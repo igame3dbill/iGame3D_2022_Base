@@ -1,0 +1,38 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {function removeDuplicateEdgesClicked(w)
+	ig3d_RemoveDuplicateEdges()
+end
+
+function selectNextBadEdgeClicked(w)
+	ig3d_SelectUnclosedEdges()
+end
+
+function removeDoubleSidedFacesAndFixFacingsClicked(w)
+	ig3d_RemoveDoubleSidedFacesAndFixFacings()
+end} {}
+  Fl_Window ShadowFixingUtilities {
+    label {Shadow Fixing Utilities} open
+    xywh {385 385 462 438} type Double visible
+  } {
+    Fl_Button {} {
+      label {Delete duplicate edges}
+      callback removeDuplicateEdgesClicked
+      xywh {25 25 290 25}
+    }
+    Fl_Button {} {
+      label {Select next bad edge}
+      callback selectNextBadEdgeClicked
+      xywh {25 50 290 25}
+    }
+    Fl_Button {} {
+      label {Remove double sided faces and fix facings}
+      callback removeDoubleSidedFacesAndFixFacingsClicked
+      xywh {25 75 290 25}
+    }
+  }
+} 

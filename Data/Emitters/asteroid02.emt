@@ -1,0 +1,16 @@
+model=Spheres/asteroid02.wtf
+amount=-1
+emission rate=0.50000
+life=100.0
+fade=1.000000
+area=1.000000
+size=500.000000
+size variance=20.000000
+lux=true
+weight=2.500000
+move=false,0.000000
+explode=true,10.000000
+scale=false,0.000000
+rotate=false,0.000000
+anim=false
+destroy=false

@@ -1,0 +1,22 @@
+function meshAnBaseSkalieren(mfil, sizx, sizy, sizz)
+	ig3d_SetMeshTool_i(4)
+	ig3d_SetMode_i(1)
+	ig3d_DeleteMesh_b(true)
+	loadMesh(mfil)
+	ig3d_SelectMeshAttachedToBone_s("base")
+	local x,x2,y,y2,z,z2=ig3d_GetMeshBounds__6f()
+	--print(x2-x, y2-y, z2-z)
+	local scalx=sizx/(x2-x)
+	local scaly=sizy/(y2-y)
+	local scalz=sizz/(z2-z)
+	if sizy==0 then
+		scaly=math.max(scalx,scalz)
+	end
+	ig3d_SelectWholeMesh()
+	ig3d_ScaleSelectedMesh_3f(scalx*100,scaly*100,scalz*100)
+	ig3d_SelectMeshAttachedToBone_s("base")
+	--x,x2,y,y2,z,z2=ig3d_GetMeshBounds__6f()
+	print(x2-x, y2-y, z2-z)
+	saveMesh(mfil)
+	ig3d_SetMode_i(4)
+end

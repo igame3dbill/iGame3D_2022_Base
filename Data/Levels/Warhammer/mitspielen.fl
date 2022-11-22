@@ -1,0 +1,110 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {function mitspielenClicked(w)
+	if joinName:value()=="" then
+		fltk.fl_message("Sie muessen sich erst einen Namen geben!")
+		return
+	end
+
+	control = socket.tcp()
+	control:settimeout(10.0)
+	host=joinMessage:value()
+	port="53839"
+	connected,error=control:connect(host,port)
+	
+	if connected then
+		control:settimeout(0.0)
+		control:send(joinName:value().."\\n")
+		
+	else
+		fltk.fl_message("Keine Antwort vom Server!")
+		control=nil
+		connected=false
+	end
+	
+end
+
+function armeelisteAuswaehlenC()
+
+	gListenDatei = fltk.fl_file_chooser("Bitte waehlen Sie eine Armeeliste mit max. "..gMaxPunkte.." Punkten aus:", "Army Builder XML Exports (*.{xml})", nil, nil)
+
+	Mitspielen:hide()
+	if gListenDatei~= nil then
+		loadLevel("Data/Levels/Warhammer")
+
+	else
+
+		
+
+		control:close()
+
+		Hauptmenue:show()	
+
+	end
+
+end
+
+gMeinIndex=2 --client ist spieler 2 !
+gSpieler=0} {}
+  Fl_Window Mitspielen {open
+    xywh {110 372 411 73} type Double visible
+  } {
+    Fl_Input joinMessage {
+      label {IP Adresse:}
+      xywh {80 35 230 25}
+      code0 {joinMessage:value("127.0.0.1")}
+    }
+    Fl_Button {} {
+      label Mitspielen
+      callback mitspielenClicked
+      xywh {310 35 90 25}
+    }
+    Fl_Input joinName {
+      label {Dein Name:}
+      xywh {80 5 230 25}
+      code0 {joinName:value("Ich")}
+    }
+  }
+  code {function warteAufAkzeptieren()
+	fltk_update()
+	
+	if connected then
+		result,e=control:receive()
+	
+		if e == "closed" then
+			fltk.fl_message("Du wurdest als Mitspieler abgelehnt!")
+			connected=false
+			control=nil
+		end
+		
+		if result~= nil then
+		
+			if punkteEmpfangen then
+				gSpieler=result
+				armeelisteAuswaehlenC()
+				return
+			end
+		
+			if ackEmpfangen then
+				gMaxPunkte=result
+				punkteEmpfangen=true
+				return
+				
+			end
+			if result=="/ack" then
+				joinMessage:value("Akzeptiert -> Spielvorbereitung")
+				ackEmpfangen=true
+			end
+		
+		end
+	end
+end
+
+game_func=warteAufAkzeptieren
+setSceneInfo(IG3D_RUN_IN_BACKGROUND, true)} {selected
+  }
+} 

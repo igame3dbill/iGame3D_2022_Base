@@ -1,0 +1,296 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {--Scripteditor code -----------------------
+
+
+function editorPrint(...)
+	local str=""
+	local i=1
+	while arg[i]~= nil do
+		if str=="" then
+			str=tostring(arg[i])
+		else
+			str=str.."	"..tostring(arg[i])
+		end
+		i=i+1
+	end
+	local l_offset=\#editor_buf:text()
+	editor:insert_position(l_offset)
+	editor:insert(str.."\\n")
+	editor:show_insert_position()
+	editor:textfont(4)
+	editor:textsize(11)
+end
+
+
+function runScriptC()
+
+	local str=editor_buf:text()	
+
+	local code,error=loadstring(str)
+	
+
+	if code==nil then
+
+		fltk.fl_message("The script you were attempting to run contains errors:\\n"..error)
+
+	else
+
+		code()
+
+	end
+
+end
+
+
+
+function openScript(tFile)
+
+
+if changed then
+
+	if not closeScript() then
+
+		return false
+
+	end
+
+end
+if tFile ==nil then
+
+fileName = fltk.fl_file_chooser("Choose a script to open:", "Lua Files (*.{lua, ig3d})", nil, nil)
+else
+fileName = gameroot..tFile
+end
+
+if fileName~= nil then
+
+print(fileName)
+	local f=io.open(fileName, "r")
+	local tText=f:read("*a")
+
+	editorPrint(tText)
+
+	f:close()
+
+	closer:activate()
+
+	path:value(fileName)
+
+else
+
+	return false
+
+end
+return true
+end
+
+
+
+
+
+function openScriptC()
+closeScript()
+	openScript()
+
+end
+
+
+
+function saveScript()
+
+	if fileName == nil then
+
+		fileName = fltk.fl_file_chooser("Please enter the filename:", "Lua Files (*.{lua, ig3d})", nil, nil)
+
+		if fileName == nil then
+
+			return false
+
+		else
+
+			path:value(fileName)
+
+			closer:activate()
+
+		end
+
+	end
+
+	
+
+	local f=io.open(fileName, "w")
+
+	f:write(editor_buf:text())
+
+	f:close()
+
+	changed=false
+
+	saver:deactivate()
+
+	return true
+
+end
+
+
+
+function saveScriptC()
+
+	saveScript()
+
+end
+
+
+
+
+
+
+
+
+
+function editorChangedContents(w)
+changed=true
+saver:activate()
+end
+
+
+
+
+
+function closeScript()
+
+	if changed then
+
+		local r=fltk.fl_choice("Do you want to save your changes first?", "No", "Yes", "Cancel")
+
+		if r == 2 then
+
+			return false
+
+		end
+
+		
+
+		if r == 1 then
+
+			if not saveScript() then
+
+				return false
+
+			end
+
+		end
+
+	end
+
+		
+
+	editor_buf:text("")
+
+	path:value("")
+
+	changed=false
+
+	fileName=nil
+
+	closer:deactivate()
+
+	saver:deactivate()
+
+	return true
+
+end
+
+
+
+function closeScriptC()
+
+	closeScript()
+
+end
+
+
+
+
+
+function newScript()
+
+	if fileName~= nil or changed then
+
+		if not closeScript() then
+
+			return false
+
+		end
+
+	end
+
+end
+
+
+
+function newScriptC()
+
+	newScript()
+
+end
+
+
+
+changed=false
+
+fileName=nil
+
+
+
+---------------------------------------------------------------------} {}
+  Fl_Window scriptEditor {
+    label {Script Editor} open
+    xywh {414 126 479 482} type Double resizable size_range {470 474 2048 2048} visible
+  } {
+    Fl_Text_Editor editor {
+      callback editorChangedContents
+      xywh {5 41 455 392} when 1 textfont 4 textsize 12
+    }
+    Fl_Button {} {
+      label Run
+      callback runScriptC
+      xywh {380 445 85 25}
+    }
+    Fl_Button opener {
+      label {Open...}
+      callback openScriptC
+      xywh {75 445 75 25}
+    }
+    Fl_Output path {
+      label {Current File:} selected
+      xywh {75 15 390 20} labelsize 11 textsize 12
+    }
+    Fl_Button saver {
+      label Save
+      callback saveScriptC
+      xywh {225 445 55 25} deactivate
+    }
+    Fl_Button newer {
+      label New
+      callback newScriptC
+      xywh {10 445 60 25}
+    }
+    Fl_Button closer {
+      label Close
+      callback closeScriptC
+      xywh {155 445 65 25} deactivate
+    }
+  }
+  code {scriptEditor:show();
+editor_buf = fltk:Fl_Text_Buffer();
+editor:buffer( editor_buf );
+scriptEditor:make_current();
+closer:deactivate();
+saver:deactivate();} {}
+} 

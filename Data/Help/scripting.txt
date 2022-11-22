@@ -1,0 +1,1182 @@
+//Chapter: iGame3D Lua Command reference
+
+//Section: Non entity related functions
+
+func: loadScript(filePath)
+docs: Loads and runs the Lua script file at [filePath]. This path is relative to the iGame3D root directory
+
+func: loadFont(filePath1, filePath2)
+docs: A font is stored in 2 textures. With this function the textures are loaded from [filePath1] and [filePath2]. The paths are relative to the iGame3D root directory. Take a look at Data/FontPngs/default32_1.png and Data/FontPngs/default32_2.png to see how the textures are made. You can use the glfontmaker to create the textures which is available at the iGame3D website
+
+func: loadMesh(filePath)
+docs: Loads a mesh in one of the supported formats (WTF, Coalesce, OBJ, 3DS, LWO) from file [filePath]. This file is relative the iGame3D root directory.
+
+func: loadLevel(folderPath)
+docs: Loads the level located at [folderPath]. This folder is relative to the iGame3D root directory. To be exact: The scene is cleared and the file load script.lua inside the folder is loaded and executed. For example loadLevel("Data/Levels/FPS") will load and run "Data/Levels/FPS/load script.lua".
+
+func: loadTexture(filePath)
+docs: Loads a texture from a PNG image file located at [filePath]. This path is relative to the iGame3D root directory. After the loading you can apply this texture to particle emitters, mesh materials or object materials. See setParticle_emitterInfo(), setMaterialInfo() for further details.
+
+func: loadSound(filePath)
+docs: Loads a sound from an OGG Vorbis file located at [filePath]. This path is relative to the iGame3D root directory. After the loading you can apply it to sound emitters. See setSound_emitterInfo() for further details.
+
+func: saveLevel(folderPath)
+docs: Saves the current scene as a load script.lua file inside folder [folderPath]. This folder is relative to the iGame3D root directory. In case there is a mesh in the scene, a loadMesh() function is added to this load script that loads the most recently saved or loaded mesh WTF file. saveLevel() fails if the desired folder does not exist. You can use ig3d_CreateDirectory_s() to create missing folders if you ever need to. A level saved this way can be loaded using loadLevel().
+
+func: saveMesh(filePath)
+docs: Saves the level mesh to file [filePath]. This path is relative to the iGame3D root directory
+
+func: saveTexture(filePath, saveAsFilePath)
+docs: Saves the texture [filePath] at path [saveAsFilePath]. This path is relative to the iGame3D root directory. The texture [filePath] needs to be in memory for this to work. It must have been loaded using loadTexture() or created using make(ig3d_texture, ...). You can use this function to create copies of textures (different [filePath] and [saveAsFilePath]) or to simply save textures created on the fly with make(ig3d_texture, ....). The following example illustrates this:
+Example: myTex=make(ig3d_texture, "myNewTexture", 256,256); saveTexture(myTex, "Data/Images/white.png"); 
+
+func: drawLine(x,y,z)
+docs: Creates lines from all selected vertices to a new vertex created at world coordinates [x,y,z]. In contrast to drawVertex() no new vertex is created if one already exists at the given coordinates. In that case the existing one will be connected to the selecte vertices. The (new) vertex will be selected and everything else will be unselected. You can use combination of drawVertex and drawLine calls to create 3D models. (Three vertices, each connected to the other with a line forms a triangle!).
+
+func: drawVertex(x,y,z)
+docs: Creates a new loose mesh vertex at world coordinates [x,y,z]. This vertex will be selected and everything else is unselected.
+
+func: drawToTexture(dstTexture, srcTexture, u, v, drawingMode, edgeBehaviour)
+docs: Draws texture image [srcTexture] into texture image [dstTexture] centered at UV coordinates [u,v]. The top-left corner of the texture image has UV coords 0,0 and the bottom-right corner of the texture image has UV coordinates [1.0, 1.0]. Both textures need to be in memory for this to work. (Either loaded using loadTexture() or created using make(ig3d_texture, ...) ). UV coords out of range [0,1] are not allowed. The way the two images are combined depends on the [drawingMode]. The following values are allowed:
+[IG3D_REPLACE]: Simply replaces the destination pixels with the source pixels. This is by far the fastest method.
+[IG3D_MODULATE]: Modulates destination and source pixels. Each RGBA color component of the source pixel is multiplied with the corresponding color component of the destination pixel. This involves reading the part of the destination image covered by the source image in order to be able to modulate. That's why it is slower than [IG3D_REPLACE].
+[IG3D_ADD]: Adds each RGBA color component of the source pixel to the corresponding color component of the destination pixel. It's slightly faster than [IG3D_MODULATE] but slower than [IG3D_REPLACE].
+When source image pixels run out of the destination image area (typically when drawing near the edges), the [edgeBehaviour] parameter specifies what to do with these pixels. They can either be discarded with [edgeBehaviour] = [IG3D_CLAMP] or wrap around to the other side of the image (pac-man-like) with [edgeBehaviour] = [IG3D_REPEAT]. The following example illustrates how to draw the iGame3D logo at the center of a fresh white texture and how to save it to a file.
+Example:
+loadTexture("Data/Images/logo0.png")
+t=make(ig3d_texture, "new", 256,256)
+drawToTexture(t, "Data/Images/logo0.png", 0.5, 0.5, IG3D_REPLACE, IG3D_CLAMP)
+saveTexture(t, "Data/Images/newtexture.png")
+
+func: passed():(seconds)
+docs: This paremeterless function returns the amount of time elapsed since the last game frame in seconds. Since the game loop should run at least 50 times a second, values of < 0.02 are typical.
+
+func: time():(seconds)
+docs: This paremeterless function returns the amount of time elapsed since startup of the iGame3D Player.
+
+func: newtonPass(timeStep)
+docs: Forces the Newton Game Dynamics library which iGame3D internally uses for physics simulation to perform a simulation step of [timeStep] seconds. Typically you won't need to use this because in every game loop the physics simulation is performed with the correct time step.
+
+func: render()
+docs: Forces redrawing of the GL scene. Typically you won't need to do this because the GL scene is drawn in every game loop.
+
+func: quit()
+docs: Immediately quits the iGame3D Player. Any unsaved changes will be lost.
+
+func: beep()
+docs: Plays the standard alert sound. This is useful for testing purposes.
+
+func: pause(trueOrFalse)
+docs: If [trueOrFalse] is set to true, this will pause iGame3D. All sounds are stopped and the time is halted. No game loop will be run. With [trueOrFalse] set to false, the game is unpaused (resumed).
+
+func: parseFluid(file1, file2)
+docs: Converts a fluid (.fl) file at full path [file1] to a lua script file (.lua) at full path [file2]. This will overwrite an existing lu script at path [file2]. Fluid is the FLTK User Interface Designer program used to design user interfaces for FLTK. iGame3D is using FLTK for its GUIs as well.
+
+func: lineCollision(ax,ay,az, bx,by,bz):(collType, cx,cy,cz, collObj)
+docs: This checks for intersections between a line segment with the mesh world or objects. The line segment is given by its two endpoint vertices [ax,ay,az] and [bx,by,bz]. It returns [collType], the type of collision that occured, the collision point in [cx,cy,cz] and in the case of an object collision also a reference to that colliding object. [collType] is always one of the following: 0 (no collision, collision point undefined, collObj=nil), 1 (collision with the mesh, collObj=nil), 2 (collision with an object, collObj=gObjects[x]). See the tutorials for more information about the gObjects table. lineCollision() gives information about the closest collision to the start point [ax,ay,az] only. In case you are interested in all object or mesh intersections on the line, you can call lineCollision repeatedly and turn off collision of each object you collide with using setObjectInfo(gObjects[x].cObj, IG3D_COLL, false) until no new collision happens. That won't help for mesh collisions though. To handle that you will need to change the line starting point [ax,ay,az] to something behind [cx,cy,cz] to detect collisions behind the first mesh collision. In most cases you will be interested in the first collision only though.
+
+func: key(char,when):(result)
+docs: Returns the state of key [char] where true means down and false means up. You use the [when] parameter to get more information about the key press. [when]="-" is the default mode where you get the key state as described above. [when]="n" can be used to detect only "new" key presses ie keys that were just pressed and have not been down in the last game loop. similarly [when]="o" detects key releases. [char] can either be the character itself or its ASCII code. For example key("a","-") and key(97,"-") are equivalent. For special keys it is a good idea to use the input() function to find out the code.
+
+func: input(alphaNumericOnly):(char,code,name)
+docs: This function takes a different approach to keyboard input. While key() allows you to request the state of every single key, you are often interested in the most recently typed key no matter which one it is (input text fields etc.). To do that with key() you would need a call to key() for every character that is accepted. That's where input() comes into play. When a new key is pressed it returns the character itself, its code and a descriptive name which is especially useful for the non printable characters. It also comes in use when buiding a key configuration level. When no new key is pressed, all return values are nil. If you are only interested in alphanumeric characters you can set [alphaNumericOnly] to true. In that case input() will return nil on any non-alphanumeric keys. Caps-lock and shift are handled automatically for alphanumeric keys, so input(true) will return a capital "A" when shift is pressed together with an "a". The [char] or [code] return values are exactly the ones to be used to poll key states with the key() function. So you could also use input() to find out the key code of a special key and later use it in a call to key().
+
+func: ascii(code):(char)
+docs: Returns the character of the given decimal ASCII [code]. For example ascii(65) returns "A". You can use the result of ascii() in a call to key() (although key() can also handle the codes directly). There may be other uses for this function though, so we didn't declare it as obsolete just yet. Lazy people can also look <a href=http://www.asciitable.com/>here</a>.
+
+func: click(when):(result)
+docs: Returns the state of the left mouse button. [result]=true means pressed and [result]=false means not pressed. The [when] parameter is used to get more information about the click. The default [when]="-" simply returns the state of the mouse button as described above. [when]="n" detects only "new" clicks. That means that click("n") returns true only when you just pressed the mouse button in contrast to click("-") which will return true all the time until the button is released. similar [when]="o" detects only mouse button releases. Often you will switch on particle emitters for guns on click("n") and switch it off again on click("o").
+
+func: dirToAngles(dx,dy,dz):(xa,ya,za)
+docs: Takes a direction vector [dx, dy, dz] and returns the corresponding euler angles that an object would need to be rotated to to look in that direction (the returned [za] angle is always 0.0, so that objects don't lean to the sides by default). Typical use is to make an object look at a certain position. In that case you would simply subtract the object's position from the "look point" and use the result as the input vector [dx,dy,dz] for dirToAngles(). Then use the returned [xa,ya,za] in a call to setObjectInfo() with IG3D_ROTATION.
+
+
+//Section: Constants
+
+To reduce the amount of functions we put the different attribute settings and functionalities of the entities into a large amount of constants to be used in get/set info functions. The patterns of these get/set info functions are similar for the different entity types. For example setObjectInfo(obj, attribute, values) allows you set any attribute that objects support and setCameraInfo(attribute, values) can set any camera attribute. A few concrete examples: setObjectInfo(gObjects[1].cObj, IG3D_POSITION, 0,2,3), setObjectInfo(gObjects[2].cObj, IG3D_COLL, false), setCameraInfo(IG3D_ROTATION, 0,180,0).
+Below is a list of the different entity type constants, shape constants (for object bounding boxes) and attribute constants. Usually different entities support different attributes, so in each set/get info function the supported attributes are listed with a brief description of what effect they have on the particular entity. 
+
+//CodeBeg: 
+--entity types
+ig3d_camera=1
+ig3d_object=2
+ig3d_light=3
+ig3d_particle_emitter=4
+ig3d_sound_emitter=5
+ig3d_group=6
+ig3d_path=7
+ig3d_bone=8
+ig3d_material=9
+ig3d_scene=10
+ig3d_text_box=11
+ig3d_joint=12
+ig3d_texture=13
+
+--entity (object) shapes
+ig3d_box=0
+ig3d_cylinder=1
+ig3d_sphere=2
+
+--entity attributes
+IG3D_AMBIENT=1
+IG3D_DIFFUSE=2
+IG3D_SPECULAR=3
+IG3D_COLOR=4
+IG3D_EMISSION=5
+IG3D_TEXTURE=6
+IG3D_TRANSPARENT=7
+IG3D_SMOOTH=8
+IG3D_SPOTLIGHT=9
+IG3D_CONSTANT_ATTENUATION=10
+IG3D_LINEAR_ATTENUATION=11
+IG3D_QUADRATIC_ATTENUATION=12
+IG3D_SHININESS=13
+IG3D_LUX=14
+IG3D_WIRE=15
+IG3D_ENABLED=16
+IG3D_POSITION=17
+IG3D_ROTATION=18
+IG3D_NAME=19
+IG3D_TORQUE=20
+IG3D_IMPULSE=21
+IG3D_SAMPLE=22
+IG3D_PITCH=23
+IG3D_VOLUME=24
+IG3D_PAUSE=25
+IG3D_START=26
+IG3D_LOOP=27
+IG3D_STOP=28
+IG3D_TINT_COLOR=29
+IG3D_FOG=30
+IG3D_FOV=31
+IG3D_ORTHO=32
+IG3D_MOUSE_VIEW=33
+IG3D_BACKGROUND_COLOR=34
+IG3D_SIZE=35
+IG3D_MOUSE_LINE=36
+IG3D_FPS=37
+IG3D_LIFE_TIME=38
+IG3D_FADE_TIME=39
+IG3D_EMISSION_RATE=40
+IG3D_SPEED=41
+IG3D_AREA=42
+IG3D_SIZE_VARIANCE=43
+IG3D_AMOUNT=44
+IG3D_ANIMATION=45
+IG3D_MASS=46
+IG3D_ROTATION_MATRIX=47
+IG3D_PARTICLE_MOVEMENT=48
+IG3D_PARTICLE_EXPLOSION=49
+IG3D_PARTICLE_SCALE=50
+IG3D_PARTICLE_ROTATION=51
+IG3D_PARTICLE_PLANE=52
+IG3D_GROUP_ADD=53
+IG3D_GROUP_REMOVE=54
+IG3D_HUD=55
+IG3D_VECTOR_CONSTRAINT=56
+IG3D_VELOCITY=57
+IG3D_FORCE=58
+IG3D_LEVEL_MESH=59
+IG3D_FULLSCREEN=60
+IG3D_FACE=61
+IG3D_IN=62
+IG3D_OUT=63
+IG3D_OMEGA=64
+IG3D_MOUSE_DELTA=65
+IG3D_DEPTH=66
+IG3D_COLL=67
+IG3D_SKYBOX=68
+IG3D_FONT=69
+IG3D_TEXT=70
+IG3D_DRAWN_FACES=71
+IG3D_NUM_SWAPS=72
+IG3D_TRANSFORMED_POSITION=73
+IG3D_COUNT=74
+IG3D_ROOT=75
+IG3D_SHADER=76
+IG3D_SHADER_PARAM=77
+IG3D_COLL_DESTROY=78
+IG3D_BONE_TRAVERSAL=79
+IG3D_IGNORE_COLL=80
+IG3D_BONE_COLL=81
+IG3D_WINDOW_COORDS=82
+IG3D_REPEAT=83
+IG3D_CAST_SHADOW=84
+IG3D_RECEIVE_SHADOW=85
+IG3D_BILLBOARD_X=86
+IG3D_BILLBOARD_Y=87
+IG3D_BILLBOARD_Z=88
+IG3D_SHAPE=89
+IG3D_GRAVITY_MULTIPLIER=90
+IG3D_RUN_IN_BACKGROUND=91
+IG3D_UV_TRANSFORMATION=92
+IG3D_WHEEL_DELTA=93
+IG3D_BALL=94
+IG3D_HINGE=95
+IG3D_SLIDER=96
+IG3D_CORKSCREW=97
+IG3D_UNIVERSAL=98
+IG3D_CLEAR_PARTICLES=99
+IG3D_CLOSEST_POINTS=100
+IG3D_BOUNDS=101
+IG3D_RAGDOLL=102
+IG3D_EXACT_COLLISION_DATA=103
+IG3D_CLAMP=104
+IG3D_MODULATE=105
+IG3D_REPLACE=106
+IG3D_ADD=107
+IG3D_FRAGMENT_SHADER_SUPPORTED=108 
+//CodeEnd: 
+//Section: Entity related functions
+
+
+
+func: make(entityType, ...):(entity)
+docs: There are entities which can explicitly created such as object, emitters etc. Other entities are always there like the camera and the 8 different lights. And some entities are implicitly created by loading a mesh or object model. Any mesh materials are created when loading a level mesh and an object's bones are created when loading the object model. make() creates an entity of type [entityType]. Depending on the type other additional parameters are needed. They are listed in detail here:
+<blockquote>fun2: make(ig3d_object, mdl):(object)
+docs: Creates an object with model [mdl] at world coordinates (0,0,0). iGame3D looks for the model in Data/WTF/[mdl].wtf if it is not already in the cache. Optionally you can enter the .wtf suffix, so make(ig3d_object, "man") and make(ig3d_object, "man.wtf") do the same thing. Objects get unique names based on the model name and an inrementing number, so "man1" will be the name of the created object in this example. Any model loaded like this will be cached, so the next time you create an object with this model it will be much faster to build. make() returns the internal number of the created object which you should store in the cObj field of an element in the gObjects table. Example: gObjects[1].cObj=make(ig3d_object, "man"). This gObjects table is used to store additional attributes with the object. Example: gObjects[1].myAttrib=42. Store whatever you need directly with the object and use the cObj field in any setObjectInfo() and getObjectInfo() calls. The collision handlers reference this gObjects table, so custom collision handling will only work when you make use of this table!!
+
+fun2: make(ig3d_particle_emitter, name, emtFile):(p_emitter)
+docs: This creates and returns a particle emitter named [name] at world coordinates (0,0,0). Its settings are read from a special particle emitter file specified in [emtFile]. This path is relative to the iGame3D root directory. Example: myEmitter=make(ig3d_particle_emitter, "MyHandgun", "Data/Emitters/bullet.emt"). For details on .emt files, see the "Particle emitter instruction reference" and take a look at example .emt files in Data/Emitters.
+
+fun2: make(ig3d_sound_emitter, name):(s_emitter)
+docs: Creates and returns a sound emitter named [name] at world coordinates (0,0,0). This sound emitter doesn't do much yet, you will need to assign it a sound sample loaded with loadSound() and then tell it to play and finally make some noise. See setSound_emitterInfo() for details.
+
+fun2: make(ig3d_group, name):(group)
+docs: Creates and returns an empty group of name [name]. See setGroupInfo() for informations on how to fill the group with entities and do other fancy stuff with it.
+
+fun2: make(ig3d_text_box, fontName):(textbox)
+docs: Creates and returns an empty text box at 2D coordinates (0,0) with font [fontName] where [fontName] is the path to the first font image of the desired font. For example to use the font loaded with loadFont("Data/FontPngs/monaco32_1.png", "Data/FontPngs/monaco32_2.png") you will use "Data/FontPngs/monaco32_1.png" for [fontName]. The dimensions of the text box are automatically adjusted with the text you put into it. For more information see setText_boxInfo().
+
+fun2: make(ig3d_joint, object1, object2, jointType, px,py,pz, pin0x,pin0y,pin0z, pin1x,pin1y,pin1z):(joint)
+docs: Creates and returns a joint between two objects or between one object and a fix point in the world. For a joint between two objects both [object1] and [object2] need to be valid cObj fields of elements in the gObjects table. If [object1] is not nil and [object2] is nil then a joint between [object1] and a fix point in the world is created. No joint is created on two nils or if [object1] is nil. The type of joint is specified by [jointType]. There are 5 different types which are exactly the same types as in the Newton Game Dynamics physics engine that iGame3D internally uses. Not all joint types need all following parameters. They all have in common the pivot point given by [px,py,pz] which is the position of the joint in world coordinates. Ragdoll objects will connect the bone that's nearest to this pivot point with the created joint. This can be used for locking hands to walls, hanging corpses etc. You are encouraged to read the <a href=http://www.newtongamedynamics.com>Newton docs</a> for detailed information and joint examples. Some joint types require up to two pin directions. Below is a list of the different supported values for [jointType] and their corresponding pin directions:
+<blockquote>IG3D_BALL, no pin direction
+IG3D_HINGE, one pin direction given by [pin0x,pin0y,pin0z]
+IG3D_SLIDER, one pin direction given by [pin0x,pin0y,pin0z]
+IG3D_CORKSCREW, one pin direction given by [pin0x,pin0y,pin0z]
+IG3D_UNIVERSAL, two pin directions given by [pin0x,pin0y,pin0z] and [pin1x,pin1y,pin1z]</blockquote>
+Example: tiedTogether=make(ig3d_joint, gObjects[1].cObj, gObjects[2].cObj, IG3D_BALL, 0.5,0.5,0)
+Example: swingingDoor=make(ig3d_joint, gObjects[13].cObj, nil, IG3D_HINGE, 0,0.5,0, 0,1,0)
+
+fun2: make(ig3d_texture, name, width, height):(texture)
+docs: Creates and returns a white texture of name [name] with dimensions given by [width] and [height] in pixels. Use powers of 2 for best performance. You typically create a fresh texture to draw decals into it and apply it to a material's 2nd texture unit for modulating etc. See drawToTexture() for information on how to draw to a texture. It is also possible to save the created texture to a file using saveTexture(). 
+</blockquote>func: get(entityType, ...)
+docs: In case you lost reference to an entity or never had it (like with implicitly created materials, bones etc.), you can obtain it by name or number using the get() function. Depending on the entity type specified in [entityType] different parameters follow similar to the make() function. Here's a list of the supported values for [entityType] with a brief description.
+<blockquote>fun2: get(ig3d_object, name):(obj)
+docs: Returns the object named [name]. The returned reference [obj] is the same as the one returned by make(ig3d_object, ...). Consider examples 1 and 2 which do the exactly same thing:
+Example 1: a=make(ig3d_object, "man")
+Example 2: make(ig3d_object, "man"); a=get(ig3d_object, "man1");
+
+fun2: get(ig3d_particle_emitter, name):(p_emitter)
+docs: Returns the particle emitter named [name]. The returned reference [p_emitter] is the same as the one returned by make(ig3d_particle_emitter, ...).
+
+fun2: get(ig3d_sound_emitter, name):(s_emitter)
+docs: Returns the sound emitter named [name]. The returned reference [s_emitter] is the same as the one returned by make(ig3d_sound_emitter, ...).
+
+fun2: get(ig3d_group, name):(grp)
+docs: Returns the group named [name]. The returned reference [grp] is the same as the one returned by make(ig3d_group, ...).
+
+fun2: get(ig3d_path, obj, name):(pth)
+docs: Returns the path named [name] stored inside object [obj]. Note that [obj] is not the name but the reference to the object, but [name] is the name of the path. Paths are implicitly created when loading objects or a mesh, so the only way to do something with them is by first getting them with get(). If [obj] is set to -1 you can get mesh paths! Examples:
+
+myRouteToFrance=get(ig3d_path, gObjects[1].cObj, "NewYork->France")
+upstairs=get(ig3d_path, get(ig3d_object, "UnreferencedObjectNamedPete"), "Upstairs")
+aMeshPath=get(ig3d_path, -1, "TheLongAndWindingRoad")
+
+In the second example you can see how to get a path in an object where you only know the name of but have no reference.
+
+fun2: get(ig3d_bone, obj, nameOrNumber):(bn)
+docs: Returns a bone of object [obj]. [nameOrNumber] can either be the number of the bone in the object's bone list or the bone name itself. Note that [obj] is not the name but the reference to the object. Bones are implicitly created when loading objects, so the only way to do something with them is by first getting them with get(). Examples:
+headBone=get(ig3d_bone, gObjects[1].cObj, "Head")
+secondBone=get(ig3d_bone, gObjects[3].cObj, 2)
+
+fun2: get(ig3d_material, obj, num):(mtrl)
+docs: Returns a material number [num] of object [obj]. Note that [obj] is not the name but the reference to the object. Materials are implicitly created when loading objects or a mesh, so the only way to do something with them is by first getting them with get(). If [obj] is set to -1 you can get mesh materials! Examples:
+clothMaterial=get(ig3d_material, gObjects[1].cObj, 3)
+desertGround=get(ig3d_material, -1, 2)
+
+</blockquote>func: delete(entityType, ...)
+docs: Some entities can be destroyed. To make iGame3D know what it is destroying use the [entityType] parameter followed by the entity itself. Never use an entity type that does not match the actual entity or the game will most likely crash. Be careful with delete() during game play, a broken reference to a destroyed object can easily crash iGame3D. A better idea is to never delete anything in the middle of a game. Put unused entities out of the scene to a position like (10000,10000,10000) and disable their collision if they are objects. Then let them be cleared automatically when loading another level. Entities that far out of the scene won't be drawn (for objects) or heard (for sound emitters), so they don't influence the performance. Here's a list of the supported values of [entityType] with a brief description.
+<blockquote>fun2: delete(ig3d_object, obj)
+docs: Destroys object [obj] where [obj] should be the cObj field of an element of the gObjects table. Example: delete(ig3d_object, gObjects[5].cObj)
+
+fun2: delete(ig3d_joint, jnt)
+docs: Destroys a joint [jnt] connecting two objects or one object with a fix point in the world. [jnt] needs to be created before using make(ig3d_joint, ...) or iGame3D might crash.
+
+fun2: delete(ig3d_particle_emitter, p_emitter)
+docs: Destroys particle emitter [p_emitter] and all particles in the scene emitted by it. Make sure [p_emitter] was created before using make(ig3d_particle_emiter, ...) or iGame3D might crash.
+
+fun2: delete(ig3d_sound_emitter, s_emitter)
+docs: Destroys sound emitter [s_emitter]. Make sure [s_emitter] was created before using make(ig3d_sound_emiter, ...) or iGame3D might crash.
+
+fun2: delete(ig3d_group, grp)
+docs: Ungroups and deletes group [grp]. The entities attached to the group will NOT be cleared, just the group is gone. Make sure [grp] was created before using make(ig3d_group, ...) or iGame3D might crash.
+
+fun2: delete(ig3d_scene, clearCaches)
+docs: Destroys all destroyable entities and the level mesh. If you set [clearCaches] to true, then the model, texture, sound, font etc. caches will also be cleared. Every time a level is loaded delete(ig3d_scene, false) is called automatically. (Caches are not cleared).
+
+</blockquote>func: getMaterialInfo(mtrl, attribConst, ...):(...)
+docs: Returns the value(s) of attribute [attribConst] of material [mtrl]. Depending on the requested attribute the results have different formats. Here comes a list of the supported settings for [attribConst] with a brief description. You are also encouraged to read this info about <a href="http://www.igame3d.com/help/materials.html">material settings<a>.
+
+<blockquote>fun2: getMaterialInfo(mtrl, IG3D_AMBIENT):(r,g,b,a)
+docs: Returns the ambient reflectance of material [mtrl]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glGetMaterial.xml">OpenGL docs (GL_AMBIENT)<a> for more information.
+
+fun2: getMaterialInfo(mtrl, IG3D_DIFFUSE):(r,g,b,a)
+docs: Returns the diffuse reflectance of material [mtrl]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glGetMaterial.xml">OpenGL docs (GL_DIFFUSE)<a> for more information.
+
+fun2: getMaterialInfo(mtrl, IG3D_SPECULAR):(r,g,b,a)
+docs: Returns the specular reflectance of material [mtrl]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glGetMaterial.xml">OpenGL docs (GL_SPECULAR)<a> for more information.
+
+fun2: getMaterialInfo(mtrl, IG3D_EMISSION):(r,g,b,a)
+docs: Returns the emissive color of material [mtrl]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glGetMaterial.xml">OpenGL docs (GL_EMISSION)<a> for more information.
+
+fun2: getMaterialInfo(mtrl, IG3D_COLOR):(r,g,b,a)
+docs: Returns the color of material [mtrl].
+
+fun2: getMaterialInfo(mtrl, IG3D_TEXTURE, textureUnit):(texturePath)
+docs: Returns the texture of unit [textureUnit] of material [mtrl].
+
+fun2: getMaterialInfo(mtrl, IG3D_TRANSPARENT):(isTransparent)
+docs: Returns true if alpha blending is enabled for material [mtrl], otherwise false.
+
+fun2: getMaterialInfo(mtrl, IG3D_SHADER):(shaderPath)
+docs: Returns the path to the shader folder in case one is attached to material [mtrl], otherwise "". See setMaterialInfo(mtrl, IG3D_SHADER, ...) for more info.
+
+fun2: getMaterialInfo(mtrl, IG3D_SMOOTH):(isSmooth)
+docs: Returns true if material [mtrl] is smooth shaded, otherwise false.
+
+fun2: getMaterialInfo(mtrl, IG3D_SHININESS):(shininessValue)
+docs: Returns the shininess value of material [mtrl]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glGetMaterial.xml">OpenGL docs (GL_SHININESS)<a> for more information.
+
+fun2: getMaterialInfo(mtrl, IG3D_LUX):(isSelfIlluminating)
+docs: Returns true if material [mtrl] is self-illuminating, otherwise false.
+
+fun2: getMaterialInfo(mtrl, IG3D_WIRE):(wireWidth)
+docs: Returns the line width of the wireframe of material [mtrl]. If it is 0, the material is not drawn as wireframe. It's filled instead (default)
+
+fun2: getMaterialInfo(mtrl, IG3D_DEPTH):(depthValue)
+docs: Returns 1 if depth buffer writing is enabled for material [mtrl] (this is the default setting). If it returns 0, the material does not write to the depth buffer.
+
+fun2: getMaterialInfo(mtrl, IG3D_NAME):(name)
+docs: Returns the name of material [mtrl].
+
+fun2: getMaterialInfo(mtrl, IG3D_UV_TRANSFORMATION):(rotx,roty,rotz, mu,mv, ou,ov)
+docs: Returns the UV transformation data of material [mtrl]. See setMaterialInfo(mtrl, IG3D_UV_TRANSFORMATION, ...) for more info. The default values are (0,0,0, 1,1, 0,0).
+
+</blockquote>func: setMaterialInfo(mtrl, attribConst, ...)
+docs: Allows you to set the value(s) of attribute [attribConst] of material [mtrl]. Depending on the requested attribute the parameters you need to enter behind [attribConst] have different formats. Here comes a list of the supported settings for [attribConst] with a brief description. You are also encouraged to read this info about <a href="http://www.igame3d.com/help/materials.html">material settings<a>.
+
+<blockquote>fun2: setMaterialInfo(mtrl, IG3D_AMBIENT, r,g,b,a)
+docs: Sets the ambient reflectance of material [mtrl] to [r,g,b,a]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glMaterial.xml">OpenGL docs (GL_AMBIENT)<a> for more information.
+
+fun2: setMaterialInfo(mtrl, IG3D_DIFFUSE, r,g,b,a)
+docs: Sets the diffuse reflectance of material [mtrl] to [r,g,b,a]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glMaterial.xml">OpenGL docs (GL_DIFFUSE)<a> for more information.
+
+fun2: setMaterialInfo(mtrl, IG3D_SPECULAR, r,g,b,a)
+docs: Sets the specular reflectance of material [mtrl] to [r,g,b,a]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glMaterial.xml">OpenGL docs (GL_SPECULAR)<a> for more information.
+
+fun2: setMaterialInfo(mtrl, IG3D_EMISSION, r,g,b,a)
+docs: Sets the emissive color of material [mtrl] to [r,g,b,a]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glMaterial.xml">OpenGL docs (GL_EMISSION)<a> for more information.
+
+fun2: setMaterialInfo(mtrl, IG3D_COLOR, r,g,b,a)
+docs: Sets the color of material [mtrl] to [r,g,b,a].
+
+fun2: setMaterialInfo(mtrl, IG3D_TEXTURE, textureUnit, texturePath)
+docs: Sets the texture of unit [textureUnit] of material [mtrl] to [texturePath]. The number of texture units depends on your graphics processor. 1 is the standard texture unit and is available even on GPUs that don't support multitexturing. The texture needs to be loaded before using loadTexture([texturePath]).
+
+fun2: setMaterialInfo(mtrl, IG3D_SHADER, shaderPath)
+docs: Applies a bombination of vertex and fragment shaders to material [mtrl] where [shaderPath] is relative to the iGame3D root directory. This folder contains vertex and fragment shader files. Only the Mac version of iGame3D supports vertex and fragment shaders as of now. The specified folder should contain these three files: VertexProgram, FragmentProgram and FragmentProgram_ATI. VertexProgram is written in ARBvp1.0 and FragmentProgram in ARBfp1.0. The FragmentProgram_ATI (language ATIfs1.0) is used on cards that don't support FragmentProgram and that concerns a lot of cards used in Macs. Example usage: setMaterialInfo(mtrl, IG3D_SHADER, "Data/Shaders/bump/")
+
+fun2: setMaterialInfo(mtrl, IG3D_TRANSPARENT, makeTransparent)
+docs: With [makeTransparent] set to true, alpha blending of material [mtrl] will be enabled, otherwise disabled. The opacity of the material is then determined by the alpha channel of its textures and the alpha value of the diffuse reflectance setting, 0 meaning complete invisible and 1 meaning opaque.
+
+fun2: setMaterialInfo(mtrl, IG3D_SMOOTH, makeSmooth)
+docs: With [makeSmooth] set to true, the material [mtrl] will be smooth-shaded (goraud-shaded). If the material is a mesh material you should first select the mesh that is using this material and call ig3d_MakeMeshSmoothShaded_b(true) to calculate the vertex normals used in this type of shading. If the value is [makeSmooth], then the material will be flat-shaded. (default)
+
+fun2: setMaterialInfo(mtrl, IG3D_SHININESS, shininessValue)
+docs: Sets the shininess of material [mtrl] to [shininessValue]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glMaterial.xml">OpenGL docs (GL_SHININESS)<a> for more information.
+
+fun2: setMaterialInfo(mtrl, IG3D_LUX, makeSelfIlluminating)
+docs: With [makeSelfIlluminating] set to true, material [mtrl] will ignore any lighting and will appear at full brightness (useful for skyboxes and lamps for example). [makeSelfIlluminating]=false turns off the self illumination.
+
+fun2: setMaterialInfo(mtrl, IG3D_WIRE, wireSize)
+docs: Makes material [mtrl] be drawn in wireframe if [wireSize] > 0. The line width of the wireframe is set to this [wireSize]. [wireSize] set to 0 disables the wireframe. The material geometry will be drawn filled again.
+
+fun2: setMaterialInfo(mtrl, IG3D_DEPTH, depthValue)
+docs: Controls depth buffer writing of material [mtrl] with [depthValue]. By default the value is 1, which means that depth-writing is performed when drawing the geometry of this material. With a [depthValue] = 0 you can turn this off. You might use this for some blending materials.
+
+fun2: setMaterialInfo(mtrl, IG3D_NAME, name)
+docs: Sets the name of material [mtrl] to [name].
+
+fun2: setMaterialInfo(mtrl, IG3D_ANIMATION, animate, delay, frameTime, num_columns, num_rows)
+docs: Texture animations can be played on material [mtrl] by setting [animated] to true, otherwise you disable that. For the animation to work the texture of the material needs to be a WAD image (image containing multiple images) just like "Data/Images/explosion640.png". You also need to specifiy the number of "rows" and "columns" of this image using the [num_columns] and [num_rows] parameters. In this explosion image they would both be 5. [frameTime] controls the time each "image frame" is shown and is given in seconds. By specifying a [delay] of non-zero you can start in the middle of the animation. You give enter a time offset from the start and iGame3D calculates which frame matches this time.
+
+fun2: setMaterialInfo(mtrl, IG3D_UV_TRANSFORMATION, rotx,roty,rotz, mu,mv, ou,ov)
+docs: Allows you to play around with the UV mapping of material [mtrl]. [rotx,roty,rotz] rotates the UV coordinates, U coords are multiplied with [mu] and V coords are multiplied with [mv]. [ou] is added to U coords and [ov] is added to V coords. The default settings are (0,0,0, 1,1, 0,0, 0,0). With these settings the UV mapping is the original mapping of the model.
+
+</blockquote>func: getPathInfo(path, attribConst, ...):(...)
+docs: Returns the value(s) of attribute [attribConst] of path [path]. Depending on the requested attribute the results have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: getPathInfo(path, IG3D_POSITION, pointNumber):(x,y,z)
+docs: Returns the position of point [pointNumber] of path [path]. This is the original untransformed position as it appears in the WTF model file that the path was loaded from.
+
+fun2: getPathInfo(path, IG3D_TRANSFORMED_POSITION, pointNumber):(x,y,z)
+docs: Returns the transformed position of point [pointNumber] of path [path]. If the path is an object path and this object is rotated and moved away, you can get the transformed position of the path point as if it was rotated and moved with the object.
+
+fun2: getPathInfo(path, IG3D_COUNT):(numPoints)
+docs: Returns the number of points of path [path].
+
+fun2: getPathInfo(path, IG3D_NAME):(name)
+docs: Returns the name of path [path].
+
+</blockquote>func: setPathInfo(path, attribConst, ...)
+docs: Allows you to set the value(s) of attribute [attribConst] of path [path]. Depending on the requested attribute the parameters you need to enter behind [attribConst] have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: setPathInfo(path, IG3D_POSITION, pointNumber, x,y,z)
+docs: Sets the position of point [pointNumber] of path [path] to [x,y,z].
+	
+</blockquote>func: getCameraInfo(attribConst):(...)
+docs: Returns the value(s) of attribute [attribConst] of the camera. Depending on the requested attribute the results have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: getCameraInfo(IG3D_POSITION):(x,y,z)
+docs: Returns the position of the camera.
+
+fun2: getCameraInfo(IG3D_ROTATION):(xa,ya,za)
+docs: Returns the orientation of the camera in euler angles.
+
+fun2: getCameraInfo(IG3D_ROTATION_MATRIX):(m11,m12,m13,m14, m21,m22,m23,m24, m31,m32,m33,m34, m41,m42,m43,m44)
+docs: Returns the 4x4 transformation matrix of the camera, where [mij] stands for the i-th row of the j-th column in the matrix. You can use this matrix to rotate and unrotate vectors etc. See the tutorials and demo levels scripts.
+
+</blockquote>func: setCameraInfo(attribConst, ...)
+docs: Allows you to set the value(s) of attribute [attribConst] of the camera. Depending on the requested attribute the parameters you need to enter behind [attribConst] have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: setCameraInfo(IG3D_POSITION, x,y,z)
+docs: Sets the camera position to [x,y,z].
+
+fun2: setCameraInfo(IG3D_ROTATION, xa,ya,za)
+docs: Sets the camera orientation to the euler angles [xa,ya,za].
+
+fun2: setCameraInfo(IG3D_ROTATION_MATRIX, m11,m12,m13,m14, m21,m22,m23,m24, m31,m32,m33,m34, m41,m42,m43,m44)
+docs: Sets the 4x4 transformation matrix of the camera to [m11,m12,m13,m14, m21,m22,m23,m24, m31,m32,m33,m34, m41,m42,m43,m44] where [mij] stands for the i-th row of the j-th column in the matrix.
+
+</blockquote>func: getObjectInfo(obj, attribConst):(...)
+docs: Returns the value(s) of attribute [attribConst] of object [obj] where [obj] should be the cObj field of an element of the gObjects table.
+Example: x,y,z=getObjectInfo(gObjects[2].cObj, IG3D_POSITION) 
+Depending on the requested attribute the results have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: getObjectInfo(obj, IG3D_BOUNDS):(xlow,xhigh, ylow,yhigh, zlow,zhigh)
+docs: Returns the dimensions of the bounding box of object [obj] where [xlow,ylow,zlow] is the "leftest, lowest, nearest" corner of the box and [xhigh,yhigh,zhigh] is the "rightest, highest, farest" corner of the box. You can calculate the height for example like this: xlow,xhigh,ylow,yhigh,zlow,zhigh=getObjectInfo(obj, IG3D_BOUNDS); boxHeight=yhigh-ylow;
+
+fun2: getObjectInfo(obj, IG3D_CLOSEST_POINTS, otherObj):(disjunct, ax,ay,az, bx,by,bz, nx,ny,z)
+docs: Sometimes knowing the distance between the centers of two objects is not enough, you might want to know the distance between their bounding shapes. This returns one point on the box of object [obj] and one point on the box of object [otherObj]. This points have minimal distance (closest points). The return values mean the following: [disjunct]=1 -> The objects don't overlap. [disjunct]=0 -> the objects overlap. [ax,ay,az] -> point on object [obj]'s bounding box that's closest to object [otherObj]'s bounding box. [bx,by,bz] -> point on object [otherObj]'s bounding box that's closest to object [obj]'s bounding box. [nx,ny,nz] -> normalized vector from [ax,ay,az] to [bx,by,bz]. Now you can use simple vector maths to calculate the distance from point [ax,ay,az] to [bx,by,bz] and get the distance between the bounding shapes.
+
+fun2: getObjectInfo(obj, IG3D_BILLBOARD_X):(isXBillboarded)
+docs: Returns true if object [obj] is x-axis billboarded, otherwise false. See setObjectInfo(obj, IG3D_BILLBOARD_X, ...) for more info.
+
+fun2: getObjectInfo(obj, IG3D_BILLBOARD_Y):(isYBillboarded)
+docs: Returns true if object [obj] is y-axis billboarded, otherwise false. See setObjectInfo(obj, IG3D_BILLBOARD_Y, ...) for more info.
+
+fun2: getObjectInfo(obj, IG3D_BILLBOARD_Z):(isZBillboarded)
+docs: Returns true if object [obj] is z-axis billboarded, otherwise false. See setObjectInfo(obj, IG3D_BILLBOARD_Z, ...) for more info.
+
+fun2: getObjectInfo(obj, IG3D_CAST_SHADOW):(castsShadow)
+docs: Returns true if object [obj] is casting shadows, otherwise false.
+
+fun2: getObjectInfo(obj, IG3D_RECEIVE_SHADOW):(receivesShadow)
+docs: Returns true if object [obj] is accepting shadows.
+
+fun2: getObjectInfo(obj, IG3D_REPEAT):(repeatsItself)
+docs: Returns true if object [obj] is self-repeating, otherwise false. See setObjectInfo(obj, IG3D_REPEAT, ...) for more info.
+
+fun2: getObjectInfo(obj, IG3D_SIZE):(xsize,ysize,zsize)
+docs: Returns the sizes of object [obj] in percentage of the original dimensions. Default is (100,100,100).
+
+fun2: getObjectInfo(obj, IG3D_COLL):(canCollide)
+docs: Returns true if object [obj] is set to be a collidable object, otherwise false.
+
+fun2: getObjectInfo(obj, IG3D_RAGDOLL):(isRagdoll)
+docs: Returns true if object [obj] is currently a ragdoll, otherwise false.
+
+fun2: getObjectInfo(obj, IG3D_POSITION):(x,y,z)
+docs: Returns the position of object [obj].
+
+fun2: getObjectInfo(obj, IG3D_ROTATION):(xa,ya,za)
+docs: Returns the orientation of object [obj].
+
+fun2: getObjectInfo(obj, IG3D_ROTATION_MATRIX):(m11,m12,m13,m14, m21,m22,m23,m24, m31,m32,m33,m34, m41,m42,m43,m44)
+docs: Returns the 4x4 transformation matrix of object [obj], where [mij] stands for the i-th row of the j-th column in the matrix. You can use this matrix to rotate and unrotate vectors etc. See the tutorials and demo levels scripts.
+
+fun2: getObjectInfo(obj, IG3D_NAME):(name)
+docs: Returns the name of object [obj]
+
+fun2: getObjectInfo(obj, IG3D_HUD):(isHUDObject)
+docs: Returns true if object [obj] is a HUD object, otherwise false. See setObjectInfo(obj, IG3D_HUD, ...) for more info.
+
+fun2: getObjectInfo(obj, IG3D_MASS):(mass, Ixx, Iyy, Izz)
+docs: Returns mass and intertia of object [obj]. Read up on [NewtonBodyGetMassMatrix] in the <a href="http://www.newtongamedynamics.com"> Newton Game Dynamics docs<a> for more information on these values.
+
+fun2: getObjectInfo(obj, IG3D_OMEGA):(ox,oy,oz)
+docs: Returns the current omega (angular velocity) of object [obj].
+
+fun2: getObjectInfo(obj, IG3D_VELOCITY):(vx,vy,vz)
+docs: Returns the current velocity of object [obj].
+
+fun2: getObjectInfo(obj, IG3D_FORCE):(fx,fy,fz)
+docs: Returns the force applied to object [obj].
+
+fun2: getObjectInfo(obj, IG3D_SHAPE):(shape)
+docs: Returns the bounding shape of object [obj] which can be one of the following: [ig3d_box, ig3d_cylinder, ig3d_sphere]. The default bounding shape is [ig3d_box].
+
+fun2: getObjectInfo(obj, IG3D_GRAVITY_MULTIPLIER):(gravMult)
+docs: Returns the gravity multplier of object [obj]. The default value is 0. See setObjectInfo(obj, IG3D_GRAVITY_MULTIPLIER, ...) for more info.
+
+fun2: getObjectInfo(obj, IG3D_EXACT_COLLISION_DATA, ax,ay,az, bx,by,bz):(collision, x,y,z, u,v, mtrl)
+docs: If you know a collision with object [obj] occured (for example from a previous call to lineCollision() or from a collision callback function) you might want to get additional information about this collision. That's where you use this function. It detects collisions of the line segment given by coords [ax,ay,az] and [bx,by,bz] with object [obj]. If it finds a collision (which it should because you only call it when you know there is a collision) it will return [true] and also return the exact collision point [x,y,z], the UV coords of the collision point in its triangle in [u,v] and the material [mtrl] of this triangle. It will return [false] it there is no collision. This can be the case if you call getObjectInfo(obj, IG3D_EXACT_COLLISION_DATA, ...) although there is no collision. Typically you will use this to apply decals. There you will need to know the collision material (actually the textures of the material) and the UV coords to be able to use drawToTexture() with it. The following example draws a red cross decal to the collision material of the object at the click position when you hit the mouse button. This works only if you have correctly UV-mapped objects in the scene!
+Example:
+//CodeBeg: 
+loadTexture("Data/Images/crosshair.png")
+function paintCrossesOnObjects()
+<blockquote>if click("n") then
+<blockquote>collType,cx,cy,cz,collObj=lineCollision(getSceneInfo(IG3D_MOUSE_LINE))
+if collType==2 then
+<blockquote>collision,x,y,z,u,v,mtrl=getObjectInfo(collObj.cObj, IG3D_EXACT_COLLISION_DATA, getSceneInfo(IG3D_MOUSE_LINE))
+if collision==true then
+<blockquote>drawToTexture(getMaterialInfo(mtrl, IG3D_TEXTURE, 1), "Data/Images/crosshair.png", u,v, IG3D_ADD, IG3D_CLAMP)
+</blockquote>end
+</blockquote>end
+</blockquote>end
+</blockquote>end
+game_func=paintCrossesOnObjects
+//CodeEnd: 
+
+</blockquote>func: setObjectInfo(obj, attribConst, ...)
+docs: Allows you to set the value(s) of attribute [attribConst] of object [obj]. [obj] should be the cObj field of an element of the gObjects table. For example:
+setObjectInfo(gObjects[2].cObj, IG3D_ROTATION, 0,180,0)
+Depending on the requested attribute the parameters you need to enter behind [attribConst] have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: setObjectInfo(obj, IG3D_BILLBOARD_X, makeXBillboarded)
+docs: With [makeXBillBoarded] set to true, you can enable x-axis billboarding of object [obj] and otherwise disable it. This makes the object always rotate around the x-axis so that it faces the camera. You can also combine billboard axes. When all IG3D_BILLBOARD_X, IG3D_BILLBOARD_Y and IG3D_BILLBOARD_Z are enabled, the object will face the camera all the time no matter where it is.
+
+fun2: setObjectInfo(obj, IG3D_BILLBOARD_Y, makeYBillboarded)
+docs: With [makeYBillBoarded] set to true, you can enable y-axis billboarding of object [obj] and otherwise disable it. This makes the object always rotate around the y-axis so that it faces the camera. Trees can be simlated with a transparent texture on a rectangle object using y-billboarding. You can also combine billboard axes. When all IG3D_BILLBOARD_X, IG3D_BILLBOARD_Y and IG3D_BILLBOARD_Z are enabled, the object will face the camera all the time no matter where it is.
+
+fun2: setObjectInfo(obj, IG3D_BILLBOARD_Z, makeZBillboarded)
+docs: With [makeZBillBoarded] set to true, you can enable z-axis billboarding of object [obj] and otherwise disable it. This makes the object always rotate around the z-axis so that it faces the camera. You can also combine billboard axes. When all IG3D_BILLBOARD_X, IG3D_BILLBOARD_Y and IG3D_BILLBOARD_Z are enabled, the object will face the camera all the time no matter where it is.
+
+fun2: setObjectInfo(obj, IG3D_CAST_SHADOW, castShadow, shadowMdl)
+docs: With [castShadow] set to true, object [obj] casts a shadow on all objects that "receive" shadows and on the mesh in case it is set to "receive shadows". Be sure to set the position of light for the "sun" positiont. Optionally you can use set the [shadowMdl] to a low-poly version of the object's model to cast the shadow instead of the object model itself. This helps maintaining better performance because drawing shadows of high-poly objects can dramatically hit the frame rate. Example: setObjectInfo(gObjects[2].cObj, IG3D_CAST_SHADOW, true, "lowpolyman.wtf")
+
+fun2: setObjectInfo(obj, IG3D_RECEIVE_SHADOW, receiveShadow)
+docs: With [receiveShadow] set to true, shadows of shadow-casting objects will be drawn on object [obj]. Be sure to position light 2 to set the "sun" position. [receiveShadow] = false disables shadow casting.
+
+fun2: setObjectInfo(obj, IG3D_REPEAT, makeRepeating)
+docs: If you happen to create levels without borders you can use a ground model that repeats itself so you never see the "end of the world" when you reach its borders. This set repeating on the x and z axes of object [obj] to [makeRepeating] which can be true or false. Be sure to set the mass of such a ground object to 0 (infinite), so it does not move when you walk on it or something hits it.
+
+fun2: setObjectInfo(obj, IG3D_IGNORE_COLL, ignore, otherEntityType, otherEntity)
+docs: You may want to disable collisions between certain pairs of entities. For example you don't want to hit your player model with the bullet emitter of your handgun. This function is used to set up such collision exceptions between object [obj] and another object or a particle emitter. [ignore]= true creates such a collision exception and [ignore]=false removes it. By default there are no exceptions. Use [otherEntityType] and [otherEntity] to specifiy the other involved entity. Some quick examples:
+setObjectInfo(gObjects[1].cObj, IG3D_IGNORE_COLL, true, ig3d_particle_emitter, HandGun)
+setObjectInfo(gObjects[1].cObj, IG3D_IGNORE_COLL, true, ig3d_object, gObjects[2].cObj)
+setObjectInfo(gObjects[1].cObj, IG3D_IGNORE_COLL, false, ig3d_particle_emitter, get(ig3d_particle_emitter, "EnemyGun") )
+
+fun2: setObjectInfo(obj, IG3D_SIZE, xsize,ysize,zsize)
+docs: Sets the sizes of object [obj] to [xsize,ysize,zsize] in percentage of the original dimensions. Default is (100,100,100).
+
+fun2: setObjectInfo(obj, IG3D_COLL, canCollide)
+docs: With [canCollide] set to true, collisions with object [obj] are enabled. Otherwise it ignores collisions (behaves like a ghost).
+
+fun2: setObjectInfo(obj, IG3D_RAGDOLL, makeRagdoll)
+docs: With [makeRagdoll] set to true, you can turn object [obj] into a ragdoll. You should use this feature for inactive objects like corpses only. Once turned into a ragdoll, certain settings have no effect until the object is turned into a normal object again using [makeRagdoll]=false.
+
+fun2: setObjectInfo(obj, IG3D_SHAPE, shape)
+docs: Sets the bounding shape of object [obj] to [shape] where [shape] can be one of the following: [ig3d_box, ig3d_cylinder, ig3d_sphere]. The default bounding shape of an object is [ig3d_box]. 
+
+fun2: setObjectInfo(obj, IG3D_GRAVITY_MULTIPLIER, gravMult)
+docs: By default an object ignores the gravity: The downward gravity force multiplied with the object's gravity multiplier is applied to the object all time, but since the default gravity multiplier is 0, the force is neutralized. You can set the gravity multiplier of object [obj] to [gravMult] using this function. A value in the range of [0...1] works well most of the time. The higher the value, the faster the object will fall down. 
+
+fun2: setObjectInfo(obj, IG3D_BONE_COLL, boneBasedCollisions)
+docs: Normally an object has one bounding box. However with [boneBasedCollisions] a seperate bounding box for each bone is created allowing more accurate collision detection. For example if you need to detect head shots etc. you should enable this feature, otherwise you will only know that the object was hit but not which bone of it. [boneBasedCollisions] = false disables the bone collision which is default.
+
+fun2: setObjectInfo(obj, IG3D_POSITION, x,y,z)
+docs: Sets the position of object [obj] to world coordinates [x,y,z].
+
+fun2: setObjectInfo(obj, IG3D_ROTATION, xa,ya,za)
+docs: Sets the orientation of object [obj] to [xa,ya,za] in euler angles.
+
+fun2: setObjectInfo(obj, IG3D_ROTATION_MATRIX, m11,m12,m13,m14, m21,m22,m23,m24, m31,m32,m33,m34, m41,m42,m43,m44)
+docs: Sets the 4x4 transformation matrix of object [obj] to [m11,m12,m13,m14, m21,m22,m23,m24, m31,m32,m33,m34, m41,m42,m43,m44], where [mij] stands for the i-th row of the j-th column in the matrix. See the tutorials and demo levels scripts.
+
+fun2: setObjectInfo(obj, IG3D_IMPULSE, ix,iy,iz)
+docs: Creates an impulse on the center of object [obj] in direction [ix,iy,iz]. Read up on [NewtonAddBodyImpulse] in the <a href="http://www.newtongamedynamics.com"> Newton Game Dynamics docs<a> for more information.
+
+fun2: setObjectInfo(obj, IG3D_VELOCITY, vx,vy,vz)
+docs: Sets the velocity of object [obj] to [vx,vy,vz]. In most cases you will set the force and not the velocity of an object. The force influences the velocity, so setting velocity directly will override any force.
+
+fun2: setObjectInfo(obj, IG3D_OMEGA, ox,oy,oz)
+docs: Sets the omega (angular velocity) of object [obj] to [ox,oy,oz]. In most cases you will set the torque and not the omega of an object. The torque influences the omega, so setting omega directly will override any torque.
+
+fun2: setObjectInfo(obj, IG3D_FORCE, fx,fy,fz)
+docs: Sets the force of object [obj] to [fx,fy,fz].
+
+fun2: setObjectInfo(obj, IG3D_TORQUE, tx,ty,tz)
+docs: Sets the torque of object [obj] to [tx,ty,tz].
+
+fun2: setObjectInfo(obj, IG3D_NAME, name)
+docs: Sets the name of object [obj] to [name].
+
+fun2: setObjectInfo(obj, IG3D_HUD, makeHUDObject)
+docs: With [makeHUDObject] set to true, object [obj] will be part of the HUD (heads up display). HUD objects do not behave like normal game objects since they move and rotate with the camera and ignore any collisions. Their coordinates become local to the camera, so that a HUD object at position (0,0,-1) will float around in a distance of 1 in front of the camera.
+
+fun2: setObjectInfo(obj, IG3D_MASS, mass, Ixx, Iyy, Izz)
+docs: Sets the mass and inertia of object [obj] to [mass, Ixx, Iyy, Izz]. Read up on [NewtonBodySetMassMatrix] in the <a href="http://www.newtongamedynamics.com"> Newton Game Dynamics docs<a> for more information on these parameters. iGame3D calculates mass and intertia values for each object automatically, this is just a way to customize them when needed.
+
+fun2: setObjectInfo(obj, IG3D_ANIMATION, animName, offset, repeat)
+docs: Sets the sceletal animation of object [obj] to [animName]. The [animName] is the name of an animation in the #Animations: chunk inside the .wtf file of the object model. With [offset] set to 0 the animation will start from the beginning. You can set another value to start at some time in between (in seconds). With [repeat] set to true, the animation will repeat itself until something stops it, otherwise it will run once and then stop. You can stop the currently playing animation with [animName] = "STOP". If you do that the [repeat] parameter has a different meaning. Setting it to false simply stops the animation. Setting it to true resets the sceleton to its default position where no bone is rotated.
+
+fun2: setObjectInfo(obj, IG3D_VECTOR_CONSTRAINT, pinx,piny,pinz)
+docs: You can place an imaginary axis into object [obj] with direction [pinx,piny,pinz]. The object can then only rotate around this axis (but still move freely). You can use a pin with direction (0,1,0) to prevent the object from falling to the sides. You typically use this for humanoid characters. Every call to setObjectInfo(obj, IG3D_VECTOR_CONSTRAINT,...) replaces an old pin axis the object might already have. With [pinx,piny,pinz] set to (0,0,0) you can remove the axis without creating a new one.
+
+</blockquote>func: getBoneInfo(bone, attribConst)
+docs: Returns the value(s) of attribute [attribConst] of bone [bone]. Depending on the requested attribute the results have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: getBoneInfo(bone, IG3D_COLL):(canCollide)
+docs: Returns true if collisions are enabled on bone [bone], otherwise false.
+
+fun2: getBoneInfo(bone, IG3D_ENABLED):(isEnabled)
+docs: Returns true if bone [bone] is visible, otherwise false.
+
+fun2: getBoneInfo(bone, IG3D_POSITION):(x,y,z)
+docs: Returns the transformed position of bone [bone] in world coordinates.
+
+fun2: getBoneInfo(bone, IG3D_ROTATION):(xa,ya,za)
+docs: Returns the orientation of bone [bone] in euler angles.
+
+fun2: getBoneInfo(bone, IG3D_NAME):(name)
+docs: Returns the name of bone [bone].
+
+</blockquote>func: setBoneInfo(bone, attribConst, ...)
+docs: Allows you to set the value(s) of attribute [attribConst] of bone [bone]. Depending on the requested attribute the parameters you need to enter behind [attribConst] have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: setBoneInfo(bone, IG3D_COLL, canCollide)
+docs: You can disable collisions with bone [bone] by setting [canCollide] to false. Otherwise the bone collision is enabled which is the default.
+
+fun2: setBoneInfo(bone, IG3D_ENABLED, makeEnabled)
+docs: You can hide bone [bone] by setting [makeEnabled] to false. Otherwise the bone is visible which is the default.
+
+fun2: setBoneInfo(bone, IG3D_POSITION, x,y,z)
+docs: Sets the LOCAL coordinates of bone [bone] to [x,y,z]. These coordinates are local to the object the bone belongs to. They are NOT the world coordinates that getBoneInfo() returns.
+
+fun2: setBoneInfo(bone, IG3D_ROTATION, xa,ya,za)
+docs: Sets the orientation of bone [bone] to euler angles [xa,ya,za].
+
+</blockquote>func: getLightInfo(lightNumber, attribConst):(...)
+docs: Returns the value(s) of attribute [attribConst] of light [lightNumber] where [lightNumber] is an integer in the range [1..8]. Depending on the requested attribute the results have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: getLightInfo(lightNumber, IG3D_AMBIENT):(r,g,b,a)
+docs: Returns the ambient color of light [lightNumber]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glGetLight.xml">OpenGL docs (GL_AMBIENT)<a> for more information. 
+
+fun2: getLightInfo(lightNumber, IG3D_DIFFUSE):(r,g,b,a)
+docs: Returns the diffuse color of light [lightNumber]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glGetLight.xml">OpenGL docs (GL_DIFFUSE)<a> for more information. 
+
+fun2: getLightInfo(lightNumber, IG3D_SPECULAR):(r,g,b,a)
+docs: Returns the specular color of light [lightNumber]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glGetLight.xml">OpenGL docs (GL_SPECULAR)<a> for more information. 
+
+fun2: getLightInfo(lightNumber, IG3D_SPOTLIGHT):(dx,dy,dz, cutoff, exponent)
+docs: docs: Returns the spotlight direction, cutoff angle and exponent of light [lightNumber]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glGetLight.xml">OpenGL docs (GL_SPOT_DIRECTION, GL_SPOT_CUTOFF, GL_SPOT_EXPONENT)<a> for more information. 
+
+fun2: getLightInfo(lightNumber, IG3D_CONSTANT_ATTENUATION):(value)
+docs: Returns the constant attenuation value of light [lightNumber]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glGetLight.xml">OpenGL docs (GL_CONSTANT_ATTENUATION)<a> for more information. 
+
+fun2: getLightInfo(lightNumber, IG3D_LINEAR_ATTENUATION):(value)
+docs: Returns the linear attenuation value of light [lightNumber]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glGetLight.xml">OpenGL docs (GL_LINEAR_ATTENUATION)<a> for more information. 
+
+fun2: getLightInfo(lightNumber, IG3D_QUADRATIC_ATTENUATION):(value)
+docs: Returns the quadratic attenuation value of light [lightNumber]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glGetLight.xml">OpenGL docs (GL_QUADRATIC_ATTENUATION)<a> for more information. 
+
+fun2: getLightInfo(lightNumber, IG3D_ENABLED):(isEnabled)
+docs: Returns true if light [lightNumber] is enabled, otherwise it returns false. By default only light 1 is enabled.
+
+fun2: getLightInfo(lightNumber, IG3D_POSITION):(x,y,z,w)
+docs: Returns the position of light [lightNumber] in homogeneous coordinates. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glGetLight.xml">OpenGL docs (GL_CONSTANT_POSITION)<a> for more information. 
+
+</blockquote>func: setLightInfo(lightNumber, attribConst, ...)
+docs: Allows you to set the value(s) of attribute [attribConst] of light [lightNumber] where [lightNumber] is an integer in the range [1..8]. Depending on the requested attribute the parameters you need to enter behind [attribConst] have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: setLightInfo(lightNumber, IG3D_AMBIENT, r,g,b,a)
+docs: Sets the ambient color of light [lightNumber] to [r,g,b,a]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glLight.xml">OpenGL docs (GL_AMBIENT)<a> for more information.
+
+fun2: setLightInfo(lightNumber, IG3D_DIFFUSE, r,g,b,a)
+docs: Sets the diffuse color of light [lightNumber] to [r,g,b,a]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glLight.xml">OpenGL docs (GL_DIFFUSE)<a> for more information.
+
+fun2: setLightInfo(lightNumber, IG3D_SPECULAR, r,g,b,a)
+docs: Sets the specular color of light [lightNumber] to [r,g,b,a]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glLight.xml">OpenGL docs (GL_SPECULAR)<a> for more information.
+
+fun2: setLightInfo(lightNumber, IG3D_SPOTLIGHT, dx,dy,dz, cutoff, exponent)
+docs: Sets the spotlight direction, cutoff angle and exponent of light [lightNumber]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glLight.xml">OpenGL docs (GL_SPOT_DIRECTION, GL_SPOT_CUTOFF, GL_SPOT_EXPONENT)<a> for more information.
+
+fun2: setLightInfo(lightNumber, IG3D_CONSTANT_ATTENUATION, value)
+docs: Sets the constant attenuation value of light [lightNumber] to [value]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glLight.xml">OpenGL docs (GL_CONSTANT_ATTENUATION)<a> for more information.
+
+fun2: setLightInfo(lightNumber, IG3D_LINEAR_ATTENUATION, value)
+docs: Sets the linear attenuation value of light [lightNumber] to [value]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glLight.xml">OpenGL docs (GL_LINEAR_ATTENUATION)<a> for more information.
+
+fun2: setLightInfo(lightNumber, IG3D_QUADRATIC_ATTENUATION, value)
+docs: Sets the quadratic attenuation value of light [lightNumber] to [value]. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glLight.xml">OpenGL docs (GL_QUADRATIC_ATTENUATION)<a> for more information.
+
+fun2: setLightInfo(lightNumber, IG3D_ENABLED, makeEnabled)
+docs: This enables light [lightNumber] if [makeEnabled] is true, otherwise it disables it. By default only light 1 is enabled.
+
+fun2: setLightInfo(lightNumber, IG3D_POSITION, x,y,z,w)
+docs: Sets the coordinates of light [lightNumber] to [x,y,z,w]. These are homogeneous coordinates. See the <a href="http://www.opengl.org/sdk/docs/man/xhtml/glLight.xml">OpenGL docs (GL_POSITION)<a> for more information.
+
+</blockquote>func: getGroupInfo(group, attribConst):(...)
+docs: Returns the value(s) of attribute [attribConst] of group [group]. Depending on the requested attribute the results have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: getGroupInfo(group, IG3D_POSITION):(x,y,z)
+docs: Returns the position of group [group]. This is the centroid of all entities attached to this group.
+
+fun2: getGroupInfo(group, IG3D_ROTATION):(xa,ya,za)
+docs: Returns the orientation of group [group]. This is an average orientation among the entities attached to this group and is meaningful only if the orientations don't differ too much.
+
+fun2: getGroupInfo(group, IG3D_NAME):(name)
+docs: Returns the name of group [group]
+
+</blockquote>func: setGroupInfo(group, attribConst, ...)
+docs: Allows you to set the value(s) of attribute [attribConst] of group [group]. Depending on the requested attribute the parameters you need to enter behind [attribConst] have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: setGroupInfo(group, IG3D_POSITION, x,y,z)
+docs: Sets the position of group [group] to [x,y,z]. Actually the centroid of the group will be placed there and all entities attached to the group will be placed with the same distance to the new centroid that they had to the old one.
+
+fun2: setGroupInfo(group, IG3D_ROTATION, xa,ya,za)
+docs: Sets the orientation of group [group] to euler angles [xa,ya,za]. The old orientations of the attached entities shouldn't differ too much or total rubbish might happen to their orientation.
+
+fun2: setGroupInfo(group, IG3D_NAME, name)
+docs: Sets the name of group [group] to [name].
+
+fun2: setGroupInfo(group, IG3D_GROUP_ADD, entityType, theEntity)
+docs: This is used to fill group [group] with entities. It adds [theEntity] to the group. [entityType] needs to be set to tell iGame3D the type of [theEntity]. One entity can be part of one group only. iGame3D will remove an entity from other groups when added to a new group. It is possible to create a hierarchy of groups by adding one group to another group. Here follows the list of the supported values for [entityType] with quick (mostly self-explanatory) examples:
+
+<blockquote>fun2: setGroupInfo(group, IG3D_GROUP_ADD, ig3d_object, obj)
+docs: [obj] should be the cObj field of an element of the gObjects table like setGroupInfo(group, IG3D_GROUP_ADD, ig3d_object, gObjects[3].cObj).
+
+fun2: setGroupInfo(group, IG3D_GROUP_ADD, ig3d_light, lightNumberFrom1to8)
+
+fun2: setGroupInfo(group, IG3D_GROUP_ADD, ig3d_particle_emitter, p_emitter) 
+
+fun2: setGroupInfo(group, IG3D_GROUP_ADD, ig3d_sound_emitter, s_emitter)
+
+fun2: setGroupInfo(group, IG3D_GROUP_ADD, ig3d_group, subGroup)
+
+</blockquote>fun2: setGroupInfo(group, IG3D_GROUP_REMOVE, entityType, theEntity)
+docs: Of course you can also remove entity [theEntity] from group [group] again. [entityType] needs to be set to tell iGame3D the type of [theEntity]. Here follows the list of the supported values for [entityType] with quick (mostly self-explanatory) examples:
+
+<blockquote>fun2: setGroupInfo(group, IG3D_GROUP_REMOVE, ig3d_object, obj)
+docs: [obj] should be the cObj field of an element of the gObjects table like setGroupInfo(group, IG3D_GROUP_REMOVE, ig3d_object, gObjects[3].cObj).
+
+fun2: setGroupInfo(group, IG3D_GROUP_REMOVE, ig3d_light, lightNumberFrom1to8)
+
+fun2: setGroupInfo(group, IG3D_GROUP_REMOVE, ig3d_particle_emitter, p_emitter) 
+
+fun2: setGroupInfo(group, IG3D_GROUP_REMOVE, ig3d_sound_emitter, s_emitter)
+
+fun2: setGroupInfo(group, IG3D_GROUP_REMOVE, ig3d_group, subGroup)
+
+</blockquote></blockquote>func: getParticle_emitterInfo(p_emitter, attribConst):(...)
+docs: Returns the value(s) of attribute [attribConst] of particle emitter [p_emitter]. Depending on the requested attribute the results have different formats. Here comes a list of the supported settings for [attribConst] with a brief description. You are also encouraged to read this info about <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+<blockquote>fun2: getParticle_emitterInfo(p_emitter, IG3D_BILLBOARD_X):(isXBillboarded)
+docs: Returns true, if particle emitter [p_emitter] is x-axis billboarded, otherwise false. The result is only meaningful for 3D model particles.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_BILLBOARD_Y):(isYBillboarded)
+docs: Returns true, if particle emitter [p_emitter] is y-axis billboarded, otherwise false. The result is only meaningful for 3D model particles.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_BILLBOARD_Z):(isZBillboarded)
+docs: Returns true, if particle emitter [p_emitter] is z-axis billboarded, otherwise false. The result is only meaningful for 3D model particles.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_COLL):(canCollide)
+docs: Returns true, if particle emitter [p_emitter] is collidable, otherwise false. The result is only meaningful for 3D model particles.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_FORCE):(fx,fy,fz)
+docs: Returns the force of particle emitter [p_emitter]. The result is only meaningful for 3D model particles.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_TORQUE):(tx,ty,tz)
+docs: Returns the torque of particle emitter [p_emitter]. The result is only meaningful for 3D model particles.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_BONE_TRAVERSAL):(traverseBones, curBone)
+docs: Returns the state of bone traversal and the starting bone of particle emitter [p_emitter]. The result is only meaningful for 3D model particles. See setParticle_emitterInfo(p_emitter, IG3D_BONE_TRAVERSAL, ...) for more info.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_COLL_DESTROY):(destroysOnCollision)
+docs: Returns true if particles of emitter [p_emitter] should be destroyed on a collision, otherwise false.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_POSITION):(x,y,z)
+docs: Returns the position of particle emitter [p_emitter].
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_ROTATION):(xa,ya,za)
+docs: Returns the orientation of particle emitter [p_emitter] in euler angles.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_VELOCITY):(vx,vy,vz)
+docs: Returns the velocity of particle emitter [p_emitter]. The result is only meaningful for 3D model particles.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_NAME):(name)
+docs: Returns the name of particle emitter [p_emitter].
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_TEXTURE):(texturePath)
+docs: Returns the texture path of emitter [p_emitter]. The result is only meaningful for 2D sprite particles. See "texture" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_LIFE_TIME):(l_time)
+docs: Returns the default life time of particle emitter [p_emitter]. See "life" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_FADE_TIME):(f_time)
+docs: Returns the default fade out time of particle emitter [p_emitter]. See "fade" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>. 
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_EMISSION_RATE):(e_rate)
+docs: Returns the emission rate of particle emitter [p_emitter]. See "emission rate" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_AREA):(area)
+docs: Returns the area of particle emitter [p_emitter]. See "area" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_SIZE_VARIANCE):(variance)
+docs: Returns the size variance of particle emitter [p_emitter]. See "size variance" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_SPEED):(speed)
+docs: Returns the speed of particle emitter [p_emitter]. See "speed" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_SIZE):(size)
+docs: Returns the size of particle emitter [p_emitter]. See "size" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_AMOUNT):(amount)
+docs: Returns the amount of particle emitter [p_emitter]. See "amount" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_ANIMATION):(isAnimating, frameTime)
+docs: Returns the animation settings of particle emitter [p_emitter]. See "anim" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_LUX):(isSelfIlluminating)
+docs: Returns the self-illuminancy of particle emitter [p_emitter]. See "lux" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_MASS):(mass)
+docs: Returns the mass/weight of particle emitter [p_emitter]. See "weight" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_PARTICLE_MOVEMENT):(moves, value)
+docs: Returns the movement settings of particle emitter [p_emitter]. See "move" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_PARTICLE_EXPLOSION):(explodes, value)
+docs: Returns the explosion movement settings of particle emitter [p_emitter]. See "explode" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_PARTICLE_SCALE):(scales, value)
+docs: Returns the scale settings of particle emitter [p_emitter]. See "scale" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_PARTICLE_ROTATION):(rotates, value)
+docs: Returns the rotation settings of particle emitter [p_emitter]. See "rotate" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: getParticle_emitterInfo(p_emitter, IG3D_PARTICLE_PLANE):(isPlanar, nx,ny,nz)
+docs: Returns settings for a custom positioning plane of particle emitter [p_emitter]. See "plane" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+</blockquote>func: setParticle_emitterInfo(p_emitter, attribConst, ...)
+docs: Allows you to set the value(s) of attribute [attribConst] of particle emitter [p_emitter]. Depending on the requested attribute the parameters you need to enter behind [attribConst] have different formats. Here comes a list of the supported settings for [attribConst] with a brief description. You are also encouraged to read this info about <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+<blockquote>fun2: setParticle_emitterInfo(p_emitter, IG3D_BILLBOARD_X, makeXBillboarded)
+docs: With [makeXBillBoarded] set to true, you can enable x-axis billboarding of particle emitter [p_emitter] and otherwise disable it. 2D sprite particles are billboarded on all three axes anyway so this setting does only make sense for 3D model particles. This makes the emitted particles always rotate around the x-axis so that they face the camera. You can also combine billboard axes. When all IG3D_BILLBOARD_X, IG3D_BILLBOARD_Y and IG3D_BILLBOARD_Z are enabled, the particles will face the camera all the time no matter where it is. 
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_BILLBOARD_Y, makeYBillboarded)
+docs: With [makeYBillBoarded] set to true, you can enable y-axis billboarding of particle emitter [p_emitter] and otherwise disable it. 2D sprite particles are billboarded on all three axes anyway so this setting does only make sense for 3D model particles. This makes the emitted particles always rotate around the y-axis so that they face the camera. Trees can be simlated with a transparent texture on a particle using y-billboarding. You can also combine billboard axes. When all IG3D_BILLBOARD_X, IG3D_BILLBOARD_Y and IG3D_BILLBOARD_Z are enabled, the particles will face the camera all the time no matter where it is. 
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_BILLBOARD_Z, makeZBillboarded)
+docs: With [makeZBillBoarded] set to true, you can enable z-axis billboarding of particle emitter [p_emitter] and otherwise disable it. 2D sprite particles are billboarded on all three axes anyway so this setting does only make sense for 3D model particles. This makes the emitted particles always rotate around the z-axis so that they face the camera. You can also combine billboard axes. When all IG3D_BILLBOARD_X, IG3D_BILLBOARD_Y and IG3D_BILLBOARD_Z are enabled, the particles will face the camera all the time no matter where it is. 
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_COLL, canCollide)
+docs: With [canCollide] set to true, the particles emitted by [p_emitter] can collide with other entities or the mesh, otherwise collisions with them are ignored. Only 3D model particles can collide, so this has no effect on the 2D sprite particles..
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_IGNORE_COLL, ignore, otherEntityType, otherEntity)
+docs: You may want to disable collisions between certain pairs of entities. For example you don't want to hit your player model with the bullet emitter of your handgun. This function is used to set up such collision exceptions between particle emitter [p_emitter] and another particle emitter or an object. [ignore]= true creates such a collision exception and [ignore]=false removes it. By default there are no exceptions. Use [otherEntityType] and [otherEntity] to specifiy the other involved entity. Some quick examples:
+setParticle_emitterInfo(p_emitter, IG3D_IGNORE_COLL, true, ig3d_object, gObjects[1].cObj)
+setParticle_emitterInfo(p_emitter, IG3D_IGNORE_COLL, true, ig3d_particle_emitter, another_emitter)
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_FORCE, fx,fy,fz)
+docs: Sets the force of new emitted particles of emitter [p_emitter] to [fx,fy,fz]. This works for 3D model particles only.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_TORQUE, tx,ty,tz)
+docs: Sets the torque of new emitted particles of emitter [p_emitter] to [tx,ty,tz]. This works for 3D model particles only.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_BONE_TRAVERSAL, traverse, startBone)
+docs: Works with 3D model particles only. With [traverse] set to true, each emitted particle of [p_emitter] is only one bone of the 3D model. That way you can emit bone per bone starting at bone [startBone] of the model. When the last bone has been emitted, it will start emitting the first bone again. This can be used for exploding vehicles. Create a version of the vehicle with unconnected bones (maybe 10 parts), then enable traversal, set the amount to 10 and emit them all (with some torque and force setup for more action). This is done in iFly for the exploding airplanes.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_COLL_DESTROY, destroyOnCollision)
+docs: With [destroyOnCollision] set to true, particles that collide with something will be cleared on collision. This is false by default. It works for 3D model particles only.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_POSITION, x,y,z)
+docs: Sets the position of particle emitter [p_emitter] to [x,y,z].
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_ROTATION, xa,ya,za)
+docs: Sets the orientation of particle emitter [p_emitter] to [xa,ya,za] in euler angles.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_VELOCITY, vx,vy,vz)
+docs: Sets the velocity of new emitted particles of emitter [p_emitter] to [vx,vy,vz]. This works for 3D model particles only.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_NAME, name)
+docs: Sets the name of particle emitter [p_emitter] to [name].
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_TEXTURE, texturePath)
+docs: Sets the texture of emitter [p_emitter] to [texturePath]. See "texture" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_LIFE_TIME, l_time)
+docs: Sets the life time of emitter [p_emitter] to [l_time]. See "life" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_FADE_TIME, f_time)
+docs: Sets the fade out time of emitter [p_emitter] to [f_time]. See "fade" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_EMISSION_RATE, e_rate)
+docs: Sets the emission rate of emitter [p_emitter] to [e_time]. See "emition rate" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_AREA, area)
+docs: Sets the area of emitter [p_emitter] to [area]. See "area" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_SIZE_VARIANCE, variance)
+docs: Sets the size variance of emitter [p_emitter] to [variance]. See "size variance" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_SPEED, speed)
+docs: Sets the speed of emitter [p_emitter] to [speed]. See "speed" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_SIZE, size)
+docs: Sets the size of emitter [p_emitter] to [size]. See "size" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_AMOUNT, amount)
+docs: Sets the amount of emitter [p_emitter] to [amount]. See "amount" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_ANIMATION, animate, frameTime)
+docs: With [animated] set to true, this activates texture animation for particles emitted by emitter [p_emitter], otherwise it will be disabled. The images in the WAD texture will be looped with a frame time of [frameTime] similar to IG3D_ANIMATION in the context of materials.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_LUX, makeSelfIlluminating)
+docs: With [makeSelfIlluminating] set to true, particle emitted by [p_emitter] will ignore any lighting and will appear at full brightness This is useful for particles that emit light themselves like fire. [makeSelfIlluminating]=false turns off the self illumination.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_MASS, mass)
+docs: Sets the mass/weight of emitter [p_emitter] to [mass]. See "weight" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_STOP, stop)
+docs: Stops emitting particle from [p_emitter].
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_START, start)
+docs: Starts emitting particle from [p_emitter] based on all the settings made.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_PARTICLE_MOVEMENT, makeMoving, value)
+docs: Sets up particle movement of emitter [p_emitter]. See "move" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_PARTICLE_EXPLOSION, makeExploding, value)
+docs: Sets up particle explosion movement of emitter [p_emitter]. See "explode" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_PARTICLE_SCALE, makeScaling, value)
+docs: Sets up particle scaling of emitter [p_emitter]. See "scale" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_PARTICLE_ROTATION, makeRotating, value)
+docs: Sets up particle rotation of emitter [p_emitter]. See "rotate" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_PARTICLE_PLANE, makePlanar, nx,ny,nz)
+docs: Sets up a plane for 2D sprite particles emitted by emitter [p_emitter]. See "plane" setting in <a href="http://www.igame3d.com/help/particles.html">particle emitter settings<a>.
+
+fun2: setParticle_emitterInfo(p_emitter, IG3D_CLEAR_PARTICLES)
+docs: Clears all particles emitter by particle emitter [p_emitter].
+
+</blockquote>func: getSound_emitterInfo(s_emitter, attribConst):(...)
+docs: Returns the value(s) of attribute [attribConst] of sound emitter [s_emitter]. Depending on the requested attribute the results have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: getSound_emitterInfo(s_emitter, IG3D_POSITION):(x,y,z)
+docs: Returns the position of sound emitter [s_emitter].
+ 
+fun2: getSound_emitterInfo(s_emitter, IG3D_NAME):(name)
+docs: Returns the name of sound emitter [s_emitter].
+
+</blockquote>func: setSound_emitterInfo(s_emitter, attribConst, ...)
+docs: Allows you to set the value(s) of attribute [attribConst] of sound emitter [s_emitter]. Depending on the requested attribute the parameters you need to enter behind [attribConst] have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: setSound_emitterInfo(s_emitter, IG3D_POSITION, x,y,z)
+docs: Sets the position of sound emitter [s_emitter] to [x,y,z].
+
+fun2: setSound_emitterInfo(s_emitter, IG3D_NAME, name)
+docs: Sets the name of sound emitter [s_emitter] to [name].
+
+fun2: setSound_emitterInfo(s_emitter, IG3D_START)
+docs: Starts playing the sound of sound emitter [s_emitter]. It can be looped or played once, see the IG3D_LOOP attribute ahead.
+
+fun2: setSound_emitterInfo(s_emitter, IG3D_LOOP, makeLooped)
+docs: You can loop the sound of sound emitter [s_emitter] with [makeLooped]=true. Otherwise it will be played only once.
+
+fun2: setSound_emitterInfo(s_emitter, IG3D_PITCH, pitch)
+docs: Sets the pitch of sound emitter [s_emitter] to [pitch] which ranges from 50 to 200. [pitch]=100 is the default which plays the original unpitched sound.
+
+fun2: setSound_emitterInfo(s_emitter, IG3D_SAMPLE, soundName)
+docs: Attaches the sound [soundName] to sound emitter [s_emitter]. This sound needs to be loaded before using loadSound().
+
+fun2: setSound_emitterInfo(s_emitter, IG3D_VOLUME, volume)
+docs: Sets the volume of sound emitter [s_emitter] to [volume] which ranges from 0 to 100.
+
+fun2: setSound_emitterInfo(s_emitter, IG3D_PAUSE, makePaused)
+docs: If [makePaused] is true, this pauses sound emitter [s_emitter]. Later you can continue playing the sound with [makePaused]=false.
+
+fun2: setSound_emitterInfo(s_emitter, IG3D_STOP)
+docs: Stops playing the sound of sound emitter [s_emitter] if it is currently playing a sound. 
+
+</blockquote>func: getSceneInfo(attribConst):(...)
+docs: Returns the value(s) of attribute [attribConst] of the scene. Anything that doesn't fit into the other entities is an attribute of the scene. Depending on the requested attribute the results have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: getSceneInfo(IG3D_RECEIVE_SHADOW):(acceptsShadows)
+docs: Returns true, if the level mesh is showing shadows of shadow-casting objects, otherwise it will return false.
+
+fun2: getSceneInfo(IG3D_WINDOW_COORDS, worldx,worldy,worldz):(winx,winy,winz)
+docs: Translates world coordinates [worldx,worldy,worldz] to window coordinates [winx,winy,winz]. The [winx] and [winy] coordinates are local 2D coordinates while [winz] is the depth into the screen. [winz] = 0: on the screen glass, [winz] > 0: in front of viewer, [winz] < 0: behind viewer.
+
+fun2: getSceneInfo(IG3D_ROTATION_MATRIX):(m11,m12,m13,m14, m21,m22,m23,m24, m31,m32,m33,m34, m41,m42,m43,m44)
+docs: Returns the 4x4 transformation matrix of the scene, where [mij] stands for the i-th row of the j-th column in the matrix. You can use this matrix to rotate and unrotate vectors etc. See the tutorials and demo levels scripts. The scene matrix is rarely used, you should use the camera matrix instead.
+
+fun2: getSceneInfo(IG3D_SHADER_PARAM, whichParam):(val0,val1,val2,val3)
+docs: The values for fragment and vertex shader parameter [whichParam] can be queried here. [whichParam] should be a number. See setSceneInfo(IG3D_SHADER_PARAM, ...) for more info.
+
+fun2: getSceneInfo(IG3D_LEVEL_MESH):(path)
+docs: Returns the path to the level mesh. Most likely this is the path to the most recently saved/loaded mesh unless you set it to something else using setSceneInfo(IG3D_LEVEL_MESH, ...).
+
+fun2: getSceneInfo(IG3D_TINT_COLOR):(r,g,b)
+docs: Returns the "tint" color of the scene, default is (1,1,1). See setSceneInfo(IG3D_TINT_COLOR, ...) for more info.
+
+fun2: getSceneInfo(IG3D_FPS):(fps)
+docs: Returns the current "frames per second", also called framerate.
+
+fun2: getSceneInfo(IG3D_DRAWN_FACES):(numFaces)
+docs: Returns the number of faces drawn in the last game frame.
+
+fun2: getSceneInfo(IG3D_NUM_SWAPS):(numSwaps)
+docs: Returns the number of triangle swaps in the last game frame that were needed to draw transparent mesh triangles in the correct order.
+
+fun2: getSceneInfo(IG3D_BACKGROUND_COLOR):(r,g,b)
+docs: Returns the clear/background color of the GL scene.
+
+fun2: getSceneInfo(IG3D_FOG):(fogEnabled, r,g,b, start, end)
+docs: Tells you if fog is enabled (true of false), the color of the fog and its start and end distances. See setSceneInfo(IG3D_FOG, ...) for more info.
+
+fun2: getSceneInfo(IG3D_FOV):(isPerspectiveView, angle)
+docs: Tells you if the current projection mode is perspective and also returns the field of view angle. Default is (true, 90).
+
+fun2: getSceneInfo(IG3D_ORTHO):(isOrthographicView, left, right, bottom, top)
+docs: Tells you if the current projection mode is orthographic and also returns the viewport settings. Defaut is (false, -10,10,-10,10).
+
+fun2: getSceneInfo(IG3D_MOUSE_VIEW):(mouseViewMode, mouseSpeed)
+docs: Returns the mouse view mode and the mouse speed. (false, 1) is the default. You can turn on mouse view using setSceneInfo(IG3D_MOUSE_VIEW, true, mouseSpeed)
+
+fun2: getSceneInfo(IG3D_MOUSE_LINE):(nearx,neary,nearz, farx,fary,farz)
+docs: Returns the "near" mouse position and the "far" mouse position in world coordinates, where the near position is the 3D position of the cursor at distance 0 to your computer screen (on the glass). The far position is also at the cursor position but at the end of the game world into the screen. You can use this "mouse line" for picking in a combination with lineCollision().
+
+fun2: getSceneInfo(IG3D_MOUSE_DELTA):(delta_x, delta_y)
+docs: Returns the mouse delta in case mouse view mode is on. See setSceneInfo(IG3D_MOUSE_VIEW, ...).
+
+fun2: getSceneInfo(IG3D_WHEEL_DELTA):(delta_x, delta_y)
+docs: Returns the mouse wheel delta in case your mouse has a wheel.
+
+fun2: getSceneInfo(IG3D_ROOT):(path)
+docs: Returns the iGame3D root directory.
+
+fun2: getSceneInfo(IG3D_RUN_IN_BACKGROUND):(runsInBackground)
+docs: Returns true if iGame3D is set to keep running when in background, otherwise this returns false.
+
+fun2: getSceneInfo(IG3D_EXACT_COLLISION_DATA, ax,ay,az, bx,by,bz):(collision, x,y,z, u,v, mtrl)
+docs: If you know a collision with the level mesh occured (for example from a previous call to lineCollision() ) you might want to get additional information about this collision. That's where you use this function. It detects collisions of the line segment given by coords [ax,ay,az] and [bx,by,bz] with the level mesh. If it finds a collision (which it should because you only call it when you know there is a collision) it will return [true] and also return the exact collision point [x,y,z], the UV coords of the collision point in its triangle in [u,v] and the material [mtrl] of this triangle. It will return [false] it there is no collision. This can be the case if you call getSceneInfo(IG3D_EXACT_COLLISION_DATA, ...) although there is no collision. It is possible to use this function without using lineCollision() but that's not recommended since it is pretty slow. You should call it only when you know there is a collision. Typically you will use this to apply decals. There you will need to know the collision material (actually the textures of the material) and the UV coords to be able to use drawToTexture() with it. The following example draws a red cross decal to the collision material of the mesh at the click position when you hit the mouse button. This works only if you have a correctly UV-mapped mesh loaded!
+Example:
+//CodeBeg: 
+loadTexture("Data/Images/crosshair.png")
+function paintCrossesOnMesh()
+<blockquote>if click("n") then
+<blockquote>collType,cx,cy,cz,collObj=lineCollision(getSceneInfo(IG3D_MOUSE_LINE))
+if collType==1 then
+<blockquote>collision,x,y,z,u,v,mtrl=getSceneInfo(IG3D_EXACT_COLLISION_DATA, getSceneInfo(IG3D_MOUSE_LINE))
+if collision==true then
+<blockquote>drawToTexture(getMaterialInfo(mtrl, IG3D_TEXTURE, 1), "Data/Images/crosshair.png", u,v, IG3D_ADD, IG3D_CLAMP)
+</blockquote>end
+</blockquote>end
+</blockquote>end
+</blockquote>end
+game_func=paintCrossesOnMesh
+//CodeEnd: 
+
+fun2: getSceneInfo(IG3D_FRAGMENT_SHADER_SUPPORTED):(supported)
+docs: Returns true if fragment shaders (either ARB_fragment_program or ATI_text_fragment_shader) are supported on the machine iGame3D is running on. If no fragment shaders are supported, false is returned.
+
+</blockquote>func: setSceneInfo(attribConst, ...)
+docs: Allows you to set the value(s) of attribute [attribConst] of the scene. Any attribute that doesn't fit the other entity types is a scene attribute. Depending on the requested attribute the parameters you need to enter behind [attribConst] have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: setSceneInfo(IG3D_RECEIVE_SHADOW, acceptShadows)
+docs: If [acceptShadows] is set to true, then you can see the shadows of any shadow-casting objects on the level mesh. Be sure to set up light 2 for the "sun" position.
+
+fun2: setSceneInfo(IG3D_ROOT, path)
+docs: Changes the root directory of iGame3D to [path]. This comes in handy if you don't store the data folder at the default position. For example if you have the Data folder at "/Users/CrazyMan/Desktop/Data" you will use setSceneInfo(IG3D_ROOT, "/Users/CrazyMan/Desktop").
+
+fun2: setSceneInfo(IG3D_SHADER_PARAM, whichParam, val0, val1, val2, val3)
+docs: If you happen to use fragment and vertex shaders you can control some values of them here. This does the same as glProgramEnvParameter4fARB([GL_VERTEX_PROGRAM_ARB, whichParam, val0, val1, val2, val3]) and glProgramEnvParameter4fARB([GL_FRAGMENT_PROGRAM_ARB, whichParam, val0, val1, val2, val3]). You set the values of both fragment shader and vertex shader with the same call. [whichParam] should be a number. Use different program parameters in your vertex and fragment programs for distinction.
+
+fun2: setSceneInfo(IG3D_LEVEL_MESH, path)
+docs: Normally when you save a level with saveLevel(), a loadMesh() function call is added to the generated load script.lua that loads the mesh that has been most recently saved/loaded. You can change that level model to [path] and then save the level. Be careful, everytime you load or save a mesh the IG3D_LEVEL_MESH variable will be overwritten, so you should do this just before saving the level if you need to.
+
+fun2: setSceneInfo(IG3D_SKYBOX, model)
+docs: Sets a skybox model [model]. iGame3D is looking in Data/WTF/[model].wtf for it. Make sure the materials of this model are self-illuminating and don't write to the depth buffer.
+
+fun2: setSceneInfo(IG3D_TINT_COLOR, r,g,b)
+docs: You can change the "tint" color of the scene to [r,g,b]. Every color in the scene is multiplied with this tint color, so you can create blue-ish underwater looking scenes for example with [r]=0.2, [b]=1, [g]=0.2.
+
+fun2: setSceneInfo(IG3D_BACKGROUND_COLOR, r,g,b)
+docs: Sets the clear/background color of the GL window to [r,g,b]. In case there is no skybox, you will see this color everywhere where no object or mesh is drawn.
+
+fun2: setSceneInfo(IG3D_FOG, hasFog, r,g,b, start, end)
+docs: For some simple OpenGL fog, set [hasFog] to true, and enter the color of the fog with [r,g,b] as well as the [start] and [end] distance. At the [end] distance you will only see the fog color and at the [start] distance there is no fog yet. The fog is linearly interpolated.
+
+fun2: setSceneInfo(IG3D_FOV, makePerspectiveView, angle)
+docs: When setting [makePerspectiveView] to true, the projection mode is set to perspective. The field of view is set by [angle]. The default is perspective view with angle 90.
+
+fun2: setSceneInfo(IG3D_ORTHO, makeOrthographicView, left, right, bottom, top)
+docs: When setting [makeOrthographicView] to true, the projection mode is set to orthographic. To control the "distance" of the viewer, you use the [left, right, bottom, top] parameters to setup the viewport. Try something like -10,10,-10,10 for a start and experiment around.
+
+fun2: setSceneInfo(IG3D_MOUSE_VIEW, mouseViewMode, mouseSpeed)
+docs: With [mouseViewMode] set to true, the mouse will be hidden and you can read mouse move deltas using getSceneInfo(IG3D_MOUSE_DELTA). [mouseSpeed] can be used to modify the mouse speed, default is 1. If [mouseViewMode] is set to false, the cursor will be visible and behave normally.
+
+fun2: setSceneInfo(IG3D_FULLSCREEN, makeFullscreen)
+docs: With [makeFullscreen] set to true, iGame3D will run in fullscreen mode, otherwise in windowed mode. You can toggle that at any time.
+
+fun2: setSceneInfo(IG3D_FACE, facingMode, x,y,z)
+docs: Since you can draw 3D mesh geometry with drawVertex() and drawLine() there needs to be a way to set the facing of the generated triangles. So before you draw the triangles, you should set a face point to [x,y,z] and the facing mode [facingMode] to IG3D_OUT or IG3D_IN. Any triangles you create (with a combination of drawLine() ) will face away from [x,y,z] if [facingMode] is set to IG3D_OUT or face towards it if [facingMode] is set to IG3D_IN.
+
+fun2: setSceneInfo(IG3D_RUN_IN_BACKGROUND, runInBackground)
+docs: If you set [runInBackground] to true, then iGame3D will also draw, simulate, play sound etc. when it is not the front application. By default this is disabled, so iGame3D is idling when suspended.
+
+</blockquote>func: getText_boxInfo(txtbx, attribConst):(...)
+docs: Returns the value(s) of attribute [attribConst] of text box [txtbx]. Depending on the requested attribute the results have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: getText_boxInfo(txtbx, IG3D_BOUNDS):(left, top, right, bottom)
+docs: Returns the bounding rectangle of text box [txtbx]. The bounding rectangle is updated every time the text changes or the position of the text box changes.
+
+fun2: getText_boxInfo(txtbx, IG3D_TEXT):(theText)
+docs: Returns the text of text box [txtbx]
+
+fun2: getText_boxInfo(txtbx, IG3D_SIZE):(fontSize)
+docs: Returns the text size of text box [txtbx].
+
+fun2: getText_boxInfo(txtbx, IG3D_COLOR):(r,g,b,a)
+docs: Returns the text color of text box [txtbx] (red, green, blue, alpha).
+
+fun2: getText_boxInfo(txtbx, IG3D_FONT):(fontName)
+docs: Returns the first texture path of the font of text box [txtbx].
+
+fun2: getText_boxInfo(txtbx, IG3D_POSITION):(hCoord,vCoord)
+docs: Returns the top-left corner of text box [txtbx]. These coordinates are local 2D coordinates of the GL window or global 2D coordinates in case iGame3D is running in fullscreen mode.
+
+</blockquote>func: setText_boxInfo(txtbx, attribConst, ...)
+docs: Allows you to set the value(s) of attribute [attribConst] of text box [txtbx]. Depending on the requested attribute the parameters you need to enter behind [attribConst] have different formats. Here comes a list of the supported settings for [attribConst] with a brief description.
+
+<blockquote>fun2: setText_boxInfo(txtbx, IG3D_TEXT, theText)
+docs: Sets the text of text box [txtbx] to [theText].
+
+fun2: setText_boxInfo(txtbx, IG3D_SIZE, fontSize)
+docs: Set the text size of text box [txtbx] to [fontSize].
+
+fun2: setText_boxInfo(txtbx, IG3D_COLOR, r,g,b,a)
+docs: Sets the text color of text box [txtbx] to [r,g,b,a]. These are exactly the same values you would put in a call to glColor4f(), so look up on that for more info.
+
+fun2: setText_boxInfo(txtbx, IG3D_FONT, fontName)
+docs: Sets the font of text box [txtbx] to the font whose first texture path is [fontName]. The font needs to be loaded before using loadFont().
+
+fun2: setText_boxInfo(txtbx, IG3D_POSITION, hCoord,vCoord)
+docs: Sets the top-left corner of text box [txtbx] to 2D coordinates [hCoord, vCoord] where [hCoord] is the horizontal and [vCoord] the vertical coordinate. The coordinates are local to the GL window (in fullscreen mode, local and global coordinates are the same of course).
+
+</blockquote>

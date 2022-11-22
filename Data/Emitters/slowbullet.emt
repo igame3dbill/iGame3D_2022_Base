@@ -1,0 +1,3 @@
+model=/Weapons/bullet.wtf
+amount=-1emission rate=0.100000life=2fade=1.000000area=0.000000size=1.000000size variance=0.000000lux=trueweight=0.050000move=true,0.000000explode=false,0.000000scale=false,0.000000rotate=false,0.000000anim=falsespeed=15.0
+destroy=true

@@ -1,0 +1,56 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {--callbacks
+
+function spielErstellen()
+
+	dofile(gameroot.."Data/Levels/Warhammer/spielparameter.lua")
+
+	Hauptmenue:hide()
+
+end
+
+
+
+function mitspielen()
+
+	dofile(gameroot.."Data/Levels/Warhammer/mitspielen.lua")
+
+	Hauptmenue:hide()
+
+end
+
+
+
+function beenden()
+
+	quit()
+
+end} {selected
+  }
+  Fl_Window Hauptmenue {
+    label Hauptmenue open
+    xywh {338 413 202 107} type Double visible
+  } {
+    Fl_Button {} {
+      label {Spiel erstellen...}
+      callback spielErstellen
+      xywh {40 15 120 25}
+    }
+    Fl_Button {} {
+      label {Mitspielen...}
+      callback mitspielen
+      xywh {40 40 120 25}
+    }
+    Fl_Button {} {
+      label Beenden
+      callback beenden
+      xywh {40 65 120 25}
+    }
+  }
+  code {Hauptmenue:show()} {}
+} 

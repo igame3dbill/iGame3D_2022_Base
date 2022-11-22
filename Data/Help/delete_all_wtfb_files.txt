@@ -1,0 +1,6 @@
+# REMOVE ALL .wtfb files
+# Naviaage to DATA/WTF folder in Windows Explorer
+# type "cmd" in the windows path bar 
+# paste the following into command prompt.exe
+
+For /R %cd% %G IN (*.wtfb) do del "%G"

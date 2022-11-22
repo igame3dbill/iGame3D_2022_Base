@@ -1,0 +1,8 @@
+!!ARBfp1.0
+
+# Tobi's ARB_fragment_program version of the bump-mapping
+
+KIL fragment.depth; #dont draw if out of screen
+
+MOV result.color, fragment.color;
+END

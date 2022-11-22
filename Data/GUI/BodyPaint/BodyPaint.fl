@@ -1,0 +1,61 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {function createWhiteMeshTextures(w)
+	local j=1
+	local m=get(ig3d_material, -1, j)
+	while m ~= nil do
+		setMaterialInfo(m, IG3D_TEXTURE, bodypaintUnit:value(), make(ig3d_texture, (os.time()..(j))..".png",512,512))
+		setMaterialInfo(m, IG3D_TRANSPARENT, true)
+		j=j+1
+		m=get(ig3d_material, -1, j)
+	end	
+end
+
+function loadThePencil(w)
+	loadTexture(w:value())
+
+end} {}
+  Fl_Window BodyPaint {
+    label {Body Paint} open
+    xywh {675 295 371 70} type Double visible
+  } {
+    Fl_Input pencilTexture {
+      label {Pencil texture}
+      callback loadThePencil
+      xywh {100 10 160 25}
+      code0 {pencilTexture:value("Data/Images/Decals/bloodpencil1.png")}
+      code1 {loadTexture("Data/Images/Decals/bloodpencil1.png")}
+    }
+    Fl_Button {} {
+      label {Create white textures for all materials}
+      callback createWhiteMeshTextures
+      xywh {10 40 250 25}
+    }
+    Fl_Value_Input bodypaintUnit {
+      label {Texture Unit}
+      xywh {345 10 25 25} minimum 1 maximum 8 step 1 value 1
+    }
+  }
+  code {bodyPaintOld=game_func
+
+function bodyPaint()
+	if click("-") then
+		result,x,y,z,u,v,m=getSceneInfo(IG3D_EXACT_COLLISION_DATA, getSceneInfo(IG3D_MOUSE_LINE))
+		if result then
+			drawToTexture( getMaterialInfo(m, IG3D_TEXTURE, bodypaintUnit:value()), pencilTexture:value(),u,v, IG3D_ADD, IG3D_CLAMP)
+		end
+	end
+	bodyPaintOld()
+end
+
+game_func=bodyPaint
+
+BodyPaint:show()
+
+
+setLightInfo(1, IG3D_POSITION, 0,0,15,1)} {}
+} 

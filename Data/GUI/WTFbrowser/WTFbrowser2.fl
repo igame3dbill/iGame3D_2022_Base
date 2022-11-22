@@ -1,0 +1,166 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {gLastBrowserControlClick=time()
+gLastSelection=-1
+
+gBrowserPath=gameroot.."Data/WTF/"
+gBrowserFiles={}
+
+function listWTFFiles()
+gBrowserFiles={}
+    wtfFileBrowser:clear()
+    for file in lfs.dir(gBrowserPath) do
+        if string.sub(file, 1,1)~="." or file==".." then
+            local f = gBrowserPath..'/'..file
+            local attr = lfs.attributes (f)
+            assert (type(attr) == "table")
+             if attr.mode == "file" and string.sub(file, -4,-1)==".wtf" then 
+             	local a={file, "file"}
+             	table.insert(gBrowserFiles, a)
+             	wtfFileBrowser:add(file)
+             end   
+           if attr.mode == "directory" then 
+           local a={file, "directory"}
+             table.insert(gBrowserFiles, a)
+             wtfFileBrowser:add(file.."     ->")
+	   end  
+        end
+     end
+     
+end
+
+function updateWTFPreviewBox(name)
+	fltk.fl_register_images()
+	local a=string.gsub(gBrowserPath, "/WTF/", "/WTFPreview/")
+	local b=string.sub(name, 1,-5).."_wtf.png"
+	local img = Fl_Shared_Image.get(a..b)
+	wtfPreviewBox:color(40)
+	if img==nil then
+		img=Fl_Shared_Image.get(gameroot.."Data/Images/Colors/white.png")
+		wtfPreviewNote:label("No preview available")
+	else
+		wtfPreviewNote:label("")
+	end
+	
+	wtfPreviewBox:image(img)
+	wtfPreviewBox:redraw()
+end
+
+function wtfAddObjectClicked(w)
+	if wtfFileBrowser:value()==0 then return end
+	local theFile=gBrowserFiles[tonumber(wtfFileBrowser:value())]
+	if theFile[2]=="directory" then return end
+	
+	local c=\#(gameroot.."Data/WTF/")+1
+	local newObj={}
+	table.insert(gObjects, newObj)
+	local n=\#gObjects
+	gObjects[n].cObj=make(ig3d_object, string.sub(gBrowserPath..theFile[1],c,-1))
+end
+
+function wtfPreviewLoadMesh(w)
+	if wtfFileBrowser:value()==0 then return end
+	local theFile=gBrowserFiles[tonumber(wtfFileBrowser:value())]
+	if theFile[2]=="directory" then return end
+	
+	local c=\#(gameroot)+1
+	local newObj={}
+	table.insert(gObjects, newObj)
+	local n=\#gObjects
+	loadMesh( string.sub(gBrowserPath..theFile[1],c,-1))
+end
+
+function createPreviewsClicked(w)
+	if wtfFileBrowser:value()==0 then return end
+	local theFile=gBrowserFiles[tonumber(wtfFileBrowser:value())]
+	local a=string.gsub(gBrowserPath, "/WTF/", "/WTFPreview/")
+	local b=string.sub(theFile[1], 1,-5).."_wtf.png"
+	local c=\#gameroot+1
+	
+	
+	if theFile[2]=="file" then
+		ig3d_CreateDirectory_s(goDirsUp(a..b,0))
+		createWTFPreviewPNG(string.sub(gBrowserPath..theFile[1], c,-1), a..b)
+		updateWTFPreviewBox(theFile[1])
+	end
+	
+	if theFile[2]=="directory" then
+		ig3d_CreateDirectory_s(a..theFile[1])
+		batchPreviewsForFolder(string.sub(gBrowserPath..theFile[1].."/", c,-1), string.sub(a..theFile[1].."/", c,-1))
+	end
+end
+
+
+function browserControlDoubleClicked(w)
+	--
+	local theFile=gBrowserFiles[tonumber(w:value())]
+	if theFile[2]=="directory" then
+		if theFile[1]==".." then 
+			gBrowserPath=goDirsUp(gBrowserPath, 1)
+		else
+			gBrowserPath=gBrowserPath..theFile[1].."/"
+		end
+		listWTFFiles()
+	end
+	
+end
+
+function browserControlClicked(w)
+	if w:value()==0 then return end
+	local theFile=gBrowserFiles[tonumber(w:value())]
+	if theFile[2]=="file" then
+		updateWTFPreviewBox(theFile[1])
+	end
+	
+	local t=time()
+	
+	if t-gLastBrowserControlClick < 0.4 and w:value()==gLastSelection then
+		browserControlDoubleClicked(w)
+		gLastBrowserControlClick=0
+	else
+		gLastBrowserControlClick=time()
+	end
+	gLastSelection=w:value()
+	
+end} {}
+  Fl_Window WTFBrowserNew {
+    label {WTF Catalog} open
+    xywh {401 182 543 302} type Double visible
+  } {
+    Fl_Box wtfPreviewBox {
+      xywh {290 0 256 256} box FLAT_BOX color 40 align 16
+    }
+    Fl_Browser wtfFileBrowser {
+      callback browserControlClicked
+      xywh {0 0 285 255} type Hold labelsize 10 when 3 textsize 10
+    }
+    Fl_Button {} {
+      label {Create preview(s)}
+      callback createPreviewsClicked
+      xywh {5 260 120 25}
+    }
+    Fl_Box wtfPreviewNote {
+      label {No preview available}
+      xywh {290 255 245 25}
+    }
+    Fl_Button {} {
+      label {Add object}
+      callback wtfAddObjectClicked
+      xywh {130 260 90 25}
+    }
+    Fl_Button {} {
+      label {Load mesh}
+      callback wtfPreviewLoadMesh
+      xywh {225 260 90 25}
+    }
+  }
+  code {WTFBrowserNew:show()
+
+
+
+listWTFFiles()} {}
+} 

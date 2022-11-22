@@ -1,0 +1,86 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {chatSocket=nil
+
+function chatSocketConnect(host)
+	chatSocket=socket.tcp()
+	chatSocket:settimeout(5.0)
+	
+	connected,error=chatSocket:connect(host, "8383")
+	if (connected) then
+		--yes, we first need to find out what the server says!
+		val,e=chatSocket:receive()
+		chatLog:insert(val.."\\n")
+		chatSocket:settimeout(0.0)
+	end
+	
+	if error then fltk.fl_message("Could not connect. The following error occured: "..error);chatSocket=nil end
+	return connected
+
+end
+
+function chatDisconnectC(w)
+	chatSocket:close()
+	local l_offset=\#chatLog_buf:text()
+	chatLog:insert_position(l_offset)
+	chatLog:insert("You left the chat.\\n")
+	chatSubmit:label("Connect To")
+	chatSocket=nil
+	chatDisconnect:deactivate()
+end
+
+function chatInputReturn(w)
+	ig3d_TellFocus_b(true)
+	if Fl:event_key() ~= fltk.FL_Enter and Fl:event_key() ~= fltk.FL_KP_Enter and w==chatInput then return end
+
+	if chatSocket==nil then
+		if chatSocketConnect(chatInput:value()) then
+			chatSubmit:label("Send")
+			chatDisconnect:activate()
+		end
+		
+	else
+		chatSocket:send(chatInput:value().."\\n")
+	end
+
+	chatInput:value("")
+	
+	chatLog:show_insert_position()
+end} {}
+  Fl_Window chatClient {open
+    xywh {298 275 462 424} type Double visible
+  } {
+    Fl_Text_Display chatLog {
+      xywh {25 25 425 325}
+    }
+    Fl_Button chatSubmit {
+      label {Connect to}
+      callback chatInputReturn
+      xywh {355 390 95 25}
+    }
+    Fl_Input chatInput {
+      callback chatInputReturn
+      xywh {25 360 425 25}
+    }
+    Fl_Button chatDisconnect {
+      label Disconnect
+      callback chatDisconnectC
+      xywh {255 390 95 25}
+    }
+  }
+  code {chatInput:when(11)	--enter key + changed
+chatDisconnect:deactivate()
+
+local p=chatLog:parent()
+p:remove(chatLog)
+
+chatLog=fltk:Fl_Text_Display(25, 25, 425, 325);
+chatLog_buf = fltk:Fl_Text_Buffer();
+chatLog:buffer( chatLog_buf );
+
+chatClient:show()} {}
+} 

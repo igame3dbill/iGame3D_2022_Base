@@ -1,0 +1,15 @@
+!!ATIfs1.0
+
+# Basic Passthrough by James A. McCombe, Tue Jun 17 2003
+#
+# Very basic example of a fragment program.  Simply samples texture unit 0 and
+# modulates with the interpolated vertex color
+#
+# Texture units:
+#   Unit 0 - Base texture map
+
+StartOutputPass;
+	SampleMap r0, t0.str;    # Sample the texture at the modified texture coordinates
+	
+	MUL r0, r0, color0;
+EndPass;

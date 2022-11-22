@@ -1,0 +1,99 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  Fl_Window kontrolle {
+    label Bewegungsphase
+    xywh {404 101 900 144} type Double hide
+  } {
+    Fl_Button schw1 {
+      label Rechtsschwenk
+      callback rechtsschwenk
+      xywh {710 0 110 25} type Radio
+    }
+    Fl_Button schw2 {
+      label Linksschwenk
+      callback linksschwenk
+      xywh {490 0 110 25} type Radio
+    }
+    Fl_Button gerade {
+      label Geradeaus
+      callback geradeaus
+      xywh {600 0 110 25} type Radio
+    }
+    Fl_Button bew1 {
+      label {Angriffe ansagen}
+      xywh {-1 0 191 25} type Toggle
+    }
+    Fl_Button bew3 {
+      label {Fliehende Truppen sammeln}
+      xywh {-1 25 191 25} type Toggle
+    }
+    Fl_Button bew4 {
+      label Pflichtbewegungen
+      xywh {-1 50 191 25} type Toggle
+    }
+    Fl_Button bew5 {
+      label {Angreifer bewegen}
+      xywh {-1 75 191 25} type Toggle
+    }
+    Fl_Button bew6 {
+      label {Restliche Bewegungen}
+      xywh {-1 100 191 25} type Toggle
+    }
+    Fl_Button {} {
+      label Weiter
+      callback nextPhase
+      xywh {270 95 100 25}
+    }
+    Fl_Button bew2 {
+      label {<- Angriffsreaktionen}
+      xywh {190 0 191 25} type Toggle
+    }
+    Fl_Value_Output valb {
+      label B
+      xywh {320 50 25 25} align 5
+    }
+    Fl_Value_Output valkg {
+      label KG
+      xywh {345 50 25 25} align 5
+    }
+    Fl_Value_Output valbf {
+      label BF
+      xywh {370 50 25 25} align 5
+    }
+    Fl_Value_Output vals {
+      label S
+      xywh {395 50 25 25} align 5
+    }
+    Fl_Value_Output valw {
+      label W
+      xywh {420 50 25 25} align 5
+    }
+    Fl_Value_Output vallp {
+      label LP
+      xywh {445 50 25 25} align 5
+    }
+    Fl_Value_Output vali {
+      label I
+      xywh {470 50 25 25} align 5
+    }
+    Fl_Value_Output vala {
+      label A
+      xywh {495 50 25 25} align 5
+    }
+    Fl_Value_Output valmw {
+      label MW
+      xywh {520 50 25 25} align 5
+    }
+    Fl_Box valname {
+      label Name
+      xywh {205 50 115 25}
+    }
+  }
+  code {kontrolle:show()
+dofile(gameroot.."Data/Levels/Warhammer/init.lua")} {selected
+  }
+} 

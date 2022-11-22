@@ -1,0 +1,56 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {-- askclose
+function askclose()
+askLevel:hide()
+askLevel=nil
+end} {}
+  code {-- askok
+function askok(w)
+
+
+
+gameroot=getSceneInfo(IG3D_ROOT)
+levelName="Data/Levels/"..w:value()
+fastPath=gameroot..levelName
+ig3d_CreateDirectory_s(fastPath) --create folder 
+delete(ig3d_scene, false) --clearscene
+--ig3d_ClearScene_b(true) 
+
+
+ig3d_SetLevelName_s(levelName) --set name
+saveLevel(levelName) --savelevel
+game_func=nil
+loadLevel(gameroot.."Data/Levels/default")
+loadLevel(levelName)
+
+
+
+UIMainTools:make_current()
+askclose()
+end} {selected
+  }
+  Fl_Window askLevel {
+    label {Please Name and Press Enter}
+    callback wClose open
+    xywh {558 428 369 44} type Double modal noborder size_range {369 44 369 44} visible
+  } {
+    Fl_Button Cancel {
+      label Cancel
+      callback askclose
+      xywh {290 10 55 20} labelsize 11
+    }
+    Fl_Input LevelName {
+      label {Name:}
+      callback askok
+      xywh {40 9 245 22} labelsize 11 when 8 textsize 11
+    }
+  }
+  code {askLevel:show()
+askLevel:x(UIMainTools:x())
+askLevel:y(UIMainTools:y()+UIMainTools:h())} {}
+} 

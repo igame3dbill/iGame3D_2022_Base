@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<document signature="Army Builder XML Roster">
+<reference AB_major="2" AB_minor="2" AB_revision=" " extension="WF7" file_major="1" file_minor="0"/>
+<summary author_name="Unknown" create_date="Unknown" game_name="Warhammer Fantasy Battles V7" mode_name="Standard Army" rule_set="Primary Rule Set" race_name="Empire" max_size="2500.00"/>
+<definition stat_def_count="14" stat_set_count="0" army_term="Army" scenario_term="Army List" points_abbrev="Pts" points_singular="Point" points_plural="Points">
+<stat_def abbreviation="Mv" field_width="5" print_width="5"/>
+<stat_def abbreviation="WS" field_width="3" print_width="3"/>
+<stat_def abbreviation="BS" field_width="3" print_width="3"/>
+<stat_def abbreviation="St" field_width="4" print_width="4"/>
+<stat_def abbreviation="To" field_width="3" print_width="3"/>
+<stat_def abbreviation="Wo" field_width="3" print_width="3"/>
+<stat_def abbreviation="In" field_width="3" print_width="3"/>
+<stat_def abbreviation="At" field_width="5" print_width="5"/>
+<stat_def abbreviation="Ld" field_width="3" print_width="3"/>
+<stat_def abbreviation="Sv" field_width="3" print_width="3"/>
+<stat_def abbreviation="WSv" field_width="4" print_width="4"/>
+<stat_def abbreviation="Cp" field_width="3" print_width="3"/>
+<stat_def abbreviation="Dp" field_width="3" print_width="3"/>
+<stat_def abbreviation="US" field_width="3" print_width="3"/>
+</definition>
+<roster top_level_count="2" total_cost="110.00">
+<name/>
+<top_level is_attached="no" composition="1">
+<regiment model_count="10" cost="60" depth="0" is_conflict="no" stat_set="99999" stat_count="14" composition="Core">
+<name>Swordsmen</name>
+<notes/>
+<stat>4</stat>
+<stat>4</stat>
+<stat>3</stat>
+<stat>3</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>4</stat>
+<stat>1</stat>
+<stat>7</stat>
+<stat>5+</stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat>1</stat>
+<choice is_range="no" select_count="1" category="Armour">
+<name>Light Armour</name>
+<notes/>
+</choice>
+<choice is_range="no" select_count="1" category="Shield">
+<name>Shield</name>
+<notes>+1Sv w/ handweapon in HtH</notes>
+</choice>
+</regiment>
+</top_level>
+<top_level is_attached="no" composition="1">
+<regiment model_count="10" cost="50" depth="0" is_conflict="no" stat_set="99999" stat_count="14" composition="Core">
+<name>Spearmen</name>
+<notes/>
+<stat>4</stat>
+<stat>3</stat>
+<stat>3</stat>
+<stat>3</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>7</stat>
+<stat>6+</stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat>1</stat>
+<choice is_range="no" select_count="1" category="Weapon">
+<name>Spear</name>
+<notes>2 ranks in HtH if static</notes>
+</choice>
+<choice is_range="no" select_count="1" category="Armour">
+<name>Light Armour</name>
+<notes/>
+</choice>
+</regiment>
+</top_level>
+<accumulate name="Casting Pool" value="2.00"/>
+<accumulate name="Dispel Pool" value="2.00"/>
+<accumulate name="Models in Army" value="20.00"/>
+<notes/>
+<design_info/>
+</roster>
+<composition unit_count="2" model_count="20" unassigned="0.00" comp_count="6">
+<comp_entry group_name="Troop Type" constraints="" count_used="Count" count_unused="Unused" points_used="Points" points_unused="Unused" percentage="Percent" is_valid="yes"/>
+<comp_entry group_name="Hero" constraints="&lt;=4unit" count_used="0" count_unused="4" points_used="0" points_unused="2500" percentage="0%" is_valid="yes"/>
+<comp_entry group_name="Core" constraints="&gt;=3unit" count_used="2" count_unused="n/a" points_used="110" points_unused="2390" percentage="4%" is_valid="no"/>
+<comp_entry group_name="Special" constraints="&lt;=4unit" count_used="0" count_unused="4" points_used="0" points_unused="2500" percentage="0%" is_valid="yes"/>
+<comp_entry group_name="Rare" constraints="&lt;=2unit" count_used="0" count_unused="2" points_used="0" points_unused="2500" percentage="0%" is_valid="yes"/>
+<comp_entry group_name="Magic Item Summary" constraints="" count_used="0" count_unused="n/a" points_used="0" points_unused="n/a" percentage="0%" is_valid="yes"/>
+</composition>
+<validation valid_count="2">
+<valid_entry>Army must have one General.</valid_entry>
+<valid_entry><![CDATA[Composition group 'Core' does not satisfy requirements (>=3unit).]]></valid_entry>
+</validation>
+</document>

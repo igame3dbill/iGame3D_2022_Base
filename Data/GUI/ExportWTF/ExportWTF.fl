@@ -1,0 +1,131 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {gFoldersFound={}
+WTFCategories={}
+gameroot=getSceneInfo(IG3D_ROOT)
+Lastpathout=""
+WTFFolderPath=gameroot.."Data/WTF"
+wtfsaveFile=""
+ChosenCategory=""} {}
+  code {function dirandsubdirs(tPath)
+	for file in lfs.dir(tPath) do
+		if string.sub(file, 1,1) ~= "."    then
+		local f = tPath..'/'..file
+            	local attr = lfs.attributes(f)
+            	assert (type(attr) == "table")
+             		if attr.mode == "directory" then 
+           		local a={file, "directory"}
+           		f =string.gsub(f,"//","/")
+			table.insert(gFoldersFound, f)
+			end 
+		end
+	end
+	
+end} {}
+  code {function WTFcategorybrowserClick(w)
+if w:value() == nil or w:value() <= 1 then return end
+n=w:value()
+Lastpathout = WTFCategories[n]
+WTFname=WTFnameinput:value()
+pathoutfield:value(Lastpathout.."/"..WTFname)
+
+
+end} {}
+  code {function fillWTFcategoryInputChoice()
+gFoldersFound={}
+--WTFcategorybrowser:clear()
+CategoryInputChoice:clear()
+dirandsubdirs(WTFFolderPath)
+
+for i,v in pairs(gFoldersFound) do 
+print(v)
+table.insert(WTFCategories,v)
+o=string.gsub(v,WTFFolderPath.."/","")
+--WTFcategorybrowser:add(o)
+CategoryInputChoice:add(o)
+end
+CategoryInputChoice:redraw()
+--WTFcategorybrowser:redraw()
+end} {}
+  code {function updateWTFpathout(w)
+if Lastpathout=="" then return end
+a=w:value()
+a=string.gsub(a,".wtf","")
+o=Lastpathout.."/"..a..".wtf"
+
+pathoutfield:value(o)
+ExportWTFWindow:redraw()
+wtfsaveFile=o
+end} {}
+  code {function CancelExportWTF()
+
+ExportWTFWindow:hide()
+ExportWTFWindow=nil
+end} {}
+  code {function SaveWTF_MouseUp()
+if wtfsaveFile ~= nil then
+a=""
+for i,v in pairs(gFoldersFound) do
+a=a..v.." "
+end
+if string.find(a,ChosenCategory)== nil then
+ig3d_CreateDirectory_s(WTFFolderPath.."/"..ChosenCategory)
+end
+ig3d_SaveMeshAsWTF_sf(wtfsaveFile,100)
+end
+end} {}
+  code {function CategoryInputChoice_cb(w)
+
+pathoutfield:value("")
+a=w:value()
+ChosenCategory=a
+WTFname=WTFnameinput:value()
+a=w:value()
+--a=string.gsub(a,".wtf","")
+o=WTFFolderPath.."/"..a.."/"..WTFname..".wtf"
+Lastpathout=WTFFolderPath.."/"..a
+if WTFname ~= "" then 
+
+
+pathoutfield:value(o)
+ExportWTFWindow:redraw()
+ end
+wtfsaveFile=o
+
+
+end} {}
+  Fl_Window ExportWTFWindow {
+    label {Export WTF}
+    callback CancelExportWTF open
+    xywh {12 50 445 75} type Double size_range {288 142 288 142} visible
+  } {
+    Fl_Input WTFnameinput {
+      label {Name:}
+      callback updateWTFpathout selected
+      xywh {125 36 215 23} labelsize 11 align 5 when 1 textsize 11
+    }
+    Fl_Group buttonsgroup {open
+      xywh {350 10 90 50}
+    } {
+      Fl_Button OkSaveWTFButton {
+        label Save
+        callback SaveWTF_MouseUp selected
+        xywh {350 35 85 25} labelsize 12
+      }
+    }
+    Fl_Input_Choice CategoryInputChoice {
+      label {Path:}
+      callback CategoryInputChoice_cb open selected
+      xywh {5 35 115 24} labelsize 11 align 5 textsize 11
+    } {}
+    Fl_Output pathoutfield {
+      xywh {5 1 419 19} box NO_BOX textsize 10
+    }
+  }
+  code {ExportWTFWindow:show()
+fillWTFcategoryInputChoice()} {}
+} 

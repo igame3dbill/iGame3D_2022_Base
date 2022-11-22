@@ -1,0 +1,37 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {-- globals_and_functions_codeblock} {}
+  code {--prepMeshForBones
+function prepMeshForBones()
+ig3d_ScaleSelectedMeshTo_3f(0,1,0)
+ig3d_SetMeshPositionNoUndo_3f (0.0,0.0,0.0) 
+ig3d_MakeInvisible() 
+loadMesh("Data/WTF/Characters/human_bones.wtf")
+end
+
+function boneMeshCluster()
+ig3d_ShowAll() 
+ig3d_ClusterMeshBones()
+end} {selected
+  }
+  Fl_Window BoningWindow {
+    label {Auto Boning}
+    xywh {95 185 211 74} type Double when 6 visible
+  } {
+    Fl_Button {} {
+      label {Set 1x1x1 and 0,0,0 and Load Bones}
+      callback prepMeshForBones
+      xywh {5 5 195 30} labelsize 11
+    }
+    Fl_Button {} {
+      label {Set Auto Bones}
+      callback boneMeshCluster
+      xywh {5 40 195 25} labelsize 11
+    }
+  }
+  code {BoningWindow:show();} {}
+} 

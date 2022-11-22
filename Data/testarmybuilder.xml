@@ -1,0 +1,384 @@
+<?xml version="1.0"?>
+<document signature="Army Builder XML Roster">
+<reference AB_major="2" AB_minor="2" AB_revision=" " extension="WF7" file_major="1" file_minor="0"/>
+<summary author_name="Unknown" create_date="Unknown" game_name="Warhammer Fantasy Battles V7" mode_name="Standard Army" rule_set="Primary Rule Set" race_name="Empire" max_size="2000.00"/>
+<definition stat_def_count="14" stat_set_count="0" army_term="Army" scenario_term="Army List" points_abbrev="Pts" points_singular="Point" points_plural="Points">
+
+</definition>
+<roster top_level_count="6" total_cost="1328.00">
+<name/>
+<top_level is_attached="no" composition="1">
+<regiment model_count="10" cost="80" depth="0" is_conflict="no" stat_set="99999" stat_count="14" composition="Core">
+<name>Archers</name>
+<notes>Skirmish.</notes>
+<stat>4</stat>
+<stat>3</stat>
+<stat>3</stat>
+<stat>3</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>7</stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat>1</stat>
+<choice is_range="no" select_count="1" category="Missile">
+<name>Normal Bow</name>
+<notes><![CDATA[24", S3]]></notes>
+</choice>
+</regiment>
+</top_level>
+<top_level is_attached="no" composition="2">
+<regiment model_count="4" cost="96" depth="0" is_conflict="no" stat_set="99999" stat_count="14" composition="Special">
+<name>Greatswords</name>
+<notes>Stubborn</notes>
+<stat>4</stat>
+<stat>4</stat>
+<stat>3</stat>
+<stat>3/5</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>8</stat>
+<stat>4+</stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat>1</stat>
+<choice is_range="no" select_count="1" category="Weapon">
+<name>Great Weapon</name>
+<notes>+2S (+1 if mounted). Strikes last in HtH unless charging</notes>
+</choice>
+<choice is_range="no" select_count="1" category="Armour">
+<name>Full Plate Armor</name>
+<notes/>
+</choice>
+<choice is_range="no" select_count="1" category="Standard">
+<name>Standard</name>
+<notes>+1CR</notes>
+</choice>
+<choice is_range="no" select_count="1" category="Musician">
+<name>Musician</name>
+<notes>+1CR if tied; +1 Ld in rally attempts.</notes>
+</choice>
+<regiment model_count="1" cost="[12]" depth="1" is_conflict="no" stat_set="99999" stat_count="14" composition="N/A">
+<name><![CDATA[Count's Champion]]></name>
+<notes/>
+<stat>4</stat>
+<stat>4</stat>
+<stat>3</stat>
+<stat>3/5</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>3</stat>
+<stat>2</stat>
+<stat>8</stat>
+<stat>4+</stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat>1</stat>
+</regiment>
+<regiment model_count="2" cost="[16]" depth="1" is_conflict="no" stat_set="99999" stat_count="14" composition="N/A">
+<name>Detachment - Archer</name>
+<notes>Skirmish</notes>
+<stat>4</stat>
+<stat>3</stat>
+<stat>3</stat>
+<stat>3</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>7</stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat>1</stat>
+<choice is_range="no" select_count="1" category="Missile">
+<name>Normal Bow</name>
+<notes><![CDATA[24", S3]]></notes>
+</choice>
+</regiment>
+</regiment>
+</top_level>
+<top_level is_attached="no" composition="2">
+<regiment model_count="4" cost="220" depth="0" is_conflict="no" stat_set="99999" stat_count="14" composition="Special">
+<name>Order of the Golden Lion</name>
+<notes/>
+<stat>4</stat>
+<stat>4</stat>
+<stat>3</stat>
+<stat>4</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>8</stat>
+<stat>1+</stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat>2</stat>
+<choice is_range="no" select_count="1" category="First">
+<name>Barding</name>
+<notes/>
+</choice>
+<choice is_range="no" select_count="1" category="Weapon">
+<name>Lance</name>
+<notes>+2S on charge</notes>
+</choice>
+<choice is_range="no" select_count="1" category="Armour">
+<name>Full Plate Armor</name>
+<notes/>
+</choice>
+<choice is_range="no" select_count="1" category="Shield">
+<name>Shield</name>
+<notes/>
+</choice>
+<choice is_range="no" select_count="1" category="Standard">
+<name>Standard</name>
+<notes>+1CR</notes>
+</choice>
+<choice is_range="no" select_count="1" category="Musician">
+<name>Musician</name>
+<notes>+1CR if tied; +1 Ld in rally attempts.</notes>
+</choice>
+<choice is_range="no" select_count="1" category="Mount">
+<name>Warhorse</name>
+<notes/>
+</choice>
+<item cost="50.00" depth="1" is_regiment="no" tweak_count="1" element_count="0" extra_cost="0" category="Magic Banners">
+<name>Banner of the Daemonslayer</name>
+<notes>Unit causes Fear when charging.</notes>
+</item>
+<regiment model_count="5" cost="[0]" depth="1" is_conflict="no" stat_set="99999" stat_count="14" composition="N/A">
+<name>Warhorse</name>
+<notes/>
+<stat>8/7</stat>
+<stat>3</stat>
+<stat></stat>
+<stat>3</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>5</stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+</regiment>
+<regiment model_count="1" cost="[16]" depth="1" is_conflict="no" stat_set="99999" stat_count="14" composition="N/A">
+<name>Preceptor</name>
+<notes/>
+<stat>4</stat>
+<stat>4</stat>
+<stat>3</stat>
+<stat>4</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>3</stat>
+<stat>2</stat>
+<stat>8</stat>
+<stat>1+</stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat>2</stat>
+</regiment>
+</regiment>
+</top_level>
+<top_level is_attached="no" composition="3">
+<regiment model_count="1" cost="300" depth="0" is_conflict="no" stat_set="99999" stat_count="14" composition="Rare">
+<name>Steam Tank</name>
+<notes><![CDATA[All  difficult terrain impassable; Drives through obstacles; Large Target; Unbreakable; Terror; Malfunction Chart: 1= -4D6HPs and -4SPs, 2-3= -2D6HPs and -2SPs, 4-5= -D6HPs and -1SP, 6= No damage and +1 SP.]]></notes>
+<stat></stat>
+<stat>1</stat>
+<stat>4</stat>
+<stat>6</stat>
+<stat>6</stat>
+<stat>6</stat>
+<stat></stat>
+<stat></stat>
+<stat>10</stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat>10</stat>
+<choice is_range="no" select_count="1" category="Weapon">
+<name>Main Cannon</name>
+<notes><![CDATA[Rng 18" S8 D3 Wo No Save; Move and fire; No grapeshot; On misfire, roll 1D6 for both Cannon Misfire chart and Malfunction chart; On "Destroyed" only, main cannon destroyed; Any enemy in BtB w/ front of Tank suffers D6 S3 -3 ArSv when cannon fires]]></notes>
+</choice>
+<choice is_range="no" select_count="1" category="Weapon">
+<name>Steam Gun</name>
+<notes>Flame Template; S2, no armour saves</notes>
+</choice>
+</regiment>
+</top_level>
+<top_level is_attached="no" composition="0">
+<regiment model_count="1" cost="325" depth="0" is_conflict="yes" stat_set="99999" stat_count="14" composition="Hero">
+<name>Arch Lector of Sigmar</name>
+<notes>Has 4 Prayers of Sigmar (Bound Spells, Power Level 4. May cast two Prayers per turn, even 2 RiP Prayers, but not cast the same Prayer succesfully twice;+2 Dispel dice; Warrior Priest and his unit Hate all enemy models.</notes>
+<stat>4</stat>
+<stat>4</stat>
+<stat>3</stat>
+<stat>4</stat>
+<stat>4</stat>
+<stat>3</stat>
+<stat>4</stat>
+<stat>2/3</stat>
+<stat>9</stat>
+<stat>3+</stat>
+<stat></stat>
+<stat></stat>
+<stat>2</stat>
+<stat>1</stat>
+<choice is_range="no" select_count="1" category="Priority">
+<name>General</name>
+<notes><![CDATA[Units within 12" may use General's Leadership]]></notes>
+</choice>
+<choice is_range="no" select_count="1" category="SpellType">
+<name>Prayers of Sigmar</name>
+<notes/>
+</choice>
+<choice is_range="no" select_count="1" category="Weapon">
+<name>2ndWeapon</name>
+<notes>+1A if on foot</notes>
+</choice>
+<choice is_range="no" select_count="1" category="Armour">
+<name>Heavy Armour</name>
+<notes/>
+</choice>
+<choice is_range="no" select_count="1" category="Shield">
+<name>Shield</name>
+<notes>+1Sv w/ handweapon in HtH</notes>
+</choice>
+<item cost="30.00" depth="1" is_regiment="no" tweak_count="0" element_count="0" extra_cost="0" category="Magic Weapons">
+<name>Sword of Righteous Steel</name>
+<notes>Hits opponent on a 2+.</notes>
+</item>
+<item cost="25.00" depth="1" is_regiment="no" tweak_count="1" element_count="0" extra_cost="0" category="Magic Armour">
+<name>Helm of the Ratslayer</name>
+<notes><![CDATA[6+Sv.  Cause Fear vs. Skaven army (except non-Skaven Dogs of War units).]]></notes>
+</item>
+<item cost="30.00" depth="1" is_regiment="no" tweak_count="0" element_count="0" extra_cost="0" category="Enchanted Items">
+<name>The Orb of Thunder</name>
+<notes>Bound spell. Power 4. Remain in play. No flying creatures may use Fly move and must use Mv. </notes>
+</item>
+<regiment model_count="1" cost="[0]" depth="1" is_conflict="no" stat_set="99999" stat_count="14" composition="N/A">
+<name>War Altar</name>
+<notes>Large Target; Unbreakable; Magic Resistance (2); Casts a Lore of Light spell as Bound Spell with Power Level 5</notes>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat>5</stat>
+<stat>5</stat>
+<stat>5</stat>
+<stat></stat>
+<stat>D6</stat>
+<stat></stat>
+<stat>5+</stat>
+<stat>4+</stat>
+<stat></stat>
+<stat></stat>
+<stat>5</stat>
+<regiment model_count="2" cost="[0]" depth="2" is_conflict="no" stat_set="99999" stat_count="14" composition="N/A">
+<name>Warhorse</name>
+<notes/>
+<stat>8/7</stat>
+<stat>3</stat>
+<stat></stat>
+<stat>3</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>3</stat>
+<stat>1</stat>
+<stat>5</stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+</regiment>
+</regiment>
+</regiment>
+</top_level>
+<top_level is_attached="no" composition="0">
+<regiment model_count="1" cost="307" depth="0" is_conflict="no" stat_set="99999" stat_count="14" composition="Hero">
+<name>General of the Empire</name>
+<notes/>
+<stat>4</stat>
+<stat>5</stat>
+<stat>5</stat>
+<stat>4</stat>
+<stat>4</stat>
+<stat>3</stat>
+<stat>5</stat>
+<stat>3</stat>
+<stat>9</stat>
+<stat>4+</stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat>1</stat>
+<choice is_range="no" select_count="1" category="Missile">
+<name>Longbow</name>
+<notes><![CDATA[30", S3]]></notes>
+</choice>
+<choice is_range="no" select_count="1" category="Armour">
+<name>Full Plate Armor</name>
+<notes/>
+</choice>
+<choice is_range="no" select_count="1" category="Mount">
+<name>Griffon</name>
+<notes/>
+</choice>
+<regiment model_count="1" cost="[200]" depth="1" is_conflict="no" stat_set="99999" stat_count="14" composition="N/A">
+<name>Griffon</name>
+<notes>Fly; Terror, Large Target</notes>
+<stat>6</stat>
+<stat>5</stat>
+<stat></stat>
+<stat>5</stat>
+<stat>5</stat>
+<stat>4</stat>
+<stat>5</stat>
+<stat>4</stat>
+<stat>7</stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat></stat>
+<stat>4</stat>
+</regiment>
+</regiment>
+</top_level>
+<accumulate name="Casting Pool" value="2.00"/>
+<accumulate name="Dispel Pool" value="4.00"/>
+<accumulate name="Models in Army" value="27.00"/>
+<notes/>
+<design_info/>
+</roster>
+<composition unit_count="6" model_count="34" unassigned="0.00" comp_count="6">
+<comp_entry group_name="Troop Type" constraints="" count_used="Count" count_unused="Unused" points_used="Points" points_unused="Unused" percentage="Percent" is_valid="yes"/>
+<comp_entry group_name="Hero" constraints="&lt;=4unit" count_used="2" count_unused="2" points_used="632" points_unused="1368" percentage="31%" is_valid="yes"/>
+<comp_entry group_name="Core" constraints="&gt;=3unit" count_used="1" count_unused="n/a" points_used="80" points_unused="1920" percentage="4%" is_valid="no"/>
+<comp_entry group_name="Special" constraints="&lt;=4unit" count_used="2" count_unused="2" points_used="316" points_unused="1684" percentage="15%" is_valid="yes"/>
+<comp_entry group_name="Rare" constraints="&lt;=2unit" count_used="1" count_unused="1" points_used="300" points_unused="1700" percentage="15%" is_valid="yes"/>
+<comp_entry group_name="Magic Item Summary" constraints="" count_used="4" count_unused="n/a" points_used="135" points_unused="n/a" percentage="6%" is_valid="yes"/>
+</composition>
+<validation valid_count="4">
+<valid_entry><![CDATA[Unit 'Detachment - Archer' is outside the specified bounds for its total model count (5-2).]]></valid_entry>
+<valid_entry>You have too many Lord characters.</valid_entry>
+<valid_entry><![CDATA[Units of type 'Lord' exceed maximum model count (1).]]></valid_entry>
+<valid_entry><![CDATA[Composition group 'Core' does not satisfy requirements (>=3unit).]]></valid_entry>
+</validation>
+</document>

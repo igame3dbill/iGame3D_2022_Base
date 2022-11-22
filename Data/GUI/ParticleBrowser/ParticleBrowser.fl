@@ -1,0 +1,122 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  Fl_Window ParticleBrowser {
+    callback wClose open
+    xywh {63 178 363 368} type Double color 40 labelsize 10 visible
+  } {
+    Fl_Menu_Bar ParticlesMenu {
+      callback particles_menu_callback
+      xywh {-2 0 371 22} color 38 labelsize 10 textsize 10
+    } {}
+    Fl_Group EmitterValueGroup {open
+      xywh {148 38 211 277}
+    } {
+      Fl_Browser CurValBrowser {
+        xywh {148 38 210 276} type Multi color 50 labelsize 10 when 4 textsize 10
+      }
+      Fl_Browser ValueListBrowser {
+        label {Values:}
+        callback ValueListCallback
+        xywh {149 38 210 276} type Multi color 50 labelsize 10 align 1 when 4 textsize 10
+      }
+    }
+    Fl_Group EmitterRootGroup {
+      callback runButton open
+      xywh {4 39 148 275}
+    } {
+      Fl_Browser EmitterListBrowser {
+        label Emitters
+        callback emitterListBrowserCallback
+        xywh {4 39 74 275} type Multi color 48 labelsize 10 align 1 when 4 textsize 10
+      }
+      Fl_Browser EmitAttListBrowser {
+        label {Attributes:}
+        callback EMTAttPicked
+        xywh {76 39 74 275} type Multi color 48 labelsize 10 align 1 when 4 textsize 10
+      }
+    }
+    Fl_Group EmitterSaveAsGroup {open
+      xywh {152 38 205 50}
+    } {
+      Fl_Input SourceNameInput {
+        label {Emitter Source File }
+        callback particleSaveButtonClick
+        xywh {152 38 205 25} color 50 labelsize 10 align 1 when 8 textsize 10
+      }
+      Fl_Button PSaveControl {
+        label Save
+        callback particleSaveButtonClick
+        xywh {307 68 50 20} labelsize 10
+      }
+    }
+    Fl_Group EmitterTextureGroup {open
+      xywh {149 38 208 276} box THIN_DOWN_BOX
+    } {
+      Fl_Group pngPreviewGroup {
+        xywh {186 175 128 129} align 16 when 6
+      } {
+        Fl_Box pngPreviewBox {
+          callback pngLoad
+          xywh {186 175 128 128} box FLAT_BOX color 40 align 16
+        }
+      }
+      Fl_Browser pngFileBrowser {
+        callback browserControlClicked
+        xywh {149 38 208 132} type Hold color 48 labelsize 10 align 1 when 3 textsize 10
+      }
+    }
+    Fl_Button MakeEmitterBtn {
+      label Make
+      callback MakeEmitter
+      xywh {150 320 205 24} labelsize 10
+    }
+    Fl_Group EmissionInputGroup {open
+      xywh {5 316 355 44} box EMBOSSED_BOX color 50
+    } {
+      Fl_Input NameInput {
+        label {Name:}
+        callback RenameEmitter
+        xywh {150 322 205 22} color 50 labelsize 10 textsize 10
+      }
+      Fl_Check_Button BoolBtn {
+        label button
+        callback particleBoolBtnPick
+        xywh {125 322 19 23} down_box DOWN_BOX align 4 when 1
+      }
+      Fl_Value_Input ParticleValInputA {
+        label x
+        callback valInput
+        xywh {150 322 46 22} color 51 labelsize 12 align 2 minimum -1 maximum 99 step 0.1 textsize 10
+      }
+      Fl_Value_Input ParticleValInputB {
+        label y
+        callback valInput
+        xywh {203 322 46 22} color 51 labelsize 12 align 2 minimum -1 maximum 99 step 0.1 textsize 10
+      }
+      Fl_Value_Input ParticleValInputC {
+        label z
+        callback valInput
+        xywh {256 322 46 22} color 51 labelsize 12 align 2 minimum -1 maximum 99 step 0.1 textsize 10
+      }
+      Fl_Value_Input ParticleValInputD {
+        label a
+        callback valInput
+        xywh {310 322 46 22} color 51 labelsize 12 align 2 minimum -1 maximum 99 step 0.1 textsize 10
+      }
+    }
+    Fl_Group EmitterSourceGroup {open
+      xywh {147 40 210 274}
+    } {
+      Fl_Browser emtFileBrowser {
+        callback emtFileBrowserCallback
+        xywh {149 40 208 274} type Hold labelsize 10 align 1 when 1 textsize 10
+      }
+    }
+  }
+  code {ParticleBrowserShow()} {selected
+  }
+} 

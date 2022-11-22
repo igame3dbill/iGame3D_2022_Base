@@ -1,0 +1,673 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {if keyboard_editor ~=nil then
+keyboard_editor:hide();
+keyboard_editor=nil
+end
+keyname={}
+Q ='"'} {}
+  code {-- insideRECT
+function insideRECT(locx,locy,Left,Top,Right,Bottom)
+local result=0
+if locx >= Left and locx <= Right then result=result+1  end
+if locy >= Top and locy <= Bottom then result=result+1  end
+if result==2 then 
+return true
+end
+end} {}
+  code {function mouseEvent()
+flmousex=Fl:event_x()
+flmousey=Fl:event_y()
+  flmousedx=flmousex-Fl:event_x()
+  flmousedy=flmousex-Fl:event_y()
+   -- if  Fl:event()==5 or Fl:event()==1 then end 
+    mouseStatus:label(flmousex..","..flmousey..","..flmousedx..","..flmousedy) 
+    
+  return flmousex,flmousey,flmousedx,flmousedy
+  end} {}
+  code {function keyboard_editorcallback()
+ keyboard_editor:make_current()
+mouseEvent()
+end} {}
+  code {function buttonProps(w)
+local o={}
+local wlabel=w:label()
+local i =1
+klabel="K"..wlabel
+local out = "\\n -".."-"..wlabel
+o[1] = "local K"..wlabel.." = fltk:Fl_Button(0,0,0,0,"..Q..wlabel..Q..");";
+o[2] = klabel..":label("..wlabel..");";
+o[3] = "-".."-"..wlabel..":callback();";
+o[4] = klabel..":resize("..w:x()..",".. w:y()..","..w:w()..","..w:h()..");";
+o[5] = klabel..":box("..w:box()..");";
+o[6] = klabel..":down_box("..w:down_box()..");";
+o[7] = klabel..":labelsize("..w:labelsize()..");";
+o[9] = "-".."-end -".."-"..wlabel.."\\n";
+o[8] = "keyname["..Q..wlabel..Q.."]= "..klabel.." ;"
+local props = \#o+1
+while i< props  do
+print(o[i])
+out = out .." "..o[i]
+i=i+1
+end
+print(out)
+end
+
+function keyButtonPressed(w)
+buttonProps(w)
+end} {}
+  Fl_Window keyboard_editor {
+    label keyboard_editor
+    callback keyboard_editorcallback open
+    xywh {314 378 592 210} type Double labelsize 8 visible
+  } {
+    Fl_Group row1 {
+      xywh {10 12 422 26} labelsize 9
+    } {
+      Fl_Button keyname_esc {
+        label esc
+        callback keyButtonPressed
+        xywh {10 12 37 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f1 {
+        label f1
+        callback keyButtonPressed
+        xywh {45 12 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f2 {
+        label f2
+        callback keyButtonPressed
+        xywh {67 12 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f3 {
+        label f3
+        callback keyButtonPressed
+        xywh {88 12 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f4 {
+        label f4
+        callback keyButtonPressed
+        xywh {109 12 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f5 {
+        label f5
+        callback keyButtonPressed
+        xywh {130 12 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f6 {
+        label f6
+        callback keyButtonPressed
+        xywh {151 12 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f7 {
+        label f7
+        callback keyButtonPressed
+        xywh {172 12 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f8 {
+        label f8
+        callback keyButtonPressed
+        xywh {193 12 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f9 {
+        label f9
+        callback keyButtonPressed
+        xywh {214 12 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f10 {
+        label f10
+        callback keyButtonPressed
+        xywh {235 12 25 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f11 {
+        label f11
+        callback keyButtonPressed
+        xywh {262 12 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f12 {
+        label f12
+        callback keyButtonPressed
+        xywh {286 12 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f13 {
+        label f13
+        callback keyButtonPressed
+        xywh {310 12 33 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f15 {
+        label f15
+        callback keyButtonPressed
+        xywh {379 12 26 26} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f16 {
+        label f16
+        callback keyButtonPressed
+        xywh {406 12 26 26} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f17 {
+        label f14
+        callback keyButtonPressed
+        xywh {352 12 26 26} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+    }
+    Fl_Group row2 {
+      xywh {10 35 355 28} labelsize 9
+    } {
+      Fl_Button keyname_tilde {
+        label {`}
+        callback keyButtonPressed
+        xywh {10 35 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname1 {
+        label 1
+        callback keyButtonPressed
+        xywh {35 35 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname2 {
+        label 2
+        callback keyButtonPressed
+        xywh {57 35 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname3 {
+        label 3
+        callback keyButtonPressed
+        xywh {79 35 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname4 {
+        label 4
+        callback keyButtonPressed
+        xywh {101 35 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname5 {
+        label 5
+        callback keyButtonPressed
+        xywh {122 35 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname6 {
+        label 6
+        callback keyButtonPressed
+        xywh {144 35 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname7 {
+        label 7
+        callback keyButtonPressed
+        xywh {166 35 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname8 {
+        label 8
+        callback keyButtonPressed
+        xywh {187 35 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname9 {
+        label 9
+        callback keyButtonPressed
+        xywh {209 35 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname0 {
+        label 0
+        callback keyButtonPressed
+        xywh {231 35 25 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_minus {
+        label {-}
+        callback keyButtonPressed
+        xywh {257 35 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_equal {
+        label {=}
+        callback keyButtonPressed
+        xywh {279 35 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_delete {
+        label delete
+        callback keyButtonPressed
+        xywh {300 35 43 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+    }
+    Fl_Group row3 {
+      xywh {10 59 333 22} box THIN_UP_BOX labelsize 9
+    } {
+      Fl_Button keyname_q {
+        label q
+        callback keyButtonPressed
+        xywh {45 59 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_w {
+        label w
+        callback keyButtonPressed
+        xywh {67 59 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_e {
+        label e
+        callback keyButtonPressed
+        xywh {88 59 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_r {
+        label r
+        callback keyButtonPressed
+        xywh {109 59 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_t {
+        label t
+        callback keyButtonPressed
+        xywh {130 59 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_y {
+        label y
+        callback keyButtonPressed
+        xywh {151 59 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_u {
+        label u
+        callback keyButtonPressed
+        xywh {172 59 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_i {
+        label i
+        callback keyButtonPressed
+        xywh {193 59 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_o {
+        label o
+        callback keyButtonPressed
+        xywh {214 59 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_p {
+        label p
+        callback keyButtonPressed
+        xywh {235 59 25 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_tab {
+        label tab
+        callback keyButtonPressed
+        xywh {10 59 35 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_openbracket {
+        label {[}
+        callback keyButtonPressed
+        xywh {260 59 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_closebracket {
+        label {]}
+        callback keyButtonPressed
+        xywh {282 59 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_backslash {
+        label {\\\\ }
+        callback keyButtonPressed
+        xywh {310 59 33 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+    }
+    Fl_Group row4 {
+      xywh {10 82 333 22} labelsize 9
+    } {
+      Fl_Button keyname_a {
+        label a
+        callback keyButtonPressed
+        xywh {55 82 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_s {
+        label s
+        callback keyButtonPressed
+        xywh {77 82 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_d {
+        label d
+        callback keyButtonPressed
+        xywh {98 82 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_f {
+        label f
+        callback keyButtonPressed
+        xywh {119 82 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_g {
+        label g
+        callback keyButtonPressed
+        xywh {140 82 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_h {
+        label h
+        callback keyButtonPressed
+        xywh {161 82 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_j {
+        label j
+        callback keyButtonPressed
+        xywh {182 82 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_k {
+        label k
+        callback keyButtonPressed
+        xywh {203 82 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_i {
+        label l
+        callback keyButtonPressed
+        xywh {224 82 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_semicolon {
+        label {;\\ }
+        callback keyButtonPressed
+        xywh {248 82 25 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_capslock {
+        label capslock
+        callback keyButtonPressed
+        xywh {10 82 42 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_apostrophe {
+        label {'\\ }
+        callback keyButtonPressed
+        xywh {275 82 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_EOL {
+        label {@returnarrow}
+        callback keyButtonPressed
+        xywh {300 82 43 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+    }
+    Fl_Group row5 {
+      xywh {10 106 333 22} labelsize 9
+    } {
+      Fl_Button keyname_z {
+        label z
+        callback keyButtonPressed
+        xywh {66 106 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_x {
+        label x
+        callback keyButtonPressed
+        xywh {89 106 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_c {
+        label c
+        callback keyButtonPressed
+        xywh {110 106 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_v {
+        label v
+        callback keyButtonPressed
+        xywh {132 106 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_b {
+        label b
+        callback keyButtonPressed
+        xywh {153 106 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_n {
+        label n
+        callback keyButtonPressed
+        xywh {175 106 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_m {
+        label m
+        callback keyButtonPressed
+        xywh {196 106 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_comma {
+        label {,}
+        callback keyButtonPressed
+        xywh {218 106 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_period {
+        label {.}
+        callback keyButtonPressed
+        xywh {239 106 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_forwardslash {
+        label {/}
+        callback keyButtonPressed
+        xywh {260 106 25 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_shiftL {
+        label shift
+        callback keyButtonPressed
+        xywh {10 106 55 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_shiftR {
+        label shift
+        callback keyButtonPressed
+        xywh {290 106 53 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+    }
+    Fl_Group arrowkeys {
+      xywh {355 100 70 54} labelsize 9
+    } {
+      Fl_Button keyname_upArrow {
+        label {@8->}
+        callback keyButtonPressed
+        xywh {379 103 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_leftArrow {
+        label {@<-}
+        callback keyButtonPressed
+        xywh {355 128 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_downArrow {
+        label {@2->}
+        callback keyButtonPressed
+        xywh {379 128 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_rightArrow {
+        label {@->}
+        callback keyButtonPressed
+        xywh {403 128 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+    }
+    Fl_Group row6 {
+      xywh {10 131 333 19} labelsize 9
+    } {
+      Fl_Button keyname_space {
+        label space
+        callback keyButtonPressed
+        xywh {111 131 140 19} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_commandL {
+        label cmd
+        callback keyButtonPressed
+        xywh {72 131 37 19} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_altL {
+        label alt
+        callback keyButtonPressed
+        xywh {51 131 22 19} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_commandR {
+        label cmd
+        callback keyButtonPressed
+        xywh {253 131 30 19} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_altR {
+        label alt
+        callback keyButtonPressed
+        xywh {284 131 22 19} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_controlL {
+        label control
+        callback keyButtonPressed
+        xywh {10 131 40 19} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_controlR {
+        label control
+        callback keyButtonPressed
+        xywh {308 131 35 19} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+    }
+    Fl_Group pagekeys {
+      xywh {352 40 80 54} labelsize 9
+    } {
+      Fl_Button keyname_help {
+        label help
+        callback keyButtonPressed
+        xywh {352 40 26 26} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_home {
+        label home
+        callback keyButtonPressed
+        xywh {379 40 26 26} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_pgup {
+        label pgup
+        callback keyButtonPressed
+        xywh {406 40 26 26} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_del {
+        label del
+        callback keyButtonPressed
+        xywh {352 68 26 26} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_END {
+        label end
+        callback keyButtonPressed
+        xywh {379 68 26 26} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_pgdn {
+        label pgdn
+        callback keyButtonPressed
+        xywh {406 68 26 26} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+    }
+    Fl_Group audiodisc {open
+      xywh {439 10 95 22} labelsize 9
+    } {
+      Fl_Button keyname_vMIN {
+        label vmin
+        callback keyButtonPressed
+        xywh {439 10 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_vADD {
+        label vadd
+        callback keyButtonPressed
+        xywh {464 10 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_mute {
+        label mute
+        callback keyButtonPressed selected
+        xywh {488 10 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_eject {
+        label eject
+        callback keyButtonPressed
+        xywh {512 10 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+    }
+    Fl_Group keypad {
+      xywh {439 33 95 122} labelsize 9
+    } {
+      Fl_Button keyname_kp_clear {
+        label clear
+        callback keyButtonPressed
+        xywh {439 33 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_equal {
+        label {=}
+        callback keyButtonPressed
+        xywh {464 33 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_forwardslash {
+        label {/}
+        callback keyButtonPressed
+        xywh {488 33 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_7 {
+        label 7
+        callback keyButtonPressed
+        xywh {439 57 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_8 {
+        label 8
+        callback keyButtonPressed
+        xywh {464 57 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_9 {
+        label 9
+        callback keyButtonPressed
+        xywh {488 57 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_asterisk {
+        label {*}
+        callback keyButtonPressed
+        xywh {512 33 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_minus {
+        label {-}
+        callback keyButtonPressed
+        xywh {512 57 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_6 {
+        label 4
+        callback keyButtonPressed
+        xywh {439 80 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_5 {
+        label 5
+        callback keyButtonPressed
+        xywh {464 80 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_6 {
+        label 6
+        callback keyButtonPressed
+        xywh {488 80 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_1 {
+        label 1
+        callback keyButtonPressed
+        xywh {439 104 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_2 {
+        label 2
+        callback keyButtonPressed
+        xywh {464 104 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_3 {
+        label 3
+        callback keyButtonPressed
+        xywh {488 104 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_0 {
+        label 0
+        callback keyButtonPressed
+        xywh {439 127 45 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_decimal {
+        label {.}
+        callback keyButtonPressed
+        xywh {488 127 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_plus {
+        label {+}
+        callback keyButtonPressed
+        xywh {512 80 22 22} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+      Fl_Button keyname_kp_enter {
+        label {@returnarrow}
+        callback keyButtonPressed
+        xywh {512 104 22 45} box THIN_UP_BOX down_box THIN_DOWN_BOX labelsize 9
+      }
+    }
+    Fl_Button mouseStatus {
+      label mouseStatus
+      xywh {10 155 145 20} box NO_BOX labelsize 11
+    }
+  }
+  code {function wheresThemouse()
+  local x,y,dx,dy = mouseEvent()
+  local w = keyboard_editor
+  local l,t,r,b= keyboard_editor:x(), keyboard_editor:y(), keyboard_editor:h(), keyboard_editor:w();
+  if insideRECT(x,y,l,t,l+r,l+b) == true  then return true end
+ return false
+  end} {}
+  code {keyname_backslash:label("\\\\ ")
+keyboard_editor:show();
+
+while (Fl:event_key() ~= fltk.FL_Escape)    do
+   
+     keyboard_editor:do_callback()
+      Fl:check()
+end} {}
+} 

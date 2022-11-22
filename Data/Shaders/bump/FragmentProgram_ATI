@@ -1,0 +1,38 @@
+!!ATIfs1.0
+
+# Simple Bump Mapping by James A. McCombe, Tue Jun 17 2003
+#
+# Implements a simple per pixel lighting model in which the dot product of a 
+# per pixel normal vector and light direction vector are used to highlight/shadow a 
+# pixel.  After that, its modulated with a base texture map to produce a "bumpy" surface
+#
+# Texture Units:
+# 	Unit 0 - Per pixel normals encoded as colors
+#   Unit 1 - Base texture map
+#
+# Parameters:
+#   program.env[0].xyz - Controls the light direction
+
+StartConstants;
+	CONSTANT c0 = { 0.5, 4.0, 0.0, 0.0};
+	CONSTANT c1 = { 1.0, 1.0, 1.0, 1.0};
+EndConstants;
+
+StartOutputPass;
+	SampleMap		r0,t0.str; #get base texture
+	SampleMap 		r1,t1.str; #get fragment normals from texture
+	PassTexCoord	r2,t5.str; #get light directions from vertex shader
+		
+	#SUB r2.rgb.2x, r2, c0.b;
+	
+	SUB r1.rgb.2x, r1, c0.r;
+
+	DOT3 r2.rgb,r2,r1;
+
+	#CND r2,r2,c4,r2;
+	MOV r2.a, 1;
+	
+	MUL r0,r0,r2;#modulate with base texture
+	
+	MUL r0,r0,color0;#modulate with color
+EndPass;

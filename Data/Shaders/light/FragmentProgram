@@ -1,0 +1,11 @@
+!!ARBfp1.0
+
+# texture and color passthrough
+
+TEMP r0;
+
+TEX r0, fragment.texcoord[0],texture[0],2D;
+
+#modulate textures
+MUL result.color, r0, fragment.color;
+END

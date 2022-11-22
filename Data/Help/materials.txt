@@ -1,0 +1,76 @@
+//Chapter: Material instruction reference
+
+ig3d_GetMeshMaterialInfo_i_s, ig3d_SetMeshMaterialInfo_is, ig3d_SetMeshMaterialInfo_is, ig3d_GetObjectMaterialInfo_si_s and ig3d_SetObjectMaterialInfo_sis
+are use the multi-line string [materialInfo] parameter (or return value). We are covering the format of this string here.
+This string has multiple lines, the first line is the name of the material and the second line contains the number of material instructions that will follow.
+The other lines are these instructions. They make up the appearance of the material.
+The instructions are organized in a line-delimited list with one line for each instruction.
+An instruction has the following syntax: [setting]=[value_1, ..., value_n]
+The types and amounts of values for a setting vary from setting to setting.
+NOTE: The material instructions are the same as in the WTF file format!
+
+Here is a sample instruction:
+
+lux=true
+
+This makes the material immune to lighting (takes only one boolean value).
+
+Since iGame3D is built on top of OpenGL, most settings you see here do exactly the same as the corresponding OpenGL state function calls.
+Because the OpenGL functions are well-documented, we are just telling what functions to look for in each setting.
+
+Here is a list of all supported settings and their value types:
+
+lux=Boolean
+smooth=Integer
+color=Real, Real, Real, Real
+ambient=Real, Real, Real, Real
+diffuse=Real, Real, Real, Real
+specular=Real, Real, Real, Real
+shininess=Real
+emission=Real, Real, Real, Real
+blend=Integer
+texture=Integer,local file string
+wire=Real
+depth=Integer
+shader=local file string
+
+"lux":
+If the value of "lux" is true, then this material will ignore any lighting and will appear at full brightness (use for skyboxes for example).
+
+"smooth":
+If the value of "smooth" is 1, then the material will be smooth-shaded (goraud-shaded). If the material is a mesh material you should first select the mesh
+that is using this material and call ig3d_MakeMeshSmoothShaded_b to calculate the vertex normals used in this type of shading.
+If the value is 0, then the material will be flat-shaded.
+The value is of type integer because in the future more shading types might be added.
+
+"color":
+Sets the color of the material using four values (red, green, blue and alpha components).
+
+"ambient", "diffuse", "specular", "shininess", "emission":
+See a OpenGL reference for the uses of GL_AMBIENT, GL_DIFFUSE, GL_SPECULAR, GL_SHININESS, GL_EMISSION with the function glMaterialfv.
+Here's an example: ambient=0.1,0.1,0.1,1.0 would be glMaterialfv(GL_FRONT, GL_AMBIENT, {0.1,0.1,0.1,1.0});
+
+"blend":
+If the value of "blend" is 1, then blending will be turned on, which means that the opacity of the material will be determined by the alpha channel
+of its texture and the alpha value of the "diffuse" setting, 0 meaning complete invisible and 1 meaning opaque.
+By default, blending is off (blend=0).
+
+"texture":
+The first value is the texture unit and the second value the local path of the texture file to be used. This should be a .png somewhere in iGame3D directory or its subdirectories.
+The texture unit ranges from 1 to 8, more are not supported by iGame3D. Some graphics cards support less, some support more. Apply textures to multiple units to do multitexturing.
+If no texture is assigned to any of the units, the material will have the color specified in the "color" setting.
+Example usage: texture=1,data/images/wood.png
+
+"wire":
+If the value of "wire" is not 0, then the material will be wireframe and the value sets the line width in pixels.
+
+"depth":
+By default the value of "depth" is 1, which means that depth-testing (sometimes called z-testing) is performed when drawing the geometry of this material.
+With a value of 0 you can turn this off. You might use this for some blending materials or where depth testing does not matter.
+
+"shader":
+Takes a local path to a folder containing vertex and fragment shader files. Only the Mac version of iGame3D supports vertex and fragment shaders as of now. The specified folder should contain
+these three files: VertexProgram, FragmentProgram and FragmentProgram_ATI. VertexProgram is written in ARBvp1.0 and FragmentProgram in ARBfp1.0. The FragmentProgram_ATI (language ATIfs1.0)  is used
+on cards that don't support FragmentProgram and that concerns a lot of cards used in Macs.
+This is allows you to apply a custom shader to a material!
+Example usage: shader=data/Shaders/bump/

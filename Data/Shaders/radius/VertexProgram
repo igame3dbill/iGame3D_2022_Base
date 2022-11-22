@@ -1,0 +1,32 @@
+!!ARBvp1.0
+
+ATTRIB vertexPosition  = vertex.position;
+OUTPUT outputPosition  = result.position;
+
+# Transform the vertex by the modelview/projection matrix
+DP4    outputPosition.x, state.matrix.mvp.row[0], vertexPosition;
+DP4    outputPosition.y, state.matrix.mvp.row[1], vertexPosition;
+DP4    outputPosition.z, state.matrix.mvp.row[2], vertexPosition;
+DP4    outputPosition.w, state.matrix.mvp.row[3], vertexPosition;
+
+MOV	result.texcoord[0], vertex.texcoord[0];
+
+#begin tobi's crazy shader
+TEMP a,b;
+PARAM pos=program.env[1];
+PARAM rcpsize=program.env[2];
+
+DP3 b.x,state.matrix.modelview.transpose.row[0],state.matrix.modelview.transpose.row[3];
+DP3 b.y,state.matrix.modelview.transpose.row[1],state.matrix.modelview.transpose.row[3];
+DP3 b.z,state.matrix.modelview.transpose.row[2],state.matrix.modelview.transpose.row[3];
+
+ADD a,vertexPosition,b;
+ADD a,a,pos;
+
+MUL a,a,rcpsize;
+
+MOV  result.texcoord[1], a;
+#end of tobi's crazy shader
+MOV result.color, vertex.color;
+
+END

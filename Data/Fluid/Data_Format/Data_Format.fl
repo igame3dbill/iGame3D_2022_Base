@@ -1,0 +1,480 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {--Scripteditor code -----------------------
+
+
+function editorPrint(...)
+	local str=""
+	local i=1
+	while arg[i]~= nil do
+		if str=="" then
+			str=tostring(arg[i])
+		else
+			str=str.."	"..tostring(arg[i])
+		end
+		i=i+1
+	end
+	local l_offset=\#editor_buf:text()
+	editor:insert_position(l_offset)
+	editor:insert(str.."\\n")
+	editor:show_insert_position()
+	editor:textfont(4)
+	editor:textsize(11)
+end
+
+
+function runScriptC()
+
+	local str=editor_buf:text()	
+
+	local code,error=loadstring(str)
+	
+
+	if code==nil then
+
+		fltk.fl_message("The script you were attempting to run contains errors:\\n"..error)
+
+	else
+
+		code()
+
+	end
+
+end
+
+
+
+function openScript(tFile)
+
+
+if changed then
+
+	if not closeScript() then
+
+		return false
+
+	end
+
+end
+if tFile ==nil then
+
+fileName = fltk.fl_file_chooser("Choose a script to open:", "Lua Files (*.{lua, ig3d})", nil, nil)
+else
+fileName = gameroot..tFile
+end
+
+if fileName~= nil then
+
+print(fileName)
+	local f=io.open(fileName, "r")
+	local tText=f:read("*a")
+
+	editorPrint(tText)
+
+	f:close()
+
+	closer:activate()
+
+	path:value(fileName)
+
+else
+
+	return false
+
+end
+return true
+end
+
+
+
+
+
+function openScriptC()
+closeScript()
+	openScript()
+
+end
+
+
+
+function saveScript()
+
+	if fileName == nil then
+
+		fileName = fltk.fl_file_chooser("Please enter the filename:", "Lua Files (*.{lua, ig3d})", nil, nil)
+
+		if fileName == nil then
+
+			return false
+
+		else
+
+			path:value(fileName)
+
+			closer:activate()
+
+		end
+
+	end
+
+	
+
+	local f=io.open(fileName, "w")
+
+	f:write(editor_buf:text())
+
+	f:close()
+
+	changed=false
+
+	saver:deactivate()
+
+	return true
+
+end
+
+
+
+function saveScriptC()
+
+	saveScript()
+
+end
+
+
+
+
+
+
+
+
+
+function editorChangedContents(w)
+changed=true
+saver:activate()
+end
+
+
+
+
+
+function closeScript()
+
+	if changed then
+
+		local r=fltk.fl_choice("Do you want to save your changes first?", "No", "Yes", "Cancel")
+
+		if r == 2 then
+
+			return false
+
+		end
+
+		
+
+		if r == 1 then
+
+			if not saveScript() then
+
+				return false
+
+			end
+
+		end
+
+	end
+
+		
+
+	editor_buf:text("")
+
+	path:value("")
+
+	changed=false
+
+	fileName=nil
+
+	closer:deactivate()
+
+	saver:deactivate()
+
+	return true
+
+end
+
+
+
+function closeScriptC()
+
+	closeScript()
+
+end
+
+
+
+
+
+function newScript()
+
+	if fileName~= nil or changed then
+
+		if not closeScript() then
+
+			return false
+
+		end
+
+	end
+
+end
+
+
+
+function newScriptC()
+
+	newScript()
+
+end
+
+
+
+changed=false
+
+fileName=nil
+
+
+
+---------------------------------------------------------------------} {}
+  Fl_Window Data_Format_Window {
+    label {Data Format} open
+    xywh {577 142 374 429} type Double hide
+  } {
+    Fl_Group ExportCancel_group {selected
+      xywh {5 1 355 409}
+    } {
+      Fl_Return_Button export_button {
+        label Export
+        xywh {250 387 110 23} labelsize 10
+      }
+      Fl_Button cancel_button {
+        label Cancel
+        xywh {135 387 110 23} labelsize 10
+      }
+      Fl_Button load_button {
+        label Load
+        xywh {5 10 75 25} labelsize 9
+      }
+      Fl_File_Input {} {
+        label {file:}
+        xywh {100 1 260 34} labelsize 9 textsize 9
+      }
+    }
+    Fl_Tabs tabs_group {open
+      xywh {5 65 369 319} labelsize 9
+    } {
+      Fl_Group input_group {
+        label Input
+        xywh {10 95 350 267} labelsize 10 align 5 hide
+      } {
+        Fl_Text_Display input_textdisplay {
+          label Input
+          xywh {10 260 340 100} box BORDER_FRAME color 54 labelsize 11 textsize 9
+        }
+        Fl_Group input_prefix_group {
+          xywh {10 95 111 145}
+        } {
+          Fl_Input input_prefix1 {
+            label prefix
+            xywh {11 95 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input input_prefix2 {
+            label prefix
+            xywh {11 120 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input input_prefix3 {
+            label prefix
+            xywh {11 145 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input input_prefix4 {
+            label prefix
+            xywh {11 170 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input input_prefix5 {
+            label prefix
+            xywh {10 195 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input input_prefix6 {
+            label prefix
+            xywh {11 220 110 20} labelsize 11 align 16 textsize 11
+          }
+        }
+        Fl_Group input_suffix_group {
+          xywh {240 95 110 145}
+        } {
+          Fl_Input input_suffix1 {
+            label prefix
+            xywh {240 95 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input input_suffix2 {
+            label prefix
+            xywh {240 120 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input input_suffix3 {
+            label prefix
+            xywh {240 145 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input input_suffix4 {
+            label prefix
+            xywh {240 170 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input input_suffix5 {
+            label prefix
+            xywh {240 195 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input input_suffix6 {
+            label prefix
+            xywh {240 220 110 20} labelsize 11 align 16 textsize 11
+          }
+        }
+        Fl_Group input_menus_group {
+          xywh {125 95 111 145}
+        } {
+          Fl_Menu_Button input_menu1 {
+            label ID open
+            xywh {126 95 110 20} labelsize 10 textsize 10
+          } {}
+          Fl_Menu_Button input_menu2 {
+            label Layer open
+            xywh {125 120 110 20} labelsize 10 textsize 10
+          } {}
+          Fl_Menu_Button input_menu3 {
+            label Position open
+            xywh {126 145 110 20} labelsize 10 textsize 10
+          } {}
+          Fl_Menu_Button input_menu4 {
+            label {-} open
+            xywh {125 170 110 20} labelsize 10 textsize 10
+          } {}
+          Fl_Menu_Button input_menu5 {
+            label {-} open
+            xywh {126 195 110 20} labelsize 10 textsize 10
+          } {}
+          Fl_Menu_Button input_menu6 {
+            label {-} open
+            xywh {125 220 110 20} labelsize 10 textsize 10
+          } {}
+        }
+      }
+      Fl_Group output_group {
+        label Output
+        xywh {15 95 345 280} labelsize 10 align 5 hide
+      } {
+        Fl_Group prefix_group {
+          xywh {15 95 106 145}
+        } {
+          Fl_Input data_prefix1 {
+            label prefix
+            xywh {15 95 106 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input data_prefix2 {
+            label prefix
+            xywh {15 120 106 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input data_prefix3 {
+            label prefix
+            xywh {15 145 106 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input data_prefix4 {
+            label prefix
+            xywh {15 170 106 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input data_prefix5 {
+            label prefix
+            xywh {15 195 105 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input data_prefix6 {
+            label prefix
+            xywh {15 220 106 20} labelsize 11 align 16 textsize 11
+          }
+        }
+        Fl_Group suffix_group {
+          xywh {240 95 110 145}
+        } {
+          Fl_Input data_suffix1 {
+            label prefix
+            xywh {240 95 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input data_suffix2 {
+            label prefix
+            xywh {240 120 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input data_suffix3 {
+            label prefix
+            xywh {240 145 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input data_suffix4 {
+            label prefix
+            xywh {240 170 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input data_suffix5 {
+            label prefix
+            xywh {240 195 110 20} labelsize 11 align 16 textsize 11
+          }
+          Fl_Input data_suffix6 {
+            label prefix
+            xywh {240 220 110 20} labelsize 11 align 16 textsize 11
+          }
+        }
+        Fl_Group menus_group {
+          xywh {125 95 111 145}
+        } {
+          Fl_Menu_Button data_menu1 {
+            label ID open
+            xywh {126 95 110 20} labelsize 10 textsize 10
+          } {}
+          Fl_Menu_Button data_menu2 {
+            label Layer open
+            xywh {125 120 110 20} labelsize 10 textsize 10
+          } {}
+          Fl_Menu_Button input_menu3 {
+            label Position open
+            xywh {126 145 110 20} labelsize 10 textsize 10
+          } {}
+          Fl_Menu_Button data_menu4 {
+            label {-} open
+            xywh {125 170 110 20} labelsize 10 textsize 10
+          } {}
+          Fl_Menu_Button data_menu5 {
+            label {-} open
+            xywh {126 195 110 20} labelsize 10 textsize 10
+          } {}
+          Fl_Menu_Button data_menu6 {
+            label {-} open
+            xywh {125 220 110 20} labelsize 10 textsize 10
+          } {}
+        }
+        Fl_Text_Display output_textdisplay {
+          label Output
+          xywh {15 260 335 100} color 23 labelsize 11 textsize 9
+        }
+      }
+      Fl_Group properties_group {
+        label Properties open
+        xywh {10 101 355 279} labelsize 10 align 5
+      } {
+        Fl_Scroll {} {open
+          xywh {10 101 350 279}
+        } {
+          Fl_Text_Editor {} {
+            xywh {10 101 350 279}
+          }
+        }
+      }
+    }
+  }
+  code {Data_Format_Window:show()} {}
+} 

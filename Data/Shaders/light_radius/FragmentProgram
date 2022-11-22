@@ -1,0 +1,27 @@
+!!ARBfp1.0
+
+# Tobi's ARB_fragment_program version of the bump-mapping
+
+KIL fragment.position; #dont draw if out of screen
+
+PARAM c0={0.5, 0.5, 0, 1};
+PARAM c1={1, 1, 1, 1};
+PARAM two={2, 2, 2, 1};
+
+TEMP r0,r1,r2;
+
+TEX r0, fragment.texcoord[0], texture[0], 2D;
+MOV r1, fragment.texcoord[1];
+
+MUL r1,r1,r1;
+MUL r1,r1,two;
+ADD r1.a, r1.r, r1.g;
+ADD r2,r1.a,r1.b;
+MUL r2,r2,two;
+SUB r2,c1,r2;
+MOV r2.a, c0.a;
+
+MUL r0,r0,r2;
+MUL result.color,r0,fragment.color;
+
+END

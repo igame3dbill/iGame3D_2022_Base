@@ -1,0 +1,836 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {gSampleCount=1
+gRot=0
+gCorrespondences={}
+gAutoFlight=false
+gRecordInterval=1
+gLastRecord=0
+gYMult=35
+gTargetPoint=1
+gFocusPoint={x=0,y=0,z=0}
+gSpeedMult=1
+gNumCalibs=0
+
+numcalibs={{0.62370359897614,0,0.78166097402573,0,-0.52390372753143,0.74214059114456,0.41803371906281,0,-0.58010232448578,-0.67024421691895,0.46287575364113,0,5.1068439483643,8.8000631332397,-4.2591762542725,1},{0.40800550580025,0,-0.91297948360443,0,0.76060962677002,0.55311173200607,0.33991226553917,0,0.50497967004776,-0.83310705423355,0.22567263245583,0,-4.2898187637329,10.441631317139,-2.179722070694,1},{-0.87954133749008,0,-0.47582244873047,0,0.43934559822083,0.38398486375809,-0.81211513280869,0,0.18270862102509,-0.92333936691284,-0.33773055672646,0,-1.5127370357513,5.4400525093079,3.2713506221771,1}}
+
+
+dofile(gameroot.."Data/Scripts/Functions/math_functions.lua")
+
+function drive_car_around(obj, forw, backw, brake, hbrake, steerr, steerl)
+	local fr=get(ig3d_bone, obj.cObj, "RightFrontWheel")
+	local fl=get(ig3d_bone, obj.cObj, "LeftFrontWheel")
+	local rr=get(ig3d_bone, obj.cObj, "RightRearWheel")
+	local rl=get(ig3d_bone, obj.cObj, "LeftRearWheel")
+
+	--throttle
+	if forw then
+		setBoneInfo(fr, IG3D_TORQUE, 20)
+		setBoneInfo(fl, IG3D_TORQUE, 20)
+		
+		setBoneInfo(rr, IG3D_TORQUE, 20)
+		setBoneInfo(rl, IG3D_TORQUE, 20)
+	else
+		if backw then
+			setBoneInfo(fr, IG3D_TORQUE, -15)
+			setBoneInfo(fl, IG3D_TORQUE, -15)
+			
+			setBoneInfo(rr, IG3D_TORQUE, -15)
+			setBoneInfo(rl, IG3D_TORQUE, -15)
+		else
+		
+		setBoneInfo(fr, IG3D_TORQUE, 0)
+		setBoneInfo(fl, IG3D_TORQUE, 0)
+		
+		setBoneInfo(rr, IG3D_TORQUE, 0)
+		setBoneInfo(rl, IG3D_TORQUE, 0)
+		end
+	end
+	
+	--front braking
+	if brake then
+		setBoneInfo(fr, IG3D_BRAKE,1)
+		setBoneInfo(fl, IG3D_BRAKE,1)
+	else
+		setBoneInfo(fr, IG3D_BRAKE,0)
+		setBoneInfo(fl, IG3D_BRAKE,0)
+	end
+	
+	--hand brakes
+	if hbrake then
+		setBoneInfo(rr, IG3D_BRAKE, 1)
+		setBoneInfo(rl, IG3D_BRAKE, 1)
+	else
+		setBoneInfo(rr, IG3D_BRAKE, 0)
+		setBoneInfo(rl, IG3D_BRAKE, 0)
+	end
+	
+	steer=steerl-steerr
+
+	
+	setBoneInfo(fr, IG3D_STEERING_ANGLE, steer)
+	setBoneInfo(fl, IG3D_STEERING_ANGLE, steer)
+end
+
+-- steer_aim
+function steer_aim(obj, x,y,z)
+	obj.x,obj.y,obj.z=getObjectInfo(obj.cObj, IG3D_POSITION)
+	local dx,dy,dz=normalized(x-obj.x,0,z-obj.z)
+	
+	local a11,a12,a13,a14, a21,a22,a23,a24, a31,a32,a33,a34, a41,a42,a43,a44=getObjectInfo(obj.cObj, IG3D_ROTATION_MATRIX)
+	d=dot(a31,a32,a33, dx,dy,dz)
+		
+	d=math.max(0,d)--uh oh
+	d=math.min((1-d)*3,1)
+	steerr=0
+	steerl=d
+	if dot(a11,a12,a13,dx,dy,dz)<dot(-a11,-a12,-a13,dx,dy,dz) then
+		--turn... but in what direction?
+		steerr=d
+		steerl=0
+	end
+	steerr=math.min(0.999999, math.max(-0.999999,steerr))
+	steerl=math.min(0.999999, math.max(-0.999999,steerl))
+	return true, false, false, false, steerr, steerl	
+end
+
+function rotateCameraAroundArbitraryAxis(dx,dy,dz)
+	local a11,a12,a13,a14, a21,a22,a23,a24, a31,a32,a33,a34, a41,a42,a43,a44=getCameraInfo(IG3D_ROTATION_MATRIX)
+		setCameraInfo(IG3D_ROTATION, dx,dy,dz)
+		local b11,b12,b13,b14, b21,b22,b23,b24, b31,b32,b33,b34, b41,b42,b43,b44 = getCameraInfo(IG3D_ROTATION_MATRIX)
+		local c11 = b11 * a11 + b21*a12 + b31*a13
+		local c12 = b12 * a11 + b22*a12 + b32*a13
+		local c13 = b13 * a11 + b23*a12 + b33*a13
+		local c21 = b11 * a21 + b21*a22 + b31*a23
+		local c22 = b12 * a21 + b22*a22 + b32*a23
+		local c23 = b13 * a21 + b23*a22 + b33*a23
+		local c31 = b11 * a31 + b21*a32 + b31*a33
+		local c32 = b12 * a31 + b22*a32 + b32*a33
+		local c33 = b13 * a31 + b23*a32 + b33*a33
+		setCameraInfo(IG3D_ROTATION_MATRIX, c11,c12,c13,a14, c21,c22,c23,a24, c31,c32,c33,a34, a41,a42,a43,a44) -- uh oh
+end
+
+function handle_copter_movement()
+	x,y,z=getCameraInfo(IG3D_POSITION)
+	a11,a12,a13,a14, a21,a22,a23,a24, a31,a32,a33,a34, a41,a42,a43,a44=getCameraInfo(IG3D_ROTATION_MATRIX)
+	
+	if key("f","-") then
+		x=x-passed()*a31*35*gSpeedMult
+		y=y-passed()*a32*35*gSpeedMult
+		z=z-passed()*a33*35*gSpeedMult
+	end
+	
+	if key("r","-") then
+		x=x+passed()*a31*35*gSpeedMult
+		y=y+passed()*a32*35*gSpeedMult
+		z=z+passed()*a33*35*gSpeedMult
+	end
+	
+	if key("s","-") then
+		x=x-passed()*a21*35*gSpeedMult
+		y=y-passed()*a22*35*gSpeedMult
+		z=z-passed()*a23*35*gSpeedMult
+	end
+	
+	if key("w","-") then
+		x=x+passed()*a21*35*gSpeedMult
+		y=y+passed()*a22*35*gSpeedMult
+		z=z+passed()*a23*35*gSpeedMult
+	end
+
+	if key("d","-") then
+		x=x-passed()*a11*35*gSpeedMult
+		y=y-passed()*a12*35*gSpeedMult
+		z=z-passed()*a13*35*gSpeedMult
+	end
+	
+	if key("a","-") then
+		x=x+passed()*a11*35*gSpeedMult
+		y=y+passed()*a12*35*gSpeedMult
+		z=z+passed()*a13*35*gSpeedMult
+	end
+	
+	
+	local rotValue=passed()*25
+	
+	if key("y","-") then
+		rotateCameraAroundArbitraryAxis( a21*rotValue*gSpeedMult, a22*rotValue*gSpeedMult, a23*rotValue*gSpeedMult)
+	end	
+	
+	if key("c","-") then
+		rotateCameraAroundArbitraryAxis( -a21*rotValue*gSpeedMult, -a22*rotValue*gSpeedMult, -a23*rotValue*gSpeedMult)
+	end
+
+	if key("u","-") then
+		rotateCameraAroundArbitraryAxis( a11*rotValue*gSpeedMult, a12*rotValue*gSpeedMult, a13*rotValue*gSpeedMult)
+	end	
+	
+	if key("t","-") then
+		rotateCameraAroundArbitraryAxis( -a11*rotValue*gSpeedMult, -a12*rotValue*gSpeedMult, -a13*rotValue*gSpeedMult)
+	end
+
+	if key("q","-") then
+		rotateCameraAroundArbitraryAxis( a31*rotValue*gSpeedMult, a32*rotValue*gSpeedMult, a33*rotValue*gSpeedMult)
+	end	
+	
+	if key("e","-") then
+		rotateCameraAroundArbitraryAxis( -a31*rotValue*gSpeedMult, -a32*rotValue*gSpeedMult, -a33*rotValue*gSpeedMult)
+	end
+
+
+
+	local cx,cy,cz=getCameraInfo(IG3D_POSITION)
+	forw,backw,brake,hbrake,steerr,steerl=steer_aim(gCar, cx,0,cz)
+if gNumCalibs>3 then
+	if vecLength(getObjectInfo(gCar.cObj, IG3D_VELOCITY))<8 then
+			
+		drive_car_around(gCar, forw,backw,brake,hbrake,steerr,steerl)
+		else
+			drive_car_around(gCar, false,false,true,true,steerr,steerl)
+		end
+end
+	setLightInfo(1, IG3D_POSITION, gCar.x,6.5499987602234,gCar.z,1)
+	
+
+	if gAutoFlight then
+
+		
+
+	if time()>gLastRecord+gRecordInterval then
+			if gTargetPoint>1 then
+			capture_image_and_matrix()
+			end
+			gLastRecord=time()
+			gNumCalibs=gNumCalibs+1
+			lagging=true
+			
+	else
+		local p=get(ig3d_path, -1, "flightpath")
+		
+		gFocusPoint.x,gFocusPoint.y,gFocusPoint.z=getPathInfo(p, IG3D_POSITION, gTargetPoint)
+
+	if gTargetPoint== 1 then
+		a41=gFocusPoint.x
+		a42=gFocusPoint.y
+		a43=gFocusPoint.z
+	end
+
+	if vecLength(a41-gFocusPoint.x, 0, a43-gFocusPoint.z)<1 then
+		gTargetPoint=gTargetPoint+1
+		if gTargetPoint>getPathInfo(p, IG3D_COUNT) then
+			gTargetPoint=1
+			gAutoFlight=false
+			autoflightButton:value(0)
+		end
+	end
+		passedMult=passed()
+		if lagging then passedMult=0; lagging=false; end
+	
+		--track focus point with camera
+	local dx,dy,dz
+	dx=gFocusPoint.x-a41
+	dy=gFocusPoint.y+5-a42
+	dz=gFocusPoint.z-a43
+	if vecLength(dx,dy,dz)>0.1 then
+		dx,dy,dz=normalized(dx,dy,dz)
+		a41=a41+dx*math.min(1,passedMult*10)*gSpeedMult
+		a42=a42+dy*math.min(1,passedMult*10)*gSpeedMult
+		a43=a43+dz*math.min(1,passedMult*10)*gSpeedMult
+		setCameraInfo(IG3D_POSITION, a41,a42,a43)
+	end
+	
+
+	b21,b22,b23=normalized(dx,0,dz)
+	b31=0
+	b32=-1
+	b33=0
+	b11,b12,b13=normalized(cross(b21,b22,b23, b31,b32,b33))
+
+	pw,px,py,pz=quaternionFromMatrix(b11,b12,b13,0, b21,b22,b23,0, b31,b32,b33,0, a41,a42,a43,1)
+	qw,qx,qy,qz=quaternionFromMatrix(a11,a12,a13,a14, a21,a22,a23,a24, a31,a32,a33,a34, a41,a42,a43,a44)
+	rx,ry,rz,rw=slerp(qx,qy,qz,qw, px,py,pz,pw, math.min(1,passedMult))
+	
+	
+	
+
+	a11,a12,a13, a21,a22,a23, a31,a32,a33=matrixFromQuaternion(rw,rx,ry,rz)
+	
+setCameraInfo(IG3D_ROTATION_MATRIX, a11,a12,a13,a14, a21,a22,a23,a24, a31,a32,a33,a34, a41,a42,a43,a44)
+
+	
+
+end
+
+
+
+
+	else
+		setCameraInfo(IG3D_POSITION, x,y,z)
+	end
+	
+
+	if gNumCalibs<4 and gAutoFlight then
+		setCameraInfo(IG3D_ROTATION_MATRIX, numcalibs[gNumCalibs][1],numcalibs[gNumCalibs][2],numcalibs[gNumCalibs][3],numcalibs[gNumCalibs][4],numcalibs[gNumCalibs][5],numcalibs[gNumCalibs][6],numcalibs[gNumCalibs][7],numcalibs[gNumCalibs][8],numcalibs[gNumCalibs][9],numcalibs[gNumCalibs][10],numcalibs[gNumCalibs][11],numcalibs[gNumCalibs][12],numcalibs[gNumCalibs][13],numcalibs[gNumCalibs][14],numcalibs[gNumCalibs][15],numcalibs[gNumCalibs][16])
+	end
+
+	
+	
+	for i=1,\#gCorrespondences,1 do
+		local x,y,z=getSceneInfo(IG3D_WINDOW_COORDS, gCorrespondences[i].x, gCorrespondences[i].y, gCorrespondences[i].z)
+		gCorrespondences[i].h=x
+		gCorrespondences[i].v=y
+		setText_boxInfo(i, IG3D_POSITION, x,y)
+		local a,b,c,d=getText_boxInfo(i, IG3D_BOUNDS)
+		local cx=x-(c-a)*0.5
+		local cy=y-(d-b)*0.5
+		setText_boxInfo(i, IG3D_POSITION, cx,cy)
+		
+		setText_boxInfo(i, IG3D_TEXT, ""..i)
+		
+	end
+	
+	fltk_update()
+end
+
+function clamptex(t)
+	local t2={}
+	t2[1]=math.max(0, math.min(t[1], 1))
+	t2[2]=math.max(0, math.min(t[2], 1))
+	t2[3]=math.max(0, math.min(t[3], 1))
+	return t--t2
+end
+
+function capture_image_and_matrix()
+	local filedir=gameroot.."Output/"
+	local pngfile=filedir.."sample"..gSampleCount..".png"
+	
+	
+	for i=1,\#gCorrespondences,1 do
+		
+		setText_boxInfo(i, IG3D_TEXT, "")
+		
+	end
+	render()
+	
+	ig3d_SaveScreenshot_s2bi(pngfile, true, false, 0)
+	gSampleCount=gSampleCount+1
+	
+	local matrixfile=filedir.."matrices.txt"
+	local fil=io.open(matrixfile, "a")
+	local m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15=getSceneInfo(IG3D_ROTATION_MATRIX)
+	fil:write(m0..","..m1..","..m2..","..m3..","..m4..","..m5..","..m6..","..m7..","..m8..","..m9..","..m10..","..m11..","..m12..","..m13..","..m14..","..m15.."\\n")
+	fil:close();
+	
+	
+	local corfile=filedir.."correspondences.txt"
+	local fil=io.open(corfile, "a")
+	for i=1,\#gCorrespondences,1 do
+		if i==\#gCorrespondences then
+			fil:write(gCorrespondences[i].h..","..gCorrespondences[i].v.."\\n")
+		else
+			fil:write(gCorrespondences[i].h..","..gCorrespondences[i].v.." ")
+		end
+	end
+	
+	fil:close();
+end
+
+function matrixFromMatrixLine(str)
+	local start=1
+	local mtrx={}
+	local i
+	for i=1,\#str,1 do
+		if string.sub(str, i,i) == "," then
+			table.insert(mtrx, tonumber(string.sub(str, start, i-1)))
+			start=i+1
+		end
+	end
+	table.insert(mtrx, tonumber(string.sub(str, start, -1)))
+	return mtrx
+end
+
+function matrixTransform(vertex, matrix)
+	local tvertex={0,0,0};
+	tvertex[1]=matrix[1]*vertex[1]+matrix[5]*vertex[2]+matrix[9]*vertex[3]+matrix[13]
+	tvertex[2]=matrix[2]*vertex[1]+matrix[6]*vertex[2]+matrix[10]*vertex[3]+matrix[14]
+	tvertex[3]=matrix[3]*vertex[1]+matrix[7]*vertex[2]+matrix[11]*vertex[3]+matrix[15]
+	return tvertex
+end
+
+function matrixMult(m,n)
+	return { m[1]*n[1] + m[5]*n[2] + m[9]*n[3] + m[13]*n[4], m[2]*n[1] + m[6]*n[2] + m[10]*n[3] + m[14]*n[4], m[3]*n[1] + m[7]*n[2] + m[11]*n[3] + m[15]*n[4], m[4]*n[1] + m[8]*n[2] + m[12]*n[3] + m[16]*n[4], m[1]*n[5] + m[5]*n[6] + m[9]*n[7] + m[13]*n[8], m[2]*n[5] + m[6]*n[6] + m[10]*n[7] + m[14]*n[8], m[3]*n[5] + m[7]*n[6] + m[11]*n[7] + m[15]*n[8], m[4]*n[5] + m[8]*n[6] + m[12]*n[7] + m[16]*n[8], m[1]*n[9] + m[5]*n[10] + m[9]*n[11] + m[13]*n[12], m[2]*n[9] + m[6]*n[10] + m[10]*n[11] + m[14]*n[12], m[3]*n[9] + m[7]*n[10] + m[11]*n[11] + m[15]*n[12], m[4]*n[9] + m[8]*n[10] + m[12]*n[11] + m[16]*n[12], m[1]*n[13] + m[5]*n[14] + m[9]*n[15] + m[13]*n[16], m[2]*n[13] + m[6]*n[14] + m[10]*n[15] + m[14]*n[16], m[3]*n[13] + m[7]*n[14] + m[11]*n[15] + m[15]*n[16], m[4]*n[13] + m[8]*n[14] + m[12]*n[15] + m[16]*n[16] }
+	
+end	
+
+function transposedMatrix(matrix)
+
+	local m2={matrix[1], matrix[5], matrix[9], matrix[13], matrix[2], matrix[6], matrix[10], matrix[14], matrix[3], matrix[7], matrix[11], matrix[15], matrix[4], matrix[8], matrix[12], matrix[16]}
+	return m2
+end
+
+
+function crossp(a,b)
+	local c={}
+	c[1]=a[2]*b[3] - a[3]*b[2]
+	c[2]=a[3]*b[1] - a[1]*b[3]
+	c[3]=a[1]*b[2] - a[2]*b[1]
+	return c
+end
+
+function dotp(a,b)
+	return a[1]*b[1]+a[2]*b[2]+a[3]*b[3]
+end
+
+function linePlaneIntersectionPoint(plane, lineA, lineB)
+	local u={}
+	local v={}
+	local n={}
+	local dir={}
+	local w0={}
+	local a,b,r
+
+	local I={}
+
+
+	u[1]=plane[2][1]-plane[1][1];
+	u[2]=plane[2][2]-plane[1][2];
+	u[3]=plane[2][3]-plane[1][3];
+
+	v[1]=plane[3][1]-plane[1][1];
+	v[2]=plane[3][2]-plane[1][2];
+	v[3]=plane[3][3]-plane[1][3];
+
+	n=crossp(u, v);
+
+	dir[1]=lineB[1]-lineA[1];
+	dir[2]=lineB[2]-lineA[2];
+	dir[3]=lineB[3]-lineA[3];
+
+	w0[1]=lineA[1]-plane[1][1];
+	w0[2]=lineA[2]-plane[1][2];
+	w0[3]=lineA[3]-plane[1][3];
+
+	a=dotp(n, w0);
+	b=dotp(n, dir);
+	
+	
+	r=-a/b;
+
+	I[1]=dir[1]*r+lineA[1]
+	I[2]=dir[2]*r+lineA[2]
+	I[3]=dir[3]*r+lineA[3]
+	return I
+end
+
+
+
+
+function init_image_and_matrix_capturer()
+	setSceneInfo(IG3D_FOV, true, 90)
+	local matrixfile=gameroot.."Output/matrices.txt"
+	local fil=io.open(matrixfile, "w")
+	fil:close()
+	ig3d_SetWindowBounds_4i(100,100,820,676)	
+	
+	
+
+	delete(ig3d_scene,false)
+
+	loadMesh("Data/WTF/ZGS_level_mesh.wtf")
+
+	
+
+	gObjects={}
+	gObjects[1]={}
+
+	gObjects[1].cObj=make(ig3d_object, "Vehicles_land/vehicle.wtf")
+	setObjectInfo(gObjects[1].cObj, IG3D_MASS, 20,20,20,20)
+	setObjectInfo(gObjects[1].cObj, IG3D_VEHICLE, true)
+	setObjectInfo(gObjects[1].cObj, IG3D_POSITION, 7,4,0)
+	setObjectInfo(gObjects[1].cObj, IG3D_CAST_SHADOW, true, "Vehicles_land/vehicleshadow.wtf")
+	setLightInfo(2, IG3D_POSITION, 20,30,20,1)
+	setSceneInfo(IG3D_RECEIVE_SHADOW, true)
+	gCar=gObjects[1]
+
+	gObjects[2]={}
+	gObjects[2].cObj=make(ig3d_object, "Reticule/crosshair.wtf")
+	setObjectInfo(gObjects[2].cObj, IG3D_HUD, true)
+	setObjectInfo(gObjects[2].cObj, IG3D_POSITION, 0,0,1000)
+	m=get(ig3d_material, gObjects[2].cObj, 1)
+	setMaterialInfo(m, IG3D_WIRE, 2)
+	
+	
+	
+	gObjects[3]={}
+	gObjects[3].cObj=make(ig3d_object, "chessboard.wtf")
+	setObjectInfo(gObjects[3].cObj, IG3D_POSITION, 0,0.1,0)
+	setObjectInfo(gObjects[3].cObj, IG3D_MASS, 0,0,0,0);
+setObjectInfo(gObjects[3].cObj, IG3D_COLL, false);
+	
+	fadenkreuz=gObjects[2].cObj
+	
+	
+	m=get(ig3d_material, gObjects[1].cObj, 1)
+	--setMaterialInfo(m, IG3D_TEXTURE, 1, "Data/Fluid/ImageAndMatrixCapturer/test3.png")
+	--setObjectInfo(gObjects[1].cObj, IG3D_SIZE, 133.333333, 100,100)--depends on ratio
+	loadMesh("Data/WTF/flightpath.wtf")
+	
+	
+	gSampleCount=1
+	gRot=0
+	gCorrespondences={}
+	
+	capture_button:deactivate()
+	create_button:deactivate()
+	fertig_button:deactivate()
+	
+	setCameraInfo(IG3D_POSITION, 0,15,0)
+	setCameraInfo(IG3D_ROTATION, 90,0,0)
+	
+	game_func=handle_copter_movement
+end
+
+
+function vecsum(a,b)
+	return {a[1]+b[1], a[2]+b[2], a[3]+b[3]}
+end
+
+function vecdiff(a,b)
+	return {a[1]-b[1], a[2]-b[2], a[3]-b[3]}
+end
+
+
+function veclength(a)
+	return math.sqrt(a[1]*a[1] + a[2]*a[2] + a[3]*a[3])
+end
+
+function vecnormalized(a)
+	local l=veclength(a)
+	local b={ a[1]/l, a[2]/l, a[3]/l}
+	return b
+end
+
+kPerspMult=0.4
+
+function create_quads()
+	i=1
+	
+	
+	ig3d_SetMode_i(1)
+	delete(ig3d_scene)
+	
+	local filedir="Output/"
+	
+	--loadTexture(filedir.."mask.png")
+	
+	xa,ya,za=getCameraInfo(IG3D_ROTATION)
+	local matrixfile=gameroot..filedir.."matrices.txt"
+	local fil=io.open(matrixfile, "r")
+	--gSampleCount=2
+	for i=1,gSampleCount-1,1 do
+		local pngfile=filedir.."sample"..i..".png"
+		loadTexture(pngfile)
+		
+		ig3d_CreateMaterial_s("blah"..i)
+		local m=get(ig3d_material, -1,i+1)
+		setMaterialInfo(m, IG3D_TEXTURE, 1, pngfile)
+		--setMaterialInfo(m, IG3D_TEXTURE, 2, filedir.."mask.png")
+		
+		setMaterialInfo(m, IG3D_LUX, true)
+		setMaterialInfo(m, IG3D_DEPTH, 0)
+		--setMaterialInfo(m, IG3D_TRANSPARENT, true)
+		--setMaterialInfo(m, IG3D_DIFFUSE, 1,1,1,1)
+	
+		ig3d_SetFacePos_b3f(false, 0,1000,0)
+	
+		local mul=576.0/720.0
+		local v1={-0.5,-0.5*mul,0}
+		local v2={0.5,-0.5*mul,0}
+		local v3={0.5,0.5*mul,0}
+		local v4={-0.5,0.5*mul,0}
+	
+		local matrixline=fil:read("*l")
+		local matrix=matrixFromMatrixLine(matrixline)
+		
+		--needs conversion first
+		matrix=convertSceneMatrixToCameraMatrix(matrix)
+		
+		setCameraInfo(IG3D_ROTATION_MATRIX, matrix[1],matrix[2],matrix[3],matrix[4],matrix[5],matrix[6],matrix[7],matrix[8],matrix[9],matrix[10],matrix[11],matrix[12],matrix[13],matrix[14],matrix[15],matrix[16])
+		render()
+		
+		v1=matrixTransform(v1, matrix)
+		v2=matrixTransform(v2, matrix)
+		v3=matrixTransform(v3, matrix)
+		v4=matrixTransform(v4, matrix)
+	
+		
+		local plane={ {0,0,0}, {10,0,0}, {0,0,10} }
+		
+		campos={matrix[13]-matrix[9]*kPerspMult, matrix[14]-matrix[10]*kPerspMult, matrix[15]-matrix[11]*kPerspMult}
+		
+		
+		
+		--first calculate an intersection point on the plane
+	--[[	
+		local daLength=-1
+		local v
+		local refpoint=linePlaneIntersectionPoint(plane, campos, v1)
+		if daLength==-1 or veclength(vecdiff(v1,refpoint))<daLength then
+			v=refpoint
+			daLength=veclength(vecdiff(v1,refpoint))
+		end
+		refpoint=linePlaneIntersectionPoint(plane, campos, v2)
+		if veclength(vecdiff(v2,refpoint))<daLength then
+			v=refpoint
+			daLength=veclength(vecdiff(v2,refpoint))
+		end
+		refpoint=linePlaneIntersectionPoint(plane, campos, v3)
+		if veclength(vecdiff(v3,refpoint))<daLength then
+			v=refpoint
+			daLength=veclength(vecdiff(v3,refpoint))
+		end
+		refpoint=linePlaneIntersectionPoint(plane, campos, v4)
+		if veclength(vecdiff(v4,refpoint))<daLength then
+			v=refpoint
+			daLength=veclength(vecdiff(v4,refpoint))
+		end
+		
+		
+	
+		local newplane={v, { v[1]+matrix[1], v[2]+matrix[2], v[3]+matrix[3]}, { v[1]+matrix[5], v[2]+matrix[6], v[3]+matrix[7]} }
+		v5=linePlaneIntersectionPoint(newplane, campos, v1)
+		v6=linePlaneIntersectionPoint(newplane, campos, v2)
+		v7=linePlaneIntersectionPoint(newplane, campos, v3)
+		v8=linePlaneIntersectionPoint(newplane, campos, v4)
+		
+		v5=linePlaneIntersectionPoint(plane, campos, v1)
+		v6=linePlaneIntersectionPoint(plane, campos, v2)
+		v7=linePlaneIntersectionPoint(plane, campos, v3)
+		v8=linePlaneIntersectionPoint(plane, campos, v4)
+	--]]
+	
+	local left,top,right,bottom=ig3d_GetWindowBounds__4i()
+		
+		ig3d_FoolMousePosition_2i(left,top)
+		campos[1],campos[2],campos[3],v1[1],v1[2],v1[3]=getSceneInfo(IG3D_MOUSE_LINE)
+		local dir=vecnormalized( vecdiff(v1,campos) )
+		v1=vecsum(campos,dir)
+		v5=linePlaneIntersectionPoint(plane, campos, v1)
+		
+		ig3d_FoolMousePosition_2i(right,top)
+		campos[1],campos[2],campos[3],v1[1],v1[2],v1[3]=getSceneInfo(IG3D_MOUSE_LINE)
+		dir=vecnormalized( vecdiff(v1,campos) )
+		v1=vecsum(campos,dir)
+		v6=linePlaneIntersectionPoint(plane, campos, v1)
+		
+		ig3d_FoolMousePosition_2i(right,bottom)
+		campos[1],campos[2],campos[3],v1[1],v1[2],v1[3]=getSceneInfo(IG3D_MOUSE_LINE)
+		dir=vecnormalized( vecdiff(v1,campos) )
+		v1=vecsum(campos,dir)
+		v7=linePlaneIntersectionPoint(plane, campos, v1)
+		
+		ig3d_FoolMousePosition_2i(left,bottom)
+		campos[1],campos[2],campos[3],v1[1],v1[2],v1[3]=getSceneInfo(IG3D_MOUSE_LINE)
+		dir=vecnormalized( vecdiff(v1,campos) )
+		v1=vecsum(campos,dir)
+		v8=linePlaneIntersectionPoint(plane, campos, v1)
+	
+	
+	
+
+		
+		local w5={0,0,0}
+		w5[1],w5[2],w5[3]=getSceneInfo(IG3D_WINDOW_COORDS, v5[1], v5[2], v5[3])
+		local w6={0,0,0}
+		w6[1],w6[2],w6[3]=getSceneInfo(IG3D_WINDOW_COORDS, v6[1], v6[2], v6[3])
+		local w7={0,0,0}
+		w7[1],w7[2],w7[3]=getSceneInfo(IG3D_WINDOW_COORDS, v7[1], v7[2], v7[3])
+		local w8={0,0,0}
+		w8[1],w8[2],w8[3]=getSceneInfo(IG3D_WINDOW_COORDS, v8[1], v8[2], v8[3])
+		
+		
+		--[[
+		t1={w5[1]/(right-left), w5[2]/(bottom-top), 0}
+		t2={w6[1]/(right-left), w6[2]/(bottom-top), 0}
+		t3={w7[1]/(right-left), w7[2]/(bottom-top), 0}
+		t4={w8[1]/(right-left), w8[2]/(bottom-top), 0}
+		t1=clamptex(t1)
+		t2=clamptex(t2)
+		t3=clamptex(t3)
+		t4=clamptex(t4)
+		--]]
+		t1={0,0,0}
+		t2={1,0,0}
+		t3={1,1,0}
+		t4={0,1,0}
+		
+		drawVertex(v5[1], v5[2], v5[3])
+		ig3d_OffsetUVMapping_2f(t1[1], t1[2])
+		drawLine(v6[1], v6[2], v6[3])
+		ig3d_OffsetUVMapping_2f(t2[1], t2[2])
+		drawLine(v7[1], v7[2], v7[3])
+		ig3d_OffsetUVMapping_2f(t3[1], t3[2])
+		drawLine(v8[1], v8[2], v8[3])
+		ig3d_OffsetUVMapping_2f(t4[1], t4[2])
+		
+		drawLine(v5[1], v5[2], v5[3])
+		drawLine(v6[1], v6[2], v6[3])
+		drawLine(v8[1], v8[2], v8[3])
+		
+		ig3d_SelectConnectedMesh();
+		ig3d_SetMaterialForSelectedMesh_i(i+1)
+		
+		ig3d_SelectWholeMesh();
+		ig3d_InvertMeshSelection();
+		
+		
+		
+		
+		
+	end
+	setCameraInfo(IG3D_ROTATION, xa,ya,za)
+
+	fil:close();
+	
+	
+	
+end
+
+
+
+function correspondencesButtonClicked(w)
+	make(ig3d_text_box, "Data/FontPngs/default32_1.png")
+	local w=correspondencesRadiusField:value()
+	local px=-w*0.5+math.random()*w
+	local py=0
+	local pz=-w*0.5+math.random()*w
+	table.insert(gCorrespondences, {x=px, y=py, z=pz})
+		
+	local i=\#gCorrespondences+1
+	table.insert(gObjects, {cObj=-1})
+	gObjects[i].cObj=make(ig3d_object, "Spheres/unitsphere.wtf")
+
+
+	setObjectInfo(gObjects[i].cObj, IG3D_COLL, false)
+	x2,y2,z2=getObjectInfo(gObjects[i].cObj, IG3D_POSITION)
+	setObjectInfo(gObjects[i].cObj, IG3D_POSITION, px,y2,pz)
+	
+end
+
+
+function capture_buttonClicked(w)
+	capture_image_and_matrix()
+end
+
+function create_buttonClicked(w)
+	create_quads()
+end
+
+function autoflightButtonClicked(w)
+	gAutoFlight=not gAutoFlight
+end
+
+function convertSceneMatrixToCameraMatrix(m)
+	local hundredeighty_y={-1,0,0,0,0,1,0,0,0,0,-1,0,0,0,0,1}
+	
+	
+	local t={m[13], m[14], m[15]}
+	m[13]=0
+	m[14]=0
+	m[15]=0
+	m2=transposedMatrix(m)
+	
+	
+	local t = matrixTransform( t, m2)
+	
+	local m2=matrixMult( m2, hundredeighty_y)
+	
+	m2[13]=-t[1]
+	m2[14]=-t[2]
+	m2[15]=-t[3]
+
+	return m2
+end
+
+function weiterClicked(w)
+	points_button:deactivate();
+	capture_button:activate();
+	fertig_button:activate();
+	weiter_button:deactivate();
+	
+	local fil=io.open(gameroot.."Output/correspondences.txt","w")
+	fil:write(\#gCorrespondences .. "\\n")
+	fil:close();
+end
+
+function speedChanged(w)
+	gSpeedMult=w:value()
+end
+
+function fertigClicked(w)
+	quit()
+end
+
+function crosshairFlagClicked(w)
+	if w:value()==1 then
+		setObjectInfo(fadenkreuz, IG3D_POSITION, 0,0,-1000)
+	else
+		setObjectInfo(fadenkreuz, IG3D_POSITION, 0,0,10)
+	end
+end} {}
+  Fl_Window capturer {
+    label {Image and Matrix capturer} open
+    xywh {153 413 475 118} type Double visible
+  } {
+    Fl_Button capture_button {
+      label {Schritt 2: Bilder generieren}
+      callback capture_buttonClicked
+      xywh {5 40 195 25} deactivate
+    }
+    Fl_Button create_button {
+      label Create
+      callback create_buttonClicked
+      xywh {5 80 100 25} deactivate
+    }
+    Fl_Button points_button {
+      label {Schritt 1: Punkte generieren}
+      callback correspondencesButtonClicked
+      xywh {5 5 195 25}
+    }
+    Fl_Value_Input correspondencesRadiusField {
+      label Radius
+      xywh {260 5 45 25} minimum 8 maximum 64 step 1 value 30
+    }
+    Fl_Return_Button weiter_button {
+      label Weiter
+      callback weiterClicked
+      xywh {375 5 85 25}
+    }
+    Fl_Return_Button fertig_button {
+      label Fertig
+      callback fertigClicked
+      xywh {365 80 100 25} deactivate
+    }
+    Fl_Button autoflightButton {
+      label {Auto Flug}
+      callback autoflightButtonClicked
+      xywh {320 45 145 25} type Toggle
+    }
+    Fl_Value_Input speedControl {
+      label Speed
+      callback speedChanged
+      xywh {275 80 85 25} step 0.1 value 1
+    }
+    Fl_Check_Button crosshairFlag {
+      label Fadenkreuz
+      callback crosshairFlagClicked
+      xywh {205 45 100 25} down_box DOWN_BOX
+    }
+  }
+  code {---initialize
+init_image_and_matrix_capturer()} {}
+} 

@@ -1,0 +1,242 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {if wifBrowser then
+wifBrowser:hide()
+wifBrowser = nil
+end
+
+gObjName=""
+gOldSel=""
+gCurSel=""
+gBoneName=""
+gMarkers={}
+gAnimSourceModel=""
+lastPushed=nil
+storedSingleSelect=0
+dragged=false
+gAnimOffset=0
+gSourceAnimsList={{name="NewAnim", markers={} }}
+gCurAnim=1
+gObjName=getObjectInfo(1, IG3D_NAME)
+gSelector=nil
+ orig_edit_func=nil
+ wifBrowser=nil
+ filad={"Walk","Idle","Fight"}
+ wifFileList={}
+ sourcelist={}} {}
+  code {function updateObjListBrowser()
+	objListBrowser:clear()
+	n = nil 
+	for i=1,\#gObjectNames,1 do
+		objListBrowser:add(gObjectNames[i])
+		
+		if gObjectNames[i]==gObjName then n = i end
+		if gObjectNames[i]== gAnimSourceModel then nn = i end
+	end	
+	if n ~= nil then 
+	print(gCurSel)
+	 objListBrowser:select(n,n)
+	 objListBrowser:value(n)
+	  objListBrowser:selected(n)
+	  end
+	 
+	  
+end} {}
+  code {function updateAnimListBrowser()
+	animListBrowser:clear()
+	for i=1,\#gAnimsList,1 do
+		animListBrowser:add(gAnimsList[i].name)
+	end
+	animListBrowser:value(gCurAnim-1)
+	
+end} {}
+  code {function modelAnimOffset(p)
+local rall = io.open(p,"r")
+	local altx = rall:read("*a")
+	rall:close()
+	if altx~=nil then
+	animSt,animEn=string.find(altx,"\#Animations")
+	end
+	return animSt-1
+end
+
+function ModelAnimationList(w)
+gAnimSourceModel = sourcelist[w:value()]
+print(gAnimSourceModel)
+if gAnimSourceModel == nil then gAnimSourceModel = gObjName end
+
+	p=ig3d_GetObjectModelPath_s_s(gAnimSourceModel)
+	p=gameroot.."Data/WTF/WIF/"..gAnimSourceModel
+	offs=modelAnimOffset(p)
+	local tmp=io.open(p,"r")
+	if tmp== nil then return end
+	gAnimsList={}
+	--tmp:seek("set",ig3d_GetObjectModelAnimOffset_s_i(gAnimSourceModel))
+	tmp:seek("set",offs)
+	local n=tmp:read("*l")	--read chunk name
+	print("n=",n)
+	n=tonumber(tmp:read("*l"))		--how many animations?
+	print("n=",n)
+	if n >= 1 then 
+	for i=1,n,1 do
+	print("i=",i,"n=",n)
+		local newAnim={markers={} }
+		newAnim.name=tmp:read("*l")
+		local an=tonumber(tmp:read("*l"))
+		if an ~= nil then 
+		for j=1,an,1 do
+			local m={cntrl=nil}
+			tims=tmp:read("*l")
+			morphs=tmp:read("*l")
+			end
+			
+			table.insert(gAnimsList, newAnim)		
+		print(newAnim.name)
+		end
+		end
+		
+		else
+		print("no animations")
+		end
+		
+		tmp:close()
+		
+		updateAnimListBrowser()
+end} {}
+  code {function runAnim(w)
+if w:value() ~= nil then 
+	local o=get(ig3d_object, gObjName)
+	local b=false
+	if animLoopControl:value()==1 then b=true end
+	
+	p=gameroot.."Data/WTF/WIF/"..gAnimSourceModel
+	offs=modelAnimOffset(p)
+	--offst=ig3d_GetObjectModelAnimOffset_s_i(gAnimSourceModel)
+	ig3d_ReadModelAnimationsFromFile_2si(gObjName, p, offs)
+	ig3d_SetAutoBoneUpdating_b(true)
+	setObjectInfo(o, IG3D_ANIMATION, gAnimsList[w:value()].name, 0, b)
+	end
+end
+
+function stopAnim(w)
+	local o=get(ig3d_object, gObjName)
+	setObjectInfo(o, IG3D_ANIMATION, "STOP", 0, false)
+end} {}
+  code {function objListBrowserCallback(w)
+gObjName = gObjectNames[w:value()]
+ig3d_SetSelection_s(gObjName)
+print(a)
+end} {}
+  code {function refillpick()
+
+sourceListBrowser:clear()
+pickedfill = filad[fillpick:value()+1]
+print(pickedfill)
+WifinDir=gameroot.."Data/WTF/WIF/"
+wifFileList={}
+sourcelist={}
+ wifFileList=listFiles(WifinDir)
+	 for i = 1,\#wifFileList,1 do
+	 print(wifFileList[i])
+	 
+	 if string.sub(wifFileList[i],1,4) == string.sub(pickedfill,1,4) then
+	 sourceListBrowser:add(string.sub(wifFileList[i],1,-5))
+	 table.insert(sourcelist,wifFileList[i])
+end
+end
+end} {}
+  code {function handle_wif_browser()
+fltk_update()
+if orig_edit_func==handle_wif_browser then orig_edit_func=nil end
+if orig_edit_func~=nil then orig_edit_func() end;
+
+	
+	if click("o") then
+		--The selection might have been changed, see what happened
+		gCurSel=ig3d_GetSelection__s()
+		if gCurSel=="" then return end
+		if gCurSel~=gOldSel then
+			
+			for w in string.gmatch(gCurSel, "[^\\n]+") do
+			
+				--if string.sub(w,1,5)=="bone " then gBoneName=string.sub(w, 6,-1) else end
+				 gObjName=w
+
+     			end
+     		
+     			
+     			local lobje=string.sub(gObjName, 1,-1)
+     			
+     			if wifBrowser:label()~=gObjName then	
+     				updateObjListBrowser()
+     			end
+     			gObjName=lobje
+     			wifBrowser:label(gObjName)
+     			
+     			
+		end
+		gOldSel=gCurSel
+	end
+	
+     			
+	
+end} {selected
+  }
+  Fl_Window wifBrowser {
+    callback wClose open
+    xywh {287 188 321 239} type Double labelsize 10 visible
+  } {
+    Fl_Choice fillpick {
+      callback refillpick open
+      xywh {100 200 87 20} down_box BORDER_BOX labeltype NO_LABEL labelsize 11 when 1 textsize 11
+    } {}
+    Fl_Browser animListBrowser {
+      callback runAnim
+      xywh {190 15 125 180} type Multi labelsize 10 textsize 10
+    }
+    Fl_Browser objListBrowser {
+      callback objListBrowserCallback
+      xywh {0 15 95 215} type Multi labelsize 10 textsize 10
+    }
+    Fl_Browser sourceListBrowser {
+      callback ModelAnimationList
+      xywh {95 15 95 180} type Multi labelsize 10 when 4 textsize 10
+    }
+    Fl_Button stopControl {
+      label Stop
+      callback stopAnim
+      xywh {195 200 45 20} labelsize 10
+    }
+    Fl_Check_Button animLoopControl {
+      label Looped
+      xywh {245 200 60 20} down_box DOWN_BOX labelsize 10
+    }
+    Fl_Box {} {
+      label Select
+      xywh {0 0 110 15} labelsize 10
+    }
+    Fl_Box {} {
+      label {Anim Source}
+      xywh {95 0 75 15} labelsize 10
+    }
+    Fl_Box {} {
+      label Animations
+      xywh {195 0 110 15} labelsize 10
+    }
+  }
+  code {for i = 1,\#filad,1 do fillpick:add(filad[i]) end
+fillpick:label("")
+fillpick:value(0)
+
+wifBrowser:label("")
+wifBrowser:show()
+wifBrowser:make_current()
+refillpick()
+updateObjListBrowser()
+orig_edit_func=edit_func
+edit_func=handle_wif_browser} {}
+} 

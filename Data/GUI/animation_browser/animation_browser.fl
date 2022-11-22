@@ -1,0 +1,198 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {gObjName=""
+gOldSel=""
+gCurSel=""
+gBoneName=""
+gMarkers={}
+gAnimSourceModel=""
+lastPushed=nil
+storedSingleSelect=0
+dragged=false
+gAnimOffset=0
+gAnimsList={{name="NewAnim", markers={} }}
+gCurAnim=1
+gObjName=getObjectInfo(1, IG3D_NAME)
+gSelector=nil
+ orig_edit_func=nil
+ animBrowser=nil} {}
+  code {function updateObjListBrowser()
+	objListBrowser:clear()
+	
+	sourceListBrowser:clear()
+	n = nil
+	nn = nil 
+	for i=1,\#gObjectNames,1 do
+		objListBrowser:add(gObjectNames[i])
+		sourceListBrowser:add(gObjectNames[i])
+		if gObjectNames[i]==gObjName then n = i end
+		if gObjectNames[i]== gAnimSourceModel then nn = i end
+	end	
+	if n ~= nil then 
+	print(gCurSel)
+	 objListBrowser:select(n,n)
+	 objListBrwoser:value(n)
+	  objListBrowser:selected(n)
+	  end
+	  if nn ~= nil then 
+	  sourceListBrowser:select(nn,nn)
+	 sourceListBrowser:value(nn)
+	  sourceListBrowser:selected(nn)
+	  end
+	  
+end} {}
+  code {function updateAnimListBrowser()
+	animListBrowser:clear()
+	for i=1,\#gAnimsList,1 do
+		animListBrowser:add(gAnimsList[i].name)
+	end
+	animListBrowser:value(gCurAnim-1)
+	
+end} {}
+  code {function ModelAnimationList(w)
+gAnimSourceModel = gObjectNames[w:value()]
+print(animSourceModel)
+if gAnimSourceModel == nil then gAnimSourceModel = gObjName end
+
+	p=ig3d_GetObjectModelPath_s_s(gAnimSourceModel)
+	local tmp=io.open(p,"r")
+	if tmp== nil then return end
+	gAnimsList={}
+	tmp:seek("set",ig3d_GetObjectModelAnimOffset_s_i(gAnimSourceModel))
+	local n=tmp:read("*l")	--read chunk name
+	n=tonumber(tmp:read("*l"))		--how many animations?
+	
+	if n >= 1 then 
+	for i=1,n,1 do
+	print("i=",i,"n=",n)
+		local newAnim={markers={} }
+		newAnim.name=tmp:read("*l")
+		local an=tonumber(tmp:read("*l"))
+		if an ~= nil then 
+		for j=1,an,1 do
+			local m={cntrl=nil}
+			tims=tmp:read("*l")
+			morphs=tmp:read("*l")
+			end
+			
+			table.insert(gAnimsList, newAnim)		
+		print(newAnim.name)
+		end
+		end
+		
+		else
+		print("no animations")
+		end
+		
+		tmp:close()
+		
+		updateAnimListBrowser()
+end} {}
+  code {function runAnim(w)
+if w:value() ~= nil then 
+	local o=get(ig3d_object, gObjName)
+	local b=false
+	if animLoopControl:value()==1 then b=true end
+	
+	
+	offst=ig3d_GetObjectModelAnimOffset_s_i(gAnimSourceModel)
+	ig3d_ReadModelAnimationsFromFile_2si(gObjName, ig3d_GetObjectModelPath_s_s(gAnimSourceModel), offst)
+	ig3d_SetAutoBoneUpdating_b(true)
+	setObjectInfo(o, IG3D_ANIMATION, gAnimsList[w:value()].name, 0, b)
+	end
+end
+
+function stopAnim(w)
+	local o=get(ig3d_object, gObjName)
+	setObjectInfo(o, IG3D_ANIMATION, "STOP", 0, false)
+end} {}
+  code {function objListBrowserCallback(w)
+gObjName = gObjectNames[w:value()]
+ig3d_SetSelection_s(gObjName)
+print(a)
+end} {}
+  code {function handle_animation_browser()
+if orig_edit_func==handle_animation_browser then orig_edit_func=nil end
+if orig_edit_func~=nil then orig_edit_func() end;
+
+	
+	if click("o") then
+		--The selection might have been changed, see what happened
+		gCurSel=ig3d_GetSelection__s()
+		if gCurSel=="" then return end
+		if gCurSel~=gOldSel then
+			
+			for w in string.gmatch(gCurSel, "[^\\n]+") do
+			
+				--if string.sub(w,1,5)=="bone " then gBoneName=string.sub(w, 6,-1) else end
+				 gObjName=w
+
+     			end
+     		
+     			
+     			local lobje=string.sub(gObjName, 1,-1)
+     			
+     			if animBrowser:label()~=gObjName then
+     		
+     				
+     				updateObjListBrowser()
+     			end
+     			gObjName=lobje
+     			animBrowser:label(gObjName)
+     			
+     			
+		end
+		gOldSel=gCurSel
+	end
+	
+     			fltk_update()
+	
+end} {}
+  Fl_Window animBrowser {
+    callback wClose
+    xywh {287 188 372 237} type Double labelsize 10 visible
+  } {
+    Fl_Browser animListBrowser {
+      callback runAnim
+      xywh {250 25 115 180} type Multi labelsize 10 textsize 10
+    }
+    Fl_Browser objListBrowser {
+      callback objListBrowserCallback
+      xywh {20 25 115 180} type Multi labelsize 10 textsize 10
+    }
+    Fl_Browser sourceListBrowser {
+      callback ModelAnimationList
+      xywh {135 25 115 180} type Multi labelsize 10 when 4 textsize 10
+    }
+    Fl_Button stopControl {
+      label Stop
+      callback stopAnim
+      xywh {255 210 45 20} labelsize 10
+    }
+    Fl_Check_Button animLoopControl {
+      label Looped
+      xywh {305 210 60 20} down_box DOWN_BOX labelsize 10
+    }
+    Fl_Box {} {
+      label Select
+      xywh {20 10 110 15} labelsize 10
+    }
+    Fl_Box {} {
+      label {Anim Source}
+      xywh {135 10 110 15} labelsize 10
+    }
+    Fl_Box {} {
+      label Animations
+      xywh {250 10 110 15} labelsize 10
+    }
+  }
+  code {animBrowser:label("")
+animBrowser:show()
+animBrowser:make_current()
+orig_edit_func=edit_func
+edit_func=handle_animation_browser} {}
+} 

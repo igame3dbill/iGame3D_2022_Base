@@ -1,0 +1,30 @@
+!!ARBvp1.0
+
+ATTRIB vertexPosition  = vertex.position;
+OUTPUT outputPosition  = result.position;
+
+# Transform the vertex by the modelview/projection matrix
+DP4    outputPosition.x, state.matrix.mvp.row[0], vertexPosition;
+DP4    outputPosition.y, state.matrix.mvp.row[1], vertexPosition;
+DP4    outputPosition.z, state.matrix.mvp.row[2], vertexPosition;
+DP4    outputPosition.w, state.matrix.mvp.row[3], vertexPosition;
+
+# Pass the color and texture coordinate through
+MOV    result.color, vertex.color;
+MOV    result.texcoord[0], vertex.texcoord[0];
+MOV    result.texcoord[1], vertex.texcoord[1];
+
+TEMP a;
+PARAM muller = {1,1,1,1} ;
+
+DP4 a.x,state.matrix.modelview.row[0], vertexPosition;
+DP4 a.y,state.matrix.modelview.row[1], vertexPosition;
+DP4 a.z,state.matrix.modelview.row[2], vertexPosition;
+DP4 a.w,state.matrix.modelview.row[3], vertexPosition;
+
+MUL a,a,muller;
+
+MOV	result.texcoord[0],a;
+
+
+END

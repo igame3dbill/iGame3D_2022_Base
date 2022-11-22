@@ -1,0 +1,434 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0302 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {-- globals_and_functions_codeblock
+lightAttributes={"Position","Ambient","Diffuse","Specular","Spot","Attenuate"}
+quote ='"'
+gLightEditMode = "Position"
+gChosenLight = 1
+
+function MaxOfOne(w)
+print(tonumber(w))
+--if tonumber(w) == nil then return 0 end 
+if tonumber(w) >= 1 then return 1 end
+--if tonumber(w) <= 0.00004 then return 0.00004 end
+end} {}
+  code {function getLight(w)
+gChosenLight = w:value()+1
+
+ig3d_SetSelection_s("light "..gChosenLight)
+displayLightAttribute()
+end} {}
+  code {function lightsVisibility(w)
+lightsVisible = w:label()
+if lightsVisible == "Show Lights" then
+w:label("Hide Lights")
+ig3d_ShowLights_b(true)
+else
+w:label("Show Lights")
+ig3d_ShowLights_b(false)
+end
+end} {}
+  code {function lightBtnClicked(w)
+gLightEditMode = w:label()
+lightPositionGrp:hide();
+lightAmbientGrp:hide();
+lightDiffuseGrp:hide();
+lightSpecularGrp:hide();
+lightSpotGrp:hide();
+lightAttenuateGrp:hide();
+togglePos:value(0)
+toggleAmb:value(0)
+toggleDif:value(0)
+toggleSpec:value(0)
+toggleSpot:value(0)
+toggleAtten:value(0)
+w:value(1)
+displayLightAttribute()
+end
+
+function enableButtonClicked(w)
+
+	if getLightInfo(gChosenLight,IG3D_ENABLED) == true then 
+	setLightInfo(gChosenLight,IG3D_ENABLED, false)
+	else
+	setLightInfo(gChosenLight,IG3D_ENABLED, true)
+	w:value(1)
+	end
+
+	
+	lightswindow:redraw()
+end} {}
+  code {-- displayLightAttribute
+function displayLightAttribute()
+lightswindow:make_current()
+GLEM = gLightEditMode
+print(gLightEditMode)
+print("gChosenLight="..gChosenLight)
+local light_enabled = getLightInfo(gChosenLight,IG3D_ENABLED)
+print("light_enabled="..tostring(light_enabled))
+	
+	
+	
+	if getLightInfo(gChosenLight,IG3D_ENABLED) == true then 
+	lightenableswitch:value(1)
+	else
+	lightenableswitch:value(0)
+	end
+
+light_x,light_y,light_z,light_w = getLightInfo(gChosenLight,IG3D_POSITION)
+light_a_R,light_a_G,light_a_B,light_a_A = getLightInfo(gChosenLight,IG3D_AMBIENT)
+
+light_d_R,light_d_G,light_d_B,light_d_A = getLightInfo(gChosenLight,IG3D_DIFFUSE)
+
+light_s_R,light_s_G,light_s_B,light_s_A = getLightInfo(gChosenLight,IG3D_SPECULAR)
+
+light_sp_DX,light_sp_DY,light_sp_DZ,light_sp_C,light_sp_EX = getLightInfo(gChosenLight,IG3D_SPOTLIGHT)
+
+light_C_Att = getLightInfo(gChosenLight,IG3D_CONSTANT_ATTENUATION)
+light_L_Att = getLightInfo(gChosenLight,IG3D_LINEAR_ATTENUATION)
+light_Q_Att = getLightInfo(gChosenLight,IG3D_QUADRATIC_ATTENUATION)
+
+if gLightEditMode =="Position" then 
+	lightPositionGrp:show()
+	lightxpos:value(light_x)
+	lightypos:value(light_y)
+	lightzpos:value(light_z)
+	lightwpos:value(light_w)
+elseif gLightEditMode =="Ambient" then 
+	lightAmbientGrp:show();
+	lightramb:value(light_a_R)
+	lightgamb:value(light_a_G)
+	lightbamb:value(light_a_B)
+	lightaamb:value(light_a_A)
+elseif gLightEditMode =="Diffuse" then 
+	lightDiffuseGrp:show();
+	lightdiffuser:value(light_d_R)
+	lightdiffuseg:value(light_d_G)
+	lightdiffuseb:value(light_d_B)
+	lightdiffusea:value(light_d_A)
+elseif gLightEditMode =="Specular" then 
+	lightSpecularGrp:show();
+	lightspecularr:value(light_s_R)
+	lightspecularg:value(light_s_G)
+	lightspecularb:value(light_s_B)
+	lightspeculara:value(light_s_A)
+elseif gLightEditMode =="Spot" then 
+	lightSpotGrp:show();
+	lightspotdx:value(light_sp_DX)
+	lightspotdy:value(light_sp_DY)
+	lightspotdz:value(light_sp_DZ)
+	lightspotcutoff:value(light_sp_C)
+	lightspotexponent:value(light_sp_EX)
+elseif gLightEditMode =="Attenuate" then 
+	lightAttenuateGrp:show();
+	lightattenuatequadratic:value(light_Q_Att)
+	lightattenuatelinear:value(light_L_Att)
+	lightattenuateconstant:value(light_C_Att)
+end
+	
+	lightswindow:redraw()
+	
+	
+end} {}
+  code {-- handleLightInput
+function handleLightInput(w)
+lightswindow:make_current()
+local GLEM = gLightEditMode
+local wLabel = w:label()
+
+	
+print(GLEM)
+--local fixVal = MaxOfOne(w:value())
+if GLEM == "Position" then 
+	togglePos:value(1)
+	light_x=lightxpos:value()
+	light_y=lightypos:value()
+	light_z=lightzpos:value()
+	
+	light_w=lightwpos:value()	
+	
+	setLightInfo(gChosenLight,IG3D_POSITION,light_x,light_y,light_z,light_w)
+	
+elseif GLEM=="Ambient" then
+	toggleAmb:value(1)
+	light_a_R =lightramb:value()
+	light_a_G =lightgamb:value()
+	light_a_B =lightbamb:value()
+	light_a_A =lightaamb:value()
+	setLightInfo(gChosenLight,IG3D_AMBIENT,light_a_R, light_a_G, light_a_B, light_a_A )
+
+elseif GLEM=="Diffuse" then 
+	toggleDif:value(1)
+	light_d_R =lightdiffuser:value()
+	light_d_G =lightdiffuseg:value()
+	light_d_B =lightdiffuseb:value()
+	light_d_A =lightdiffusea:value()
+	
+	setLightInfo(gChosenLight,IG3D_DIFFUSE,light_d_R, light_d_G, light_d_B, light_d_A )
+	
+
+elseif GLEM=="Specular" then 
+	toggleSpec:value(1)
+	light_s_R =lightspecularr:value()
+	light_s_G =lightspecularg:value()
+	light_s_B =lightspecularb:value()
+	light_s_A =lightspeculara:value()
+	setLightInfo(gChosenLight,IG3D_SPECULAR,light_s_R, light_s_G, light_s_B, light_s_A )
+
+elseif GLEM=="Spot" then 
+	toggleSpot:value(1)
+	light_sp_DX =lightspotdx:value()
+	light_sp_DY =lightspotdy:value()
+	light_sp_DZ =lightspotdz:value()
+	light_sp_C =lightspotcutoff:value()
+	light_sp_EX =lightspotexponent:value()
+	
+	light_x,light_y,light_z,light_w = getLightInfo(gChosenLight,IG3D_POSITION)	
+	setLightInfo(gChosenLight,IG3D_POSITION,light_x,light_y,light_z,1)
+	
+	setLightInfo(gChosenLight,IG3D_SPOTLIGHT, light_sp_DX, light_sp_DY, light_sp_DZ, light_sp_C, light_sp_EX)
+	
+elseif GLEM=="Attenuate" then
+	toggleAtten:value(1)
+	light_Q_Att =lightattenuatequadratic:value()
+	light_L_Att =lightattenuatelinear:value()
+	light_C_Att =lightattenuateconstant:value()
+	
+		if wLabel == "Constant" then
+		setLightInfo(gChosenLight,IG3D_CONSTANT_ATTENUATION, light_C_Att )
+		elseif wLabel == "Linear" then 
+		setLightInfo(gChosenLight,IG3D_LINEAR_ATTENUATION , light_L_Att )
+		elseif wLabel == "Quadratic" then 
+		setLightInfo(gChosenLight,IG3D_QUADRATIC_ATTENUATION , light_Q_Att )
+		end 
+	end
+	
+	
+lightswindow:redraw()
+	displayLightAttribute()
+	
+end} {}
+  Fl_Window lightswindow {
+    label Lights open selected
+    xywh {97 183 480 90} type Double when 6 noborder size_range {480 67 480 90} visible
+  } {
+    Fl_Choice lightChoice {
+      label {Light:}
+      callback getLight open
+      xywh {5 43 80 20} down_box BORDER_BOX labelsize 10 align 1 textsize 11
+    } {}
+    Fl_Group LightAttributeBtnGrp {
+      xywh {60 0 441 60}
+    } {
+      Fl_Button lightenableswitch {
+        label Enable
+        callback enableButtonClicked
+        xywh {60 0 59 25} down_box THIN_DOWN_BOX labelsize 11
+      }
+      Fl_Button togglePos {
+        label Position
+        callback lightBtnClicked
+        xywh {120 0 59 25} down_box THIN_DOWN_BOX labelsize 11
+      }
+      Fl_Button toggleAmb {
+        label Ambient
+        callback lightBtnClicked
+        xywh {180 0 59 25} down_box THIN_DOWN_BOX labelsize 11
+      }
+      Fl_Button toggleDif {
+        label Diffuse
+        callback lightBtnClicked
+        xywh {240 0 59 25} down_box THIN_DOWN_BOX labelsize 11
+      }
+      Fl_Button toggleSpec {
+        label Specular
+        callback lightBtnClicked
+        xywh {300 0 59 25} down_box THIN_DOWN_BOX labelsize 11
+      }
+      Fl_Button toggleSpot {
+        label Spot
+        callback lightBtnClicked
+        xywh {360 0 59 25} down_box THIN_DOWN_BOX labelsize 11
+      }
+      Fl_Button toggleAtten {
+        label Attenuate
+        callback lightBtnClicked
+        xywh {420 0 59 25} down_box THIN_DOWN_BOX labelsize 11
+      }
+    }
+    Fl_Group lightPositionGrp {
+      xywh {90 41 321 22} labelsize 11 align 4
+    } {
+      Fl_Value_Input lightxpos {
+        label X
+        callback handleLightInput
+        xywh {90 41 66 22} labelsize 10 align 1 minimum -1000 maximum 1000 step 0.4 value 1 textsize 10
+      }
+      Fl_Value_Input lightypos {
+        label Y
+        callback handleLightInput
+        xywh {160 41 66 22} labelsize 10 align 1 minimum -1000 maximum 1000 step 0.4 value 1 textsize 10
+      }
+      Fl_Value_Input lightzpos {
+        label Z
+        callback handleLightInput
+        xywh {230 41 66 22} labelsize 10 align 1 minimum -1000 maximum 1000 step 0.4 value 1 textsize 10
+      }
+      Fl_Value_Input lightwpos {
+        label W
+        callback handleLightInput
+        xywh {300 41 66 22} labelsize 10 align 1 step 1 textsize 10
+      }
+    }
+    Fl_Group lightAmbientGrp {
+      xywh {90 40 321 23} labelsize 11 align 4
+    } {
+      Fl_Value_Input lightramb {
+        label R
+        callback handleLightInput
+        xywh {90 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+      Fl_Value_Input lightgamb {
+        label G
+        callback handleLightInput
+        xywh {160 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+      Fl_Value_Input lightbamb {
+        label B
+        callback handleLightInput
+        xywh {230 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+      Fl_Value_Input lightaamb {
+        label A
+        callback handleLightInput
+        xywh {300 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+    }
+    Fl_Group lightDiffuseGrp {
+      xywh {90 41 321 22} labelsize 11 align 4
+    } {
+      Fl_Value_Input lightdiffuser {
+        label R
+        callback handleLightInput
+        xywh {90 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+      Fl_Value_Input lightdiffuseg {
+        label G
+        callback handleLightInput
+        xywh {160 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+      Fl_Value_Input lightdiffuseb {
+        label B
+        callback handleLightInput
+        xywh {230 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+      Fl_Value_Input lightdiffusea {
+        label A
+        callback handleLightInput
+        xywh {300 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+    }
+    Fl_Group lightSpecularGrp {
+      xywh {90 41 321 24} labelsize 11 align 4
+    } {
+      Fl_Value_Input lightspecularr {
+        label R
+        callback handleLightInput
+        xywh {90 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+      Fl_Value_Input lightspecularg {
+        label G
+        callback handleLightInput
+        xywh {160 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+      Fl_Value_Input lightspecularb {
+        label B
+        callback handleLightInput
+        xywh {230 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+      Fl_Value_Input lightspeculara {
+        label A
+        callback handleLightInput
+        xywh {300 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+    }
+    Fl_Group lightSpotGrp {
+      xywh {90 36 411 27} labelsize 11 align 4
+    } {
+      Fl_Value_Input lightspotdx {
+        label dx
+        callback handleLightInput
+        xywh {90 41 66 22} labelsize 10 align 1 minimum -1000 maximum 1000 step 0.004 textsize 10
+      }
+      Fl_Value_Input lightspotdy {
+        label dy
+        callback handleLightInput
+        xywh {160 41 66 22} labelsize 10 align 1 minimum -1000 maximum 1000 step 0.004 textsize 10
+      }
+      Fl_Value_Input lightspotdz {
+        label dz
+        callback handleLightInput
+        xywh {230 41 66 22} labelsize 10 align 1 minimum -1000 maximum 1000 step 0.004 textsize 10
+      }
+      Fl_Value_Input lightspotcutoff {
+        label Cutoff
+        callback handleLightInput
+        xywh {300 41 66 22} labelsize 10 align 1 minimum -180 maximum 180 step 0.004 textsize 10
+      }
+      Fl_Value_Input lightspotexponent {
+        label Exponent
+        callback handleLightInput
+        xywh {370 41 66 22} labelsize 10 align 1 minimum 1 maximum 32 step 0.004 value 1 textsize 10
+      }
+    }
+    Fl_Group lightAttenuateGrp {open
+      xywh {90 39 251 24} labelsize 11 align 4
+    } {
+      Fl_Value_Input lightattenuateconstant {
+        label Constant
+        callback handleLightInput
+        xywh {90 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+      Fl_Value_Input lightattenuatelinear {
+        label Linear
+        callback handleLightInput
+        xywh {160 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+      Fl_Value_Input lightattenuatequadratic {
+        label Quadratic
+        callback handleLightInput
+        xywh {230 41 66 22} labelsize 10 align 1 minimum 0.004 step 0.004 value 0.004 textsize 10
+      }
+    }
+    Fl_Repeat_Button toggleLightVisibility {
+      label {Hide Lights}
+      callback lightsVisibility
+      xywh {0 0 59 25} labelsize 10
+    }
+  }
+  code {for i = 1,8,1 do
+lightChoice:add(i)
+end
+
+lightChoice:value(0)
+lightenableswitch:value(1)
+
+lightAmbientGrp:hide();
+lightDiffuseGrp:hide();
+lightSpecularGrp:hide();
+lightSpotGrp:hide();
+lightAttenuateGrp:hide();
+
+togglePos:value(1)
+lightswindow:show();
+displayLightAttribute()
+ig3d_ShowLights_b(true)
+getLight(lightChoice)
+--print("gChosenLight="..gChosenLight)
+--print("gLightEditMode="..gLightEditMode)
+-- print("changelight_enabled="..tostring(changelight_enabled))} {}
+} 

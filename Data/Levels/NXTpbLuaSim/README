@@ -1,0 +1,166 @@
+This is a simple project demonstrating the power of iGame3D Player and murgaLua
+
+Later, I try to implement a complete simulation of pbLua programs for the Lego NXT robotics set.
+
+NXTpbLuaSim idea
+================
+
+A world of Lego parts and simulation of pbLua programs for the Mindstorms NXT
+
+Bricks:
+there are 3 parts available only
+1. NXT
+2. Brick 2x2
+3. Brick 2x4
+
+Scenes:
+Labyrith of bricks. 
+1. The base area (floor) is surrounded by brick walls only.
+Try to write a program that let the robot (NXT) find the next door.
+Use the ultrasonic sensor to avoid collisions and detect the door.
+
+2. Additional bricks on the floor
+Use the ultrasonic sensor to avoid collisions and detect the door.
+
+3. Additional wholes in the floor
+Try to detect wholes with the light sensor
+Use the ultrasonic sensor to avoid collisions and detect the door.
+
+4. Custom build labyrinth
+Read scene from XML file.
+
+5. Multiuser game communication over the internet
+Multiple NXT objects in a network shared labyrinth
+
+
+
+maze.xml from ct-sim project
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE collection SYSTEM "parcours.dtd">
+
+<world>
+	<description>
+		Dieses ist ein Testparcours fuer ein Labyrinth fuer einen Bots
+	</description>
+		
+	<parcours>
+		<line>============#</line>
+		<line>#==#        Z</line>
+		<line>#==#      ==#</line>
+		<line>#===      #=#</line>
+		<line>#           #</line>
+		<line>#           #</line>
+		<line>#   #====#  #</line>
+		<line>#   #****#  #</line>
+		<line>#========#  #</line>
+		<line>#           #</line>
+		<line>#           #</line>
+		<line>#  =========#</line>
+		<line>#  #        #</line>
+		<line>#  #        #</line>
+		<line>#      #==  #</line>
+		<line>#      #*#  #</line>
+		<line>#======#*#  #</line>
+		<line>#      #*#  #</line>
+		<line>#      #=#  #</line>
+		<line>#..#        #</line>
+		<line>#..#        #</line>
+	    <line>=1.==========</line>
+	
+	</parcours>
+		<optics>
+			<appearance type="X">
+				<description>quadratische Wand</description>
+				<texture>textures/rock_wall.jpg</texture>
+				<color>#999999</color>
+			</appearance>
+			<appearance type="#">
+				<description>senkrechte Wand</description>
+				<clone>X</clone>
+			</appearance>
+			<appearance type="=">
+				<description>wagrechte Wand</description>
+				<clone>X</clone>
+			</appearance>
+	
+			
+			<appearance type="."> 
+				<description>Fussboden im Eingangsbereich</description>
+				<color type="ambient">#FFFFFF</color>
+				<color type="diffuse">#FFFFFF</color>
+			</appearance>
+			
+			<appearance type=" "> 
+				<description>Fussboden im Labyrinth</description>
+				<color type="ambient">#606060</color>
+				<color type="diffuse">#606060</color>
+			</appearance>
+			
+			<appearance type="1"> 
+				<description>Fussboden des Startfeldes 1</description>
+				<color type="ambient">#993030</color>
+				<color type="diffuse">#993030</color>
+			</appearance>
+			
+			<appearance type="2"> 
+				<description>Fussboden des Startfeldes 2</description>
+				<color type="ambient">#000099</color>
+				<color type="diffuse">#000099</color>
+			</appearance>
+	
+			<appearance type="0"> 
+				<description>Fussboden des Default-Startfeldes</description>
+				<clone>.</clone>
+			</appearance>
+			
+			<appearance type="Z"> 
+				<description>Fussboden des Zielfeldes 0</description>
+				<color type="ambient">#66FF00</color>
+				<color type="diffuse">#66FF00</color>
+			</appearance>
+		
+			<appearance type="*"> 
+				<description>Lichtkugel</description>
+				<color type="emmissive">#FFFF90</color>
+			</appearance>
+
+			<appearance type="-"> 
+				<description>Linie</description>
+				<color type="ambient">#000000</color>
+				<color type="diffuse">#000000</color>
+				<color type="specular">#000000</color>
+				<color type="emmissive">#000000</color>
+			</appearance>
+	
+			<appearance type="|"> 
+				<description>Linie</description>
+				<clone>-</clone>
+			</appearance>
+	
+			<appearance type="/"> 
+				<description>Linie</description>
+				<clone>-</clone>
+			</appearance>
+	
+			<appearance type="\"> 
+				<description>Linie</description>
+				<clone>-</clone>
+			</appearance>
+	
+			<appearance type="+"> 
+				<description>Linie</description>
+				<clone>-</clone>
+			</appearance>
+	
+			<appearance type="~"> 
+				<description>Linie</description>
+				<clone>-</clone>
+			</appearance>
+			
+		</optics>
+
+	
+
+</world>
+  

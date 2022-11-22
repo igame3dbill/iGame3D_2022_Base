@@ -1,0 +1,126 @@
+!!ARBvp1.0
+
+# Hacked bump-mapping by Tobias Opfermann © 2008
+#
+# Pre-fragment program preparation, see the Fragment Program for specifics.
+#
+# Texture units:
+#   Unit 0 - Base texture map
+#   Unit 1 - Surface normals, encoded in the red, green and blue color channels
+#
+# Parameters:
+#   program.env[0].xyz - Light position in eye space.
+
+
+ATTRIB normalModel             = vertex.normal;
+PARAM  lightPositionEye        = program.env[0];
+TEMP   t0;#was lightPositionModel, needed to reduce the number of temps
+OUTPUT   vertexPositionClip=result.position;
+
+# Transform the vertex into clip space
+
+
+DP4    vertexPositionClip.x, state.matrix.mvp.row[0], vertex.position;
+DP4    vertexPositionClip.y, state.matrix.mvp.row[1], vertex.position;
+DP4    vertexPositionClip.z, state.matrix.mvp.row[2], vertex.position;
+DP4    vertexPositionClip.w, state.matrix.mvp.row[3], vertex.position;
+
+# Transform the light position into model space
+DP4 t0.x, state.matrix.modelview.inverse.row[0], lightPositionEye;
+DP4 t0.y, state.matrix.modelview.inverse.row[1], lightPositionEye;
+DP4 t0.z, state.matrix.modelview.inverse.row[2], lightPositionEye;
+
+
+
+
+
+# Tobis's bad pre-fragment light dir calculator
+ADD		t0.xyz, -t0,vertex.position;
+MUL		t0,t0,{-1,-1,-1,1};
+#MOV		t0,program.env[1];
+DP3		t0.w, t0, t0;
+RSQ		t0.w, t0.w;
+MUL		t0.xyz, t0, t0.w;
+
+# Rotate the light direction according to orientation of the face!
+
+TEMP		u,c,s,t,x,y,z,temp;
+TEMP		columns0,columns1,columns2;
+#PARAM 	n={1,0,0,1};
+ATTRIB	n=vertex.normal;
+
+
+
+XPD 	u,n,{0,0,-1,1};
+DP3		u.w, u, u;#
+RSQ		u.w, u.w;#
+MUL		u.xyz, u, u.w;#
+
+DP3	c.x,n,{0,0,1,1};
+MUL 	s.x,c.x,c.x;
+SUB	s.x,1,s.x;
+RSQ	s.x,s.x;
+RCP	s.x,s.x;
+MOV  x.x,u.x;
+MOV	y.y,u.y;
+MOV	z.z,u.z;
+SUB	t.x,1,c.x;
+
+#rx=t*x*x+c
+MUL columns0.x,t.x,x.x;
+MAD columns0.x,columns0.x,x.x,c.x;
+
+#ux=t*x*y+z*s
+MUL columns0.y,t.x,x.x;
+MUL temp.x,z.z,s.x;
+MAD columns0.y,columns0.y,y.y,temp.x;
+
+#lx=t*x*z-y*s
+MUL columns0.z,t.x,x.x;
+MUL temp.x,-y.y,s.x;
+MAD columns0.z,columns0.z,z.z,temp.x;
+
+#ry=t*x*y-z*s
+MUL columns1.x,t.x,x.x;
+MUL temp.x,-z.z,s.x;
+MAD columns1.x,columns1.x,y.y,temp.x;
+
+#uy=t*y*y+c
+MUL columns1.y,t.x,y.y;
+MAD columns1.y,columns1.y,y.y,c.x;
+
+#ly=t*y*z+x*s
+MUL columns1.z,t.x,y.y;
+MUL temp.x,x.x,s.x;
+MAD columns1.z,columns1.z,z.z,temp.x;
+
+#rz=t*x*z+y*s
+MUL columns2.x,t.x,x.x;
+MUL temp.x,y.y,s.x;
+MAD columns2.x,columns2.x,z.z,temp.x;
+
+#uz=t*y*z-x*s
+MUL columns2.y,t.x,y.y;
+MUL temp.x,-x.x,s.x;
+MAD columns2.y,columns1.y,z.z,temp.x;
+
+#lz=t*z*z+c
+MUL columns2.z,t.x,z.z;
+MAD columns2.z,columns2.z,z.z,c.x;
+
+#re-use temp
+DP3 temp.x,columns0,t0;
+DP3 temp.y,columns1,t0;
+DP3 temp.z,columns2,t0;
+
+MOV temp.w,1;
+
+# Pass the color and texture coordinate through
+MOV    result.color, vertex.color;
+MOV    result.texcoord[0], vertex.texcoord[0];
+MOV	  result.texcoord[1], vertex.texcoord[0];
+MOV	  result.texcoord[2], vertex.texcoord[0];
+MOV 	result.texcoord[3], temp; # the normalized light direction vector
+#MOV		result.color, vertex.color;
+END
+

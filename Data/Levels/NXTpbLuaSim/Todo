@@ -1,0 +1,20 @@
+Todo list:
+
+debugging keyboard control and physics :-)
+learning by doing
+reading more samples
+
+Open cases:
+
+why does Bobette fly away ?
+how to use cursors for control ?
+how to add background music ?
+how to add a text windows which shows current nxt object coordinates 
+	and sensor values (ultrasonic and light) ?
+how to switch to next level when reaching the door ?
+how to integrate robot control by program ?
+how to add explosion emitters when crashing into the wall (sound and animation)?
+how to quit or return to start, when fall thru a whole or explode
+how to add visual animations for ultrasonic and lightsensor beams 
+how to add a second window for onboard nxt view (front view) ?
+

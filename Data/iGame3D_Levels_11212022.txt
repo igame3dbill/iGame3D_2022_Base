@@ -1,0 +1,145 @@
+These tests were made with Windows Visual Studio build 2013
+
+Bike -- TRON Lightcycle uses version of the CAR level script, camera freaks out but
+otherwise works, although there's no engine sound or breaking texture.
+Aliens and crate stuff was commented out.
+
+BobetteSoccer  -- fixed path:
+ if console==nil then dofile(gameroot.."Data/GUI/console/console.fl") end
+
+Okay apparently loading the console from within the game or during the game
+causes it to crash, console.lua must be having an issue on it's own.
+This level was screaming in the console about not being able to open the game root folder path ...for whatever reason
+camresetter function had
+--setCameraInfo(IG3D_POSITION, -7.488011, 11.233835, 3.243137)
+--setCameraInfo(IG3D_ROTATION, 49.487797, 125.060448, -0.000000)
+and
+--fltk_update()
+as the camera stuff was freaking the camera out and the fltk thing didn't do anything useful.
+
+Otherwise BobbetteSoccer is working
+
+
+BrickFun - Works. Interesting Editor mouse/3D widget is active during game mode
+
+Car - WORKS. Camera freaks out though, for whatever reason.
+
+Car_n_Driver -- was missing level mesh, redirected to Car level mesh
+Seems the car is constantly applying the brake
+Ragdolls work
+Space key and/or mouse click crashes it
+Can't get back to editor mode and/or regain mouse pointer
+
+
+Colltests  -- fixed console path and this doesn't do any of the buggy stuff Bobette was doing with the console open. Otherwise works.
+
+
+cubmaptest -- DELETED Didn't do anything. just a default script.
+
+default -- default script, empty level mesh, redudant default_Globals.lua
+
+FPS -- WORKS
+
+HelloWorld -- WORKS
+
+
+iFly
+iFly function paths moved to Data/Scripts/Games/iFly_Functions
+base iFly level load script now loads Data/Levels/iFly/iFly_Title
+iFly standard game play script has been placed in Data/Levels/iFly/iFly_Game
+iFly_Title has been changed to load that script on "continue"
+
+
+
+iFly_Briefing path to jets fixed, click now starts game immediately
+
+iFly_Game...script from 2013 replaced with script from 2009, the 2013 script wasn't turning the plane with mouse move, maybe 2013 script was modified for iPhone?
+The Enemy Pointers fontPNG was missing, added back into the Data folder.
+
+----------------------------------------------------------------------------
+iFly_Controls and iFly_Options 
+had the following added to loop function so "BACK" button went to iFly_Title instead of game play, it was not clearing the text boxes otherwise, and the iFly_Title text was not selectable after the switch.
+
+if load== true then
+  load = false
+  gTextboxes={}
+for i=1,#gTextboxFonts,1 do
+	gTextboxes[i]=make(ig3d_text_box, gTextboxFonts[i])
+	setText_boxInfo(gTextboxes[i], IG3D_TEXT, "")
+  end
+ loadLevel("Data/Levels/iFly/iFly_Title")
+end
+---------------------------------------------------------------------------
+
+iPhoneCar -- don't have iPhone so can't test this
+iPhoneHelloWorld -- don't have iPhone so can't test this
+
+level-1 -- REMOVED EMPTY
+level-2 -- REMOVED EMPTY
+
+MedeivalHouse2 -- A nice free house that was a pain in the ass to invert 2 normals
+
+NXTpbLuaSim -- Chrimo's project from 2008, weird thing, has some text display stuff for position and FPS (3512 Fps?!?!?) that might be a useful example, after cleaning up. Fixed a path to ifly_math functions.
+This is notable need to remember this:
+-- this avoids unwanted behaviours with wrong initialition
+delete(ig3d_scene)
+
+Pong -- Paddles were missing, still don't know how to make the ball bouncey.
+Materials collision detection? Bones?
+
+Recognizer -- Works better than it ever has. Saved as new style load script, old script to drive the Rec around has been updated.
+
+Simple -- Contains some examples, let's put them back into the main level folder and remove this one.
+Redundant and Removed >>> BobetteSoccer, FpS, HelloWorld, UFO
+
+BROKEN DOOR, shows a door breaking ooh magic
+
+A_Level_Menu >> Ye olde default wiggly level menu screen
+For some reason reloading:
+ dofile(gameroot.."Data/Scripts/Default/default_Globals.lua")
+Really mucks up the whole game engine. So that's commented out.
+
+SquigLand -- WORKS AS ALWAYS
+
+Tank -- Same script as Recognizer but it the airborne() bool grinds the object to a halt. 
+Also Tanks uses: player=get(ig3d_object, "trontankwbase1") 
+While Recognizer uses:  player=gObjects[1].cObj
+Yet Car uses: car=gObjects[1]
+That car version didn't work for Recognizer level at all.
+
+
+
+testing123 -- BVH testing level so Renamed to testingBVH
+"Data/BVH/FreeBVH/BoxerWarming1.bvh" was missing, has been added
+listAnims = ModelAnimationList("truebonesmaster1") -- was looking for gObjectNames[1] but the object is loaded by  "Data/Scripts/Examples/truebonesbvh_parser.lua" so gObjectNames is not updated with the correct data.
+
+
+
+testLEvel --- Did nothing, REMOVED.
+
+Third Person <<-- Squigland again, maybe we should update with an animated character
+
+Tronish <<< Just a display level, REMOVED
+
+udeadgames << Whats going on here? Fixed a script path, it loaded a very strange UDG map, with an oversized (like 500%) zombie all distorted and weird, I moved around a map a bit, saw a human eating a snack but he was half in the floor, then the game ended because all the zombies died (from falling into the ether I think)
+
+UDG -- Updated all the scripts to load from path: "Data/Scripts/Games/UDG_Functions/UDG_Init.lua"
+
+UFO -- Works as it usual
+
+
+ufotest <-- EMPTY LEVEL REMOVED
+
+Utility <--- Contains some more levels
+	AnimazooBVH <-- these BVH are not available at the moment
+	boninglevel <-- Forgot how that works
+	Studio <-- whats that do?
+	TrueBonesBVH <--- crashed on load
+
+Warhammer -- can not open "..Data/Levels/Warhammer/tools/mathe.lua": No such file or directory
+
+ZFPS <<-- Hmm this is just plain broken, it was UDG before UDG was finished?
+
+ZGS -- Works! All the guns are extra big, so funny. Vehicle is extra big and don't work.
+
+ZGS_default --- was pointing to RTS_Init and was broken and crashed, it did spit out a bunch of data text on screen before it crashed. Changed the path to ZGS_Init and it works, even the car works! But there's a freaky distorted giant zombie, have to "Zombie.wtf" it seems is super low poly, has no texture and his bones are are a mess because he gets all bent out of shape.

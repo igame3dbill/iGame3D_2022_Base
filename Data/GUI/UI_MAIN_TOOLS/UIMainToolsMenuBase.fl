@@ -1,0 +1,358 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {-- Menu Globals
+mainMenuIndex={}
+menuIndexCount=1
+LibStartVal=1
+oldChar=" "} {}
+  code {-- CHOOSE FILE OR FOLDER
+
+function chooseFolder(title,start_path)
+-- fl_dir_chooser (function)
+-- fltk.fl_dir_chooser(title,start_path,relative)
+-- "relative" is a toggle. Non-zero means the filename returned will be a relative path, and zero returns absolute path. 
+-- Using nil as start path will default to the previously chosen path,
+-- or current directory if this is the first time the function is called
+local relative=0
+ local dirname=fltk.fl_dir_chooser(title,start_path,relative)
+ if dirname then tFolder= replaceText(gameroot,"",dirname) end
+ return tFolder 
+end
+
+
+function chooseFile(title,filename_filter,start_path)
+-- fl_file_chooser (function)
+-- fltk.fl_file_chooser(title,filename_filter,start_path,relative)
+-- "relative" is a toggle. Non-zero means the filename returned will be a relative path, and zero returns absolute path. 
+local relative=0
+local filename=fltk.fl_file_chooser(title,filename_filter,start_path,relative)
+ if filename then tFile= replaceText(gameroot,"",filename) end
+ return tFile 
+end} {}
+  code {-- FILL THE FILE MENU
+fileMenuText={}
+fileMenuText.Save={"Save/Level","Save/Level Mesh","Save/Level State","Save/Screenshot"}
+fileMenuText.Export={"Export/WTF","Export/OBJ","Export/3DS","Export/Path"}
+fileMenuText.Open={"Open/default","Open/Level","Open/Script","Open/Mesh","Open/Fluid","Open/Emitter","Open/Shader"}
+fileMenuText.Load={"Load/Object","Load/Sound","Load/Font","Load/Texture","Load/Mesh"}
+fileMenuIndex={}
+
+function fill_FileMenu()
+n=\#mainMenuIndex+1
+mainMenuIndex[n]="Open"
+for i=1,table.getn(fileMenuText.Open),1 do
+n=n+1
+menuLine="File/"..fileMenuText.Open[i]
+menuBar:add(menuLine);
+mainMenuIndex[n]=menuLine
+end
+
+n=n+2
+mainMenuIndex[n]="Save"
+for i=1,table.getn(fileMenuText.Save),1 do
+n=n+1 
+menuLine="File/"..fileMenuText.Save[i]
+menuBar:add(menuLine);
+mainMenuIndex[n]=menuLine
+end
+
+n=n+2
+mainMenuIndex[n]="Load"
+for i=1,table.getn(fileMenuText.Load),1 do
+n=n+1 
+menuLine="File/"..fileMenuText.Load[i]
+menuBar:add(menuLine);
+mainMenuIndex[n]=menuLine
+end
+
+n=n+2
+mainMenuIndex[n]="Export"
+for i=1,table.getn(fileMenuText.Export),1 do
+n=n+1 
+menuLine="File/"..fileMenuText.Export[i]
+menuBar:add(menuLine);
+mainMenuIndex[n]=menuLine
+end
+
+menuIndexCount=n
+print("n="..n)
+end} {}
+  code {-- FILL THE EDIT MENU
+editMenuText={"Undo","Copy","Paste","Delete","Select All","-","Clear Scene"}
+
+function fill_EditMenu()
+n=menuIndexCount+3
+mainMenuIndex[n]="Edit"
+for i=1,table.getn(editMenuText),1 do
+n=n+1
+menuLine="Edit/"..editMenuText[i]
+menuBar:add(menuLine);
+mainMenuIndex[n]=menuLine
+end
+menuIndexCount=n
+end} {}
+  code {-- FILL THE LEVEL MENU
+levelMenuText={"Play","Save","Reset","New Level","Clear Scene"}
+
+function fill_LevelMenu()
+mainMenuIndex[menuIndexCount+1]="Level"
+n=menuIndexCount+2
+mainMenuIndex[n]="Level"
+for i=1,\#levelMenuText,1 do
+n=n+1
+menuLine="Level/"..levelMenuText[i]
+menuBar:add(menuLine);
+mainMenuIndex[n]=menuLine
+end
+menuIndexCount=n
+end} {}
+  code {-- FILL THE LIBRARY MENU
+LibraryMenuText={"Emitters","Levels","Models","Materials","Scripts","Sounds","Images","FontPngs","Text","Fluid","Shaders"}
+
+function fill_LibraryMenu()
+n=menuIndexCount+3
+mainMenuIndex[n]="Library"
+for i=1,table.getn(LibraryMenuText),1 do
+  n=n+1
+  menuLine="Library/"..LibraryMenuText[i]
+  menuBar:add(menuLine);
+mainMenuIndex[n]=menuLine
+end
+menuIndexCount=n
+end} {}
+  code {-- FILL THE Mesh MENU
+MeshMenuText={}
+MeshMenuText.base={"Focus Mesh","Goto Points","Tag Vertices","Duplicate Vertices","Extrude","Combine Overlaps","Subdivide","Delete Vertices","Clear Mesh"}
+MeshMenuText.Select={"Select/All Vertices","Select/Connected","Select/Invert","Select/Connected to Bone","Select/Same Material","Select/Same Tag"}
+MeshMenuText.Face={"Face/In","Face/Out","Face/Invert"}
+MeshMenuText.View={"View/Hide","View/Hide All","View/Show All","View/Swap Hidden","View/Hide Faces","View/Show Faces","View/Invisible","View/Visible"}
+MeshMenuText.Mirror={"Mirror/x","Mirror/y","Mirror/z"}
+
+
+function fill_MeshMenu()
+n=menuIndexCount+2
+mainMenuIndex[n]="&Mesh"
+for i=1,table.getn(MeshMenuText.base),1 do
+n=n+1
+menuLine="&Mesh/"..MeshMenuText.base[i]
+menuBar:add(menuLine);
+mainMenuIndex[n]=menuLine
+end
+
+n=n+1
+mainMenuIndex[n]="&Mesh/Select"
+for i=1,table.getn(MeshMenuText.Select),1 do
+n=n+1 
+menuLine="&Mesh/"..MeshMenuText.Select[i]
+menuBar:add(menuLine);
+mainMenuIndex[n]=menuLine
+end
+
+n=n+2
+mainMenuIndex[n]="&Mesh/Face"
+for i=1,table.getn(MeshMenuText.Face),1 do
+n=n+1 
+menuLine="&Mesh/"..MeshMenuText.Face[i]
+menuBar:add(menuLine);
+mainMenuIndex[n]=menuLine
+end
+
+n=n+2
+mainMenuIndex[n]="&Mesh/View"
+for i=1,table.getn(MeshMenuText.View),1 do
+n=n+1 
+menuLine="&Mesh/"..MeshMenuText.View[i]
+menuBar:add(menuLine);
+mainMenuIndex[n]=menuLine
+end
+
+n=n+2
+mainMenuIndex[n]="&Mesh/Mirror"
+for i=1,table.getn(MeshMenuText.Mirror),1 do
+n=n+1 
+menuLine="&Mesh/"..MeshMenuText.Mirror[i]
+menuBar:add(menuLine);
+mainMenuIndex[n]=menuLine
+end
+menuIndexCount=n
+end} {}
+  code {-- Library Menu Callback
+function Library_menu_callback(w)
+tMenu=w:label()
+tVal=w:value()+LibStartVal
+tPick=w:text()
+print(tMenu,tVal,tPick)
+print(tVal,"=",mainMenuIndex[tVal]);
+end} {}
+  code {-- Fill Menu Bar
+function FillMenuBar()
+fill_FileMenu();
+fill_EditMenu();
+fill_LevelMenu();
+fill_LibraryMenu();
+fill_MeshMenu();
+end} {}
+  code {-- file Menu Pick
+function fileMenuPick(tPick)
+local xPick=item(-2,tPick,"/")
+local yPick=item(-1,tPick,"/")
+local mPick=xPick.."/"..yPick
+local tTitle=xPick.." "..yPick
+local tDir=gameroot.."Data/"
+local tFile="empty"
+  -- chooseFile(title,filename_filter,start_path)
+ -- chooseFolder(title,start_path)
+
+
+print("mPick="..mPick)
+   if mPick=="Save/Level" then save_level() 
+   elseif mPick=="Save/Level Mesh" then save_levelMesh()
+   elseif mPick=="Save/Level State" then save_levelState()
+   elseif mPick=="Save/Screenshot" then save_screenshot()
+   elseif mPick=="Export/WTF" then save_asWTF()
+   elseif mPick=="Export/OBJ" then save_asOBJ()
+   elseif mPick=="Export/3ds" then save_as3DS()
+   elseif mPick=="Export/Meshwork" then save_asMeshwork()
+   --
+   elseif mPick=="Open/default" then action = exittomenu()
+   elseif mPick=="Open/Level" then tFile = chooseFolder(tTitle,tDir.."Levels")  
+   elseif mPick=="Open/Script" then tFile =  chooseFile(tTitle,"*.lua",tDir.."Scripts") 
+   elseif mPick=="Open/Fluid" then tFile =  chooseFolder(tTitle,tDir.."Fluid") 
+   elseif mPick=="Open/Mesh" then tFile =  chooseFile(tTitle,"*.wtf",tDir.."WTF")
+   elseif mPick=="Open/Shader" then tFile =  chooseFolder(tTitle,tDir.."Shaders") 
+   --
+   elseif mPick=="Load/Object" then tFile =  chooseFile(tTitle,"*.wtf",tDir.."WTF")
+   elseif mPick=="Load/Sound" then tFile =  chooseFile(tTitle,"*.ogg",tDir.."Sounds") 
+   elseif mPick=="Load/Font" then tFile =  chooseFile(tTitle,"*.png",tDir.."FontPngs") 
+   elseif mPick=="Load/Texture" then tFile =  chooseFile(tTitle,"*.png",tDir.."Images") 
+   elseif mPick=="Load/Mesh" then tFile =  chooseFile(tTitle,"*.wtf",tDir.."WTF")
+   
+    
+   end
+   
+   if tFile ~= "empty" or tFile ~= nil then 
+ 
+ 
+   if yPick=="Level" then loadLevel(tFile);
+   elseif yPick=="Fluid" then  OPEN_UI_WINDOWS(item(-2,tFile,"/"))
+   elseif yPick=="Mesh" then loadMesh(tFile);
+   elseif yPick=="Texture" then loadTexture(tFile);
+   elseif yPick=="Font" then loadTexture(tFile);
+   elseif yPick=="Sound" then loadSound(tFile);
+   elseif yPick=="Object" then loadObject(tFile);
+   elseif yPick=="Shader" then print(tFile);
+   end
+   
+   if yPick=="Font" then
+   firstFont=item(1,tFile,"_").."_1.png"
+   secondFont=item(1,tFile,"_").."_2.png"
+   loadTexture(firstFont)
+   loadTexture(secondFont)
+   loadFont(firstFont,secondFont)
+   print(firstFont.."/n"..secondFont)
+   end
+   
+   if yPick=="Script" then 
+   OPEN_UI_WINDOWS("script_editor");
+  if scriptEditor ~=nil then openScript(tFile) end
+   end
+    
+   end
+end} {}
+  code {-- edit Menu Pick
+function editMenuPick(tPick)
+
+local xPick=item(-2,tPick,"/")
+local yPick=item(-1,tPick,"/")
+local mPick=xPick.."/"..yPick
+local tTitle=xPick.." "..yPick
+local tDir=gameroot.."Data/"
+local tFile="empty"
+ 
+print("mPick="..mPick)
+if mPick=="Edit/Clear Scene" then tFile =  clearsceneClicked() end
+end} {}
+  code {-- level Menu Pick
+function levelMenuPick(tPick)
+
+local xPick=item(-2,tPick,"/")
+local yPick=item(-1,tPick,"/")
+local mPick=xPick.."/"..yPick
+local tTitle=xPick.." "..yPick
+local tDir=gameroot.."Data/"
+local tFile="empty"
+ 
+
+
+print("mPick="..mPick)
+if mPick == "Level/Clear Scene" then action =  clearsceneClicked() 
+elseif mPick == "Level/Reset" then action =  restartbutton()
+elseif mPick == "Level/Main Menu" then action =  exittomenu()
+elseif mPick == "Level/Save" then action =   savebutton()
+elseif mPick == "Level/Play" then action = editingModeSwitch("play")
+elseif mPick == "Level/New Level" then action = newLevel()
+
+end
+
+end} {}
+  code {-- main_menu_callback
+
+function main_menu_callback(w)
+tMenu=w:label()
+tVal=w:value()
+tPick=w:text()
+tIndex=mainMenuIndex[tVal]
+--print(tMenu,tVal,tPick,tIndex)
+if tIndex ~= nil then
+menuHead=item(1,tIndex,"/")
+if string.find(tIndex,"/") then
+if menuHead == "File" then fileMenuPick(tIndex)
+elseif menuHead == "Edit" then editMenuPick(tIndex)
+elseif menuHead == "Level" then levelMenuPick(tIndex)
+end
+end
+end
+end} {}
+  code {-- output menu Indices
+function outputMenuIndices(tVal)
+-- fileMenuPick(mainMenuIndex[tVal]);
+-- print("+1=",tVal+1,mainMenuIndex[tVal+1])
+-- print("+2=",tVal+2,mainMenuIndex[tVal+2])
+   print(tVal,"=",mainMenuIndex[tVal]);
+-- print("-1=",tVal-1,mainMenuIndex[tVal-1])
+-- print("-2=",tVal-2,mainMenuIndex[tVal-2])
+ end} {}
+  code {-- UI_MAINTOOLS_WINDOW
+
+function UI_MAINTOOLS_WINDOW()
+local i=1
+local c=5
+local r=31
+do UIMainTools= fltk:Fl_Double_Window(100,100,466,166,"")
+UIMainTools:label("Menu MurgaLua 5.5")
+UIMainTools:when(2)
+do menuBar= fltk:Fl_Menu_Bar(0,0,0,0,"")
+menuBar:callback(main_menu_callback)
+menuBar:resize(0,0,680,30)
+menuBar:labelsize(10)
+menuBar:textsize(11)
+Fl_Group:current(Fl_Group:current():parent())
+end --menubar
+end --dowindow
+
+UIMainTools:show();
+Fl:scheme("gltk+");
+UIMainTools:make_current();
+menuBar:global();
+meshMenu=menuBar
+FillMenuBar();
+
+end --setupIcons} {selected
+  }
+  code {UI_MAINTOOLS_WINDOW();
+--Fl:run();} {}
+} 

@@ -1,0 +1,4 @@
+amount=1emission rate=0life=1.25fade=0.500000area=0.200000size=5.000000size variance=2.000000lux=trueweight=0.000000move=false,0.000000explode=false,0.000000scale=true,4.000000rotate=false,0.000000
+speed=0anim=true,0.05
+texture=Data/Images/Effects/explosion640.png
+num_textures=5,5

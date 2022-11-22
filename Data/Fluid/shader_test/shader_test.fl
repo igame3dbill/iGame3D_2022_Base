@@ -1,0 +1,107 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {--head
+function shaderApplyClicked(w)
+	local obj=objNumber:value()
+	local m=get(ig3d_material, obj, mtrlNumber:value())
+	setMaterialInfo(m, IG3D_SHADER, shaderPath:value())
+	setMaterialInfo(m, IG3D_TEXTURE, textureUnit:value(), texturePath:value())
+	setSceneInfo(IG3D_SHADER_PARAM, paramNum:value(), param1:value(), param2:value(), param3:value(), param4:value())
+
+end
+
+function shaderParamsLooped()
+
+	setSceneInfo(IG3D_SHADER_PARAM, paramNum:value(), param1:value(), param2:value(), param3:value(), param4:value())
+	
+	
+	x,y,z=getObjectInfo(d, IG3D_POSITION)
+	setLightInfo(1, IG3D_POSITION, x,y,z,1)
+
+	setObjectInfo(d, IG3D_VELOCITY, 0,0,0)
+	if key("w","-") then
+		setObjectInfo(d, IG3D_VELOCITY, 0,0,-15)
+	end
+	
+	if key("s","-") then
+		setObjectInfo(d, IG3D_VELOCITY, 0,0,15)
+	end
+	
+	if key("a","-") then
+		setObjectInfo(d, IG3D_VELOCITY, -15,0,0)
+	end
+	
+	if key("d","-") then
+		setObjectInfo(d, IG3D_VELOCITY, 15,0,0)
+	end
+	
+	if key("r","-") then
+		setObjectInfo(d, IG3D_VELOCITY, 0,15,0)
+	end
+	
+	if key("f","-") then
+		setObjectInfo(d, IG3D_VELOCITY, 0,-15,0)
+	end
+	
+	
+	alt()
+end
+
+alt=game_func
+--game_func=shaderParamsLooped} {selected
+  }
+  Fl_Window shader_test {
+    label {Shader test} open
+    xywh {585 151 174 309} type Double visible
+  } {
+    Fl_Input shaderPath {
+      label Shader
+      xywh {5 20 145 25} align 5 textsize 10
+      code0 {shaderPath:value("Data/Shaders/bump/")}
+    }
+    Fl_Value_Input objNumber {
+      label Object
+      xywh {5 70 60 25} align 5 minimum 1 maximum 100 step 1 value 1
+    }
+    Fl_Value_Input mtrlNumber {
+      label {Material Number}
+      xywh {75 70 75 25} labelsize 11 align 5 minimum 1 maximum 100 step 1 value 1
+    }
+    Fl_Value_Input paramNum {
+      label {Shader parameter}
+      xywh {5 240 25 25} align 5 minimum 1 value 1
+    }
+    Fl_Value_Input param1 {
+      xywh {50 240 25 25}
+    }
+    Fl_Value_Input param2 {
+      xywh {75 240 25 25}
+    }
+    Fl_Value_Input param3 {
+      xywh {100 240 25 25}
+    }
+    Fl_Value_Input param4 {
+      xywh {125 240 25 25}
+    }
+    Fl_Button shaderApply {
+      label Apply
+      callback shaderApplyClicked
+      xywh {5 270 90 25}
+    }
+    Fl_Input texturePath {
+      xywh {50 115 100 25} align 5 textsize 10
+      code0 {texturePath:value("Data/Images/normals.png")}
+    }
+    Fl_Value_Input textureUnit {
+      label {Texture Unit / Texture}
+      xywh {5 115 40 25} align 5 minimum 1 maximum 8 step 1 value 1
+    }
+  }
+  code {--tail
+shader_test:show()
+ig3d_RebuildMacMenubar()} {}
+} 

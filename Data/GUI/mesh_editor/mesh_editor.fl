@@ -1,0 +1,624 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {if gameroot==nil then dofile(getSceneInfo(IG3D_ROOT).."Data/game script.lua") end
+resetFunctions()} {}
+  code {-----------------------------------------------
+-----------------------------------------------
+-----------------------------------------------
+-----------------------------------------------
+-----------------------------------------------
+-----------------------------------------------
+-----------------------------------------------
+-----------------------------------------------} {}
+  code {-- hideAllGroups
+function hideAllGroups()
+local ax = 10
+local ay = 65
+bonesgroup:x(ax)
+uvmappinggroup:x(ax)
+materialsgroup:x(ax)
+magicgroup:x(ax)
+meshviewgroup:x(ax)
+
+bonesgroup:y(ay)
+uvmappinggroup:y(ay)
+materialsgroup:y(ay)
+magicgroup:y(ay)
+Translate:y(ay)
+meshviewgroup:y(ay)
+bonesgroup:hide()
+uvmappinggroup:hide()
+materialsgroup:hide()
+magicgroup:hide()
+pathsgroup:hide()
+
+end} {}
+  Fl_Window mesheditor {
+    label {Mesh Editor}
+    callback wClose open
+    xywh {46 187 389 439} type Double labelsize 10 resizable visible
+  } {
+    Fl_Menu_Bar meshMenu {
+      callback mesh_menu_callback
+      xywh {0 -4 425 29} labelsize 10 textsize 11
+    } {}
+    Fl_Group mainttoolsgroup {
+      xywh {0 27 645 29}
+    } {
+      Fl_Button meshtooldropmesh {
+        label meshtooldropMesh
+        callback setMeshTool
+        xywh {5 27 26 26} labelsize 1
+      }
+      Fl_Button meshtool1 {
+        label meshtool1
+        callback setMeshTool
+        xywh {33 27 26 26} labelsize 1
+      }
+      Fl_Button meshtool2 {
+        label meshtool2
+        callback setMeshTool
+        xywh {62 27 26 26} labelsize 1
+      }
+      Fl_Button meshtool3 {
+        label meshtool3
+        callback setMeshTool
+        xywh {90 27 26 26} labelsize 1
+      }
+      Fl_Button meshtool4 {
+        label meshtool4
+        callback setMeshTool
+        xywh {119 27 26 26} labelsize 1
+      }
+      Fl_Button meshtool5 {
+        label meshtool5
+        callback setMeshTool
+        xywh {148 27 26 26} labelsize 1
+      }
+      Fl_Button meshtoolbones {
+        label meshtoolBones
+        callback setMeshTool
+        xywh {176 27 26 26} labelsize 1
+      }
+      Fl_Button uvgrouptab {
+        label UV
+        callback setMeshTool
+        xywh {205 27 26 26} labelsize 11
+      }
+      Fl_Button meshtoolmaterials {
+        label Materials
+        callback setMeshTool
+        xywh {234 27 26 26} labelsize 2
+      }
+      Fl_Button meshtoolmagic {
+        label Magic
+        callback setMeshTool
+        xywh {262 27 26 26} labelsize 2
+      }
+      Fl_Button meshtoolpath {
+        label meshtoolPath
+        callback setMeshTool
+        xywh {291 27 26 26} labelsize 1
+      }
+      Fl_Button meshtool6 {
+        label meshtool6
+        callback setMeshTool
+        xywh {320 27 26 26} labelsize 1
+      }
+    }
+    Fl_Group mesheditorrootgrp {open
+      xywh {5 58 375 370} box PLASTIC_DOWN_BOX labelsize 11
+    } {
+      Fl_Group Translate {
+        xywh {5 60 360 118} box DOWN_BOX
+      } {
+        Fl_Input xpos {
+          label x
+          callback handlePositionValueFields
+          xywh {30 70 60 22} type Float labelsize 10 align 1 textsize 10
+        }
+        Fl_Input ypos {
+          label y
+          callback handlePositionValueFields
+          xywh {90 70 60 22} type Float labelsize 10 align 1 textsize 10
+        }
+        Fl_Input zpos {
+          label z
+          callback handlePositionValueFields
+          xywh {150 70 60 22} type Float labelsize 10 align 1 textsize 10
+        }
+        Fl_Button {} {
+          label Get
+          callback handleGetButton
+          xywh {8 71 20 21} labelsize 9
+        }
+        Fl_Input xsize {
+          label {x-size}
+          callback handleScaleValueFields
+          xywh {30 103 60 19} type Float labelsize 10 align 1 textsize 10
+        }
+        Fl_Input ysize {
+          label {y-size}
+          callback handleScaleValueFields
+          xywh {90 103 60 19} type Float labelsize 10 align 1 textsize 10
+        }
+        Fl_Input zsize {
+          label {z-size}
+          callback handleScaleValueFields
+          xywh {150 103 60 19} type Float labelsize 10 align 1 textsize 10
+        }
+        Fl_Group MeshAlign {
+          label {Alignment Size}
+          xywh {88 149 277 26} labelsize 10 align 4
+        } {
+          Fl_Button {} {
+            label Align
+            callback alignIt
+            xywh {159 150 50 21} labelsize 10
+          }
+          Fl_Value_Input alignSize {
+            xywh {90 151 60 19} labelsize 9 maximum 32 step 0.1 value 4 textsize 10
+          }
+        }
+        Fl_Group extrudegroup {
+          xywh {13 127 203 19}
+        } {
+          Fl_Button {} {
+            label Extrude
+            callback extrudeButtonClicked
+            xywh {159 127 50 19} labelsize 10
+          }
+          Fl_Value_Input extrudeDepth {
+            label {Extrude Dist.}
+            callback handleExtrudeValueField
+            xywh {90 127 60 19} labelsize 10 minimum 0.1 maximum 100 step 0.5 value 1 textsize 10
+          }
+        }
+        Fl_Button getsizebutton {
+          label Get
+          callback handleGetSizeButton
+          xywh {8 102 20 21} labelsize 9
+        }
+      }
+      Fl_Group meshviewgroup {
+        label meshviewgroup
+        xywh {215 70 145 99} box FLAT_BOX color 51 labeltype NO_LABEL align 0
+      } {
+        Fl_Check_Button {} {
+          label {Mesh Z-buffering}
+          callback zbufferControlClicked
+          xywh {225 70 105 19} down_box DOWN_BOX labelsize 10
+        }
+        Fl_Check_Button {} {
+          label {Backface Culling}
+          callback backfaceControlClicked
+          xywh {225 89 100 16} down_box DOWN_BOX labelsize 10
+        }
+        Fl_Value_Input meshlinewidth {
+          label {Line Width}
+          callback handlelinewidth
+          xywh {230 111 70 19} labelsize 9 align 8 maximum 8 step 0.02 value 1 textsize 10
+        }
+        Fl_Value_Input meshpointwidth {
+          label {Point Width}
+          callback handlepointwidth
+          xywh {230 134 70 18} labelsize 9 align 8 maximum 8 step 0.02 value 1 textsize 10
+        }
+      }
+    }
+    Fl_Group mesheditorsubgrps {open
+      xywh {-8 183 388 247} labelsize 11
+    } {
+      Fl_Group magicgroup {
+        xywh {5 189 370 230} box FLAT_BOX color 51
+      } {
+        Fl_Button {} {
+          label Magic
+          callback DoMagic
+          xywh {183 194 49 225} labelsize 10
+        }
+        Fl_Value_Input magicValue {
+          xywh {109 194 60 11} labelsize 10 step 0.1 value 1 textsize 10
+        }
+        Fl_Check_Button magicCyl {
+          label Cylindric
+          xywh {27 194 61 11} down_box DOWN_BOX labelsize 10
+        }
+      }
+      Fl_Group bonesgroup {
+        label Bones open
+        xywh {10 184 365 235} box FLAT_BOX labelsize 10 align 21
+      } {
+        Fl_Browser meshBones {
+          callback meshBonesClicked
+          xywh {10 200 135 218} type Hold labelsize 10 align 1 textsize 10
+        }
+        Fl_Group bonebuttonsgroup {open
+          xywh {145 198 215 221} box DOWN_BOX
+        } {
+          Fl_Button updatebonelist {
+            label {Update list}
+            callback listBones
+            xywh {160 203 190 22} labelsize 10
+          }
+          Fl_Button verticetobone {
+            label {Make bone from selected vertex}
+            callback bonemaker
+            xywh {160 233 190 22} labelsize 10
+          }
+          Fl_Button attachmeshtobone {
+            label {Attach selected mesh to bone}
+            callback boneattacher
+            xywh {160 263 190 22} labelsize 10
+          }
+          Fl_Button selectbonemesh {
+            label {Select bone mesh}
+            callback selectBoneMesh
+            xywh {160 294 190 22} labelsize 10
+          }
+          Fl_Group {} {
+            label {Bone Clustering}
+            xywh {155 356 195 63} labelsize 10
+          } {
+            Fl_Button {} {
+              label {Set 1x1x1and 0,0,0 and Load Bones}
+              callback prepMeshForBones
+              xywh {160 361 190 24} labelsize 10
+            }
+            Fl_Button {} {
+              label {Set Auto Bones}
+              callback boneMeshCluster
+              xywh {160 393 190 22} labelsize 10
+            }
+          }
+        }
+      }
+      Fl_Group uvmappinggroup {
+        label {UV Mapping} open
+        xywh {10 183 370 232} box FLAT_BOX labelsize 10 align 21
+      } {
+        Fl_Group matValsgrp {open
+          xywh {205 188 160 167} box DOWN_BOX
+        } {
+          Fl_Choice uvmapaxis {
+            label {Mapping axis} open
+            xywh {210 328 150 21} down_box BORDER_BOX labelsize 10 align 5 textsize 12
+            code0 {uvmapaxis:add("Adaptive")}
+            code1 {uvmapaxis:add("x-axis")}
+            code2 {uvmapaxis:add("y-axis");uvmapaxis:add("z-axis");}
+            code3 {uvmapaxis:value(0)}
+          } {}
+          Fl_Value_Input uvwidth {
+            label Width
+            xywh {274 223 70 19} labelsize 10 maximum 10000 value 1
+          }
+          Fl_Value_Input uvheight {
+            label Height
+            xywh {279 245 65 19} labelsize 10 maximum 10000 value 1
+          }
+          Fl_Value_Input uvrot {
+            label Rotation
+            xywh {299 198 45 19} labelsize 10
+          }
+          Fl_Value_Input uvscaleu {
+            label {uv-factors}
+            xywh {279 272 30 19} labelsize 10 maximum 10000 value 1 textsize 10
+          }
+          Fl_Value_Input uvscalev {
+            xywh {309 272 30 19} labelsize 10 maximum 10000 value 1 textsize 10
+          }
+          Fl_Value_Input uvoffu {
+            label {uv-offsets}
+            xywh {279 292 30 22} labelsize 10 textsize 10
+          }
+          Fl_Value_Input uvoffv {
+            xywh {309 292 30 22} labelsize 10 textsize 10
+          }
+        }
+        Fl_Button {} {
+          label {Match selection once}
+          callback uvmatcher
+          xywh {15 201 150 21} labelsize 10
+        }
+        Fl_Button {} {
+          label {Apply UV mapping}
+          callback applyuvmapping
+          xywh {210 384 150 21} labelsize 10
+        }
+        Fl_Button {} {
+          label {Scale UV mapping}
+          callback scaleuvmapping
+          xywh {15 233 150 21} labelsize 10
+        }
+        Fl_Button {} {
+          label {Offset UV mapping}
+          callback offsetuvmapping
+          xywh {15 264 150 21} labelsize 10
+        }
+        Fl_Button {} {
+          label {Apply cylindric mapping}
+          callback cylindricMappingClicked
+          xywh {210 359 150 21} labelsize 10
+        }
+      }
+      Fl_Group pathsgroup {
+        label Paths open
+        xywh {12 187 363 232} box FLAT_BOX labelsize 10 align 21
+      } {
+        Fl_Group pathbuttonsgrp {open
+          xywh {15 198 147 207} box DOWN_BOX resizable
+        } {
+          Fl_Button updatePathList {
+            label {Update list}
+            callback listPaths
+            xywh {22 272 130 22} labelsize 10
+          }
+          Fl_Button selectwholepath {
+            label {Select Connected}
+            callback selectWholePath
+            xywh {22 323 130 22} labelsize 10
+          }
+          Fl_Button savePathBtn {
+            label Save
+            callback savePathClicked
+            xywh {22 373 130 22} labelsize 10
+          }
+          Fl_Button loadPathBtn {
+            label Load
+            callback loadPathClicked
+            tooltip {Load Path Points} xywh {22 345 70 22} labelsize 10
+          }
+          Fl_Button Newpath {
+            label New
+            callback NewPathClicked
+            tooltip {Insert selected vertice into path} xywh {22 345 130 22} labelsize 10
+          }
+          Fl_Button removepathbtn {
+            label Remove
+            callback RemovePathClicked
+            tooltip {Remove Selected Path} xywh {22 377 130 22} labelsize 10
+          }
+          Fl_Group pathtoolgrp {open
+            xywh {15 201 137 67} labelsize 10
+          } {
+            Fl_Button addToPath {
+              label {ÐÐ+}
+              callback addPointToPath
+              tooltip {Add selected vertex to Path} xywh {117 237 35 31} labelsize 10
+            }
+            Fl_Button insertintopath {
+              label {Ð+Ð}
+              callback insertIntoPath
+              tooltip {Insert selected vertice into path} xywh {69 237 35 31} labelsize 10
+            }
+            Fl_Button addToPath {
+              label {+ÐÐ}
+              callback addPointToPath
+              tooltip {Add selected vertex  before Path} xywh {22 237 35 31} labelsize 10
+            }
+            Fl_Button addToPath {
+              label {SÐ-}
+              callback addPointToPath
+              tooltip {Add selected vertex to Path} xywh {22 203 35 31} labelsize 10
+            }
+            Fl_Button insertintopath {
+              label {ÐE SÊÐ}
+              callback insertIntoPath
+              tooltip {Insert selected vertice into path} xywh {69 203 35 31} labelsize 10
+            }
+            Fl_Button addToPath {
+              label {ÐE}
+              callback addPointToPath
+              tooltip {Add selected vertex  before Path} xywh {117 203 35 31} labelsize 10
+            }
+          }
+        }
+        Fl_Group pathsbrowsergrp {open
+          xywh {167 200 190 203}
+        } {
+          Fl_Browser pathsBrowser {
+            callback pathsBrowserClicked
+            xywh {167 200 185 82} type Hold labelsize 10 align 1 textsize 10
+          }
+          Fl_Browser pathspointsBrowser {
+            callback pathspointsBrowserClicked
+            xywh {167 285 185 118} type Hold labelsize 10 align 1 textsize 10 resizable
+          }
+        }
+      }
+      Fl_Group materialsgroup {
+        label Materials open
+        xywh {10 191 365 239} box FLAT_BOX labelsize 10 align 5 resizable
+      } {
+        Fl_Browser meshMaterials {
+          callback meshMaterialsClicked
+          xywh {15 200 185 156} type Hold labelsize 10 align 1 textsize 10
+        }
+        Fl_Button {} {
+          label {New Material...}
+          callback materialmaker
+          xywh {241 236 125 19} labelsize 10
+        }
+        Fl_Button {} {
+          label {Set Material To Mesh}
+          callback materialattacher
+          xywh {240 296 125 19} labelsize 10
+        }
+        Fl_Button {} {
+          label {Update list}
+          callback listMaterials
+          xywh {241 196 125 19} labelsize 10
+        }
+        Fl_Button {} {
+          label {Select material mesh}
+          callback selectMaterialMesh
+          xywh {241 216 125 19} labelsize 10
+        }
+        Fl_Button {} {
+          label {Rename Material...}
+          callback renameMaterial
+          xywh {240 256 125 19} labelsize 10
+        }
+        Fl_Button {} {
+          label {Clear material}
+          callback clearMaterial
+          xywh {240 276 125 19} labelsize 10
+        }
+        Fl_Choice matsetting {
+          label {Material settings}
+          callback matsettingChosen open
+          xywh {235 351 125 19} down_box BORDER_BOX labelsize 10 align 5 textsize 12
+          code0 {setupmatsettingschooser();}
+          code1 {matsetting:value(0);}
+        } {}
+        Fl_Value_Input matred {
+          label R
+          callback matsettingChange
+          xywh {17 374 55 23} labelsize 10 align 5 when 8 textsize 9
+        }
+        Fl_Value_Input matgreen {
+          label G
+          callback matsettingChange
+          xywh {72 374 55 23} labelsize 10 align 5 when 8 textsize 9
+        }
+        Fl_Value_Input matblue {
+          label B
+          callback matsettingChange
+          xywh {134 374 55 23} labelsize 10 align 5 when 8 textsize 9
+        }
+        Fl_Value_Input matalpha {
+          label A
+          callback matsettingChange
+          xywh {189 374 55 23} labelsize 10 align 5 when 8 textsize 9
+        }
+        Fl_Input matpath {
+          label Path
+          callback matsettingChange
+          xywh {17 374 350 23} labelsize 10 align 5 when 8 textsize 12
+          code0 {matpath:hide()}
+        }
+        Fl_Check_Button matbool {
+          label Smooth
+          callback matsettingChange
+          xywh {285 411 75 19} down_box DOWN_BOX labelsize 10
+          code0 {matbool:hide()}
+        }
+        Fl_Button {} {
+          label {Combine Equal Materials}
+          callback combineEqualMaterialsCB selected
+          xywh {240 316 125 19} labelsize 10
+        }
+      }
+    }
+  }
+  code {---- BUTTON ICONS 
+fltk.fl_register_images()
+local iconPath=gameroot.."Data/Icons/ig3dSetMeshTool/ig3dSetMeshTool"
+mtl1 = Fl_Shared_Image.get(iconPath.."1.png")
+mtl2 = Fl_Shared_Image.get(iconPath.."2.png")
+mtl3 = Fl_Shared_Image.get(iconPath.."3.png")
+mtl4 = Fl_Shared_Image.get(iconPath.."4.png")
+mtl5 = Fl_Shared_Image.get(iconPath.."5.png")
+mtl6 = Fl_Shared_Image.get(iconPath.."6.png")
+mtlp = Fl_Shared_Image.get(iconPath.."Path.png")
+mtld = Fl_Shared_Image.get(iconPath.."dropMesh.png")
+mtlb = Fl_Shared_Image.get(iconPath.."Bones.png")
+mtlm  = Fl_Shared_Image.get(iconPath.."Materials.png")
+mtlma  = Fl_Shared_Image.get(iconPath.."Magic.png")
+--mtlv  = Fl_Shared_Image.get(iconPath.."Views.png")
+
+meshtool1:image(mtl1)
+meshtool2:image(mtl2)
+meshtool3:image(mtl3)
+meshtool4:image(mtl4)
+meshtool5:image(mtl5)
+meshtool5:image(mtl6)
+meshtoolpath:image(mtlp)
+meshtooldropmesh:image(mtld)
+meshtoolbones:image(mtlb)
+meshtoolmaterials:image(mtlm)
+meshtoolmagic:image(mtlma)
+--meshtoolviews:image(mtlv)
+
+meshtool1:image(mtl1,22,22)
+meshtool2:image(mtl2,22,22)
+meshtool3:image(mtl3,22,22)
+meshtool4:image(mtl4,22,22)
+meshtool5:image(mtl5,22,22)
+meshtool6:image(mtl6,22,22)
+meshtoolpath:image(mtlp,22,22)
+meshtooldropmesh:image(mtld,22,22)
+meshtoolbones:image(mtlb,22,22)
+meshtoolmaterials:image(mtlm,22,22)
+meshtoolmagic:image(mtlma,22,22)
+--meshtoolviews:image(mtlv,22,22)
+
+meshtool1:redraw()
+meshtool2:redraw()
+meshtool3:redraw()
+meshtool4:redraw()
+meshtool5:redraw()
+meshtool6:redraw()
+meshtoolpath:redraw()
+meshtooldropmesh:redraw()
+meshtoolbones:redraw()
+meshtoolmaterials:redraw()
+meshtoolmagic:redraw()
+--meshtoolviews:redraw()
+
+meshtool1:when(11)
+meshtool2:when(11)
+meshtool3:when(11)
+meshtool4:when(11)
+meshtool5:when(11)
+meshtool6:when(11)
+meshtoolpath:when(11)
+meshtooldropmesh:when(11)
+meshtoolbones:when(11)
+meshtoolmaterials:when(11)
+meshtoolmagic:when(11)
+--meshtoolviews:when(11)} {}
+  code {--- HANDLE CALL BACKS
+extrudeDepth:when(11)	--enter key and changed
+xpos:when(11)	--enter key and changed
+ypos:when(11)
+zpos:when(11)
+xsize:when(11)	--enter key and changed
+ysize:when(11)
+zsize:when(11)
+uvwidth:when(11)
+uvheight:when(11)
+uvrot:when(11)
+uvscaleu:when(11)
+uvscalev:when(11)
+uvoffu:when(11)
+uvoffv:when(11)
+matred:when(11)
+matblue:when(11)
+matblue:when(11)
+matalpha:when(11)
+matpath:when(11)} {}
+  code {-- FINAL STEP Mesh Editor GUI
+setSceneInfo(IG3D_BACKGROUND_COLOR, 0.65,0.65,0.65)
+--ig3d_SetFourViews_b(true)
+ig3d_SetMode_i(1)
+
+fill_MeshMenu()
+if not UIMainTools then OPEN_UI_WINDOWS("UI_MAIN_TOOLS") end
+mH= UIMainTools:x()+UIMainTools:h()+30
+mY= UIMainTools:y()
+
+mesheditor:x(mH);
+mesheditor:y(mY);
+
+hideAllGroups();
+mesheditor:show()
+
+Translate:show();
+Fl:scheme("plastic");
+mesheditor:make_current();} {}
+} 

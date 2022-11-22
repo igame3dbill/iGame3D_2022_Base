@@ -1,0 +1,632 @@
+//Chapter: iGame3D Lua command reference
+//Section: Object and object bone operations:
+
+func: ig3d_SetObjectInfo_2s(objName, info)
+docs:  Sets the name, position, orientation and size of object [objName] to [info]. [info] is a 4-line string. Line 1: Name, Line 2: Position (x,y,z), Line 3: Orientation (xa, ya, za), Line 4: Size (x-percent, y-percent, z-percent)
+
+func: ig3d_GetObjectMaterialInfo_si_s(objName, materialNumber):(materialInfo)
+docs:  Returns a line-delimited list of material settings of material [materialNumber] of object [objName]. This is documented in detail elsewhere in this document. Search for "Material instruction reference".
+
+func: ig3d_SetObjectMaterialInfo_sis(objName, matNumber, materialInfo)
+docs:  Sets the material settings of material [matNumber] of object [objName] to [materialInfo]. The specs for [materialInfo] are documented elsewhere in this document. Search for "Material instruction reference".
+
+func: ig3d_SetObjectMaterialName_sis(objName, matNumber, newMatName)
+docs:  Sets the name of material [matNumber] of object [objName] to [newMatName]
+
+func: ig3d_SetObjectBoneInfo_2s6f(objName, boneName, x,y,z, xa,ya,za)
+docs:  Sets the bone transformation of bone [boneName] of object [objName]. [x,y,z] makes up the position offset and [xa,ya,za] the change of orientation.
+
+func: ig3d_UpdateBones()
+docs: OBSOLETE REV EXTERNAL FEATURE!!! Tells the external that one or more bones have been modified. In turn the external sends a "selectBone boneName" message back to the rev stack just like it would when you clicked an object bone in sceletal animation mode.
+
+func: ig3d_SetBonesEulersOnly_s(objName)
+docs:  Translates the current bone rotation matrix of each bone in object [objName] into euler angles, so you get correct values when calling ig3d_GetObjectBoneInfo_2s_6f.
+
+func: ig3d_ReadModelAnimationsFromFile_2si(objName, fileName, offset)
+docs:  This loads the sceletal animations from a file [fileName] (full path) and attaches them to object [objName]. You specify a byte offset into the file at which the animation data begins with the [offset] parameter. (0 means at the beginning of the file).
+
+func: ig3d_SetAutoBoneUpdating_b(autoUpdate)
+docs:  If [autoUpdate] is true, then sceletal animations of objects will also run in editing and animation mode, so you can preview them outside of play-testing.
+
+func: ig3d_UpdateObjectBonesAtTime_si(objName, msecs)
+docs:  Positions and rotates the bones of object [objName] according to a given moment in its current animation. The moment is [msecs] milliseconds after start of animation.
+
+func: ig3d_DeleteObject_i(objNumber)
+docs:  Deletes object of number [objNumber]. This number is equivalent to the line number an object appears at in ig3d_GetObjectList__s.
+
+func: ig3d_GetObjectBonesList_s_s(objName):(boneList)
+docs:  Returns a line-delimited list of the bones of object [objName].
+
+func: ig3d_GetObjectsList__s():(objectList)
+docs:  Returns a line-delimited list of the names of all objects in the scene.
+
+func: ig3d_GetObjectInfo_s_s(objName):(info)
+docs:  Returns the name, position, orientation and size of object [objName]. The return value is formatted in the same way as the [info] parameter of ig3d_SetObjectInfo_2s
+
+func: ig3d_GetObjectBoneInfo_2s_6f(objName, boneName):(x,y,z, xa,ya,za)
+docs:  This returns the current transformation of bone [boneName] of object [objName]. The return value is a string containing 6 floats: change of position (x,y,z) and orientation (xa,ya,za).
+
+func: ig3d_GetObjectMaterialsList_s_s(objName):(materialList)
+docs:  Returns a line-delimited list of the bones of object [objName].
+
+func: ig3d_GetObjectModelPath_s_s(objName):(modelPath)
+docs:  Returns the path of the model file that object [objName] is using.
+
+func: ig3d_GetObjectModelAnimOffset_s_i(objName):(offset)
+docs:  Returns the offset of the #Animations: chunk inside the model file of object [objName]. The first char in the file is number 0. Typical use of this is an animation editor that saves custom animations to model files. This makes it more comfortable to find the place to store the animations.
+
+//Section: Particle emitter operations:
+
+func: ig3d_GetParticle_emitterInfo_s_s(emitterName):(emtInfo)
+docs:  Returns the particle emitter info of emitter [emitterInfo]. The format of the return value is discribed in detail elsewhere in this document. Search for "Particle emitter instruction reference".
+
+func: ig3d_SetParticle_emitterInfo_2s(emitterName, emtInfo)
+docs:  Sets the emitter info of particle emitter [emitterName] to [emtInfo]. The format of [emtInfo] is discribed in detail elsewhere in this document. Search for "Particle emitter instruction reference".
+
+func: ig3d_GetParticle_emittersList__s():(emtList)
+docs:  Returns a line-delimited list of all particle emitters in the scene.
+
+//Section: Sounds and sound emitter operations:
+
+func: ig3d_GetSamplesList__s():(samplesList)
+docs:  Returns a line-delimited list of all loaded sound files.
+
+func: ig3d_GetSound_emittersList__s():(sndEmtList)
+docs:  Returns a line-delimited list of all sound emitters in the scene.
+
+func: ig3d_GetSound_emitterInfo_s_s(emtName):(emitterInfo)
+docs:  This will return the information of sound emitter [emtName]. That is a 5-line string. Line 1: Name, Line 2: relative path to assigned sound sample file, Line 3: Position (x,y,z), Line 4: Volume (in ), Line 5: looped or unlooped (true/false)
+
+func: ig3d_SetSound_emitterInfo_2s(emtName, emitterInfo)
+docs:  This sets the information of sound emitter [emtName] to [emitterInfo]. See ig3d_GetSound_emitterInfo_s_s for a detailed description of the format of [emitterInfo].
+
+//Section: Light operations
+
+func: ig3d_GetLightInfo_i_s(lightNumber):(lightInfo)
+docs:  Returns the light information for light number [lightNumber] which ranges from 1 to 8. This information is 7-line string. Line 1: on/off (true/false), Line 2: light position in homogenous coordinates (x,y,z,w). Line 3: Ambient (r,g,b,a), Line 4: Diffuse (r,g,b,a), Line 5: Specular (r,g,b,a), Line 6: Spotlight data (direction x,y,z, cutoff angle, exponent). Line 7: Attenuation factors (constant, linear, quadratic). See any OpenGL documentation for help and default values of these light settings.
+
+func: ig3d_SetLightInfo_is(lightNumber, lightInfo)
+docs:  Sets the light information of light number [lightNumber] to [lightInfo]. The format of lightInfo is discribed in ig3d_GetLightInfo_i_s
+
+func: ig3d_ShowLights_b(show)
+docs:  If [show] is set to true, some auxiliary graphics are displayed at the positions of active lights while editing. If set to false, these will be hidden
+
+func: ig3d_SetLightConeLength_if(lightNumber, length)
+docs:  This is used to set the length of the auxiliary cones that can be displayed for active spotlights in editing mode. [lightNumber] is a number from 1 to 8 telling which light you are talking about and [length] is that length of the cone. It's really just for more convenient editing and won't effect the light appearance.
+
+//Section: Camera
+
+func: ig3d_GetCameraInfo__s():(camData)
+docs:  Returns the position and orientation of the camera in a string. This string contains two lines. Line 1: Position (x,y,z), Line 2: Orientation (xa, ya, za)
+
+func: ig3d_SetCameraInfo_s(camData)
+docs:  Sets the camera position and orientation to [camData]. The formatting is the same as the one of the return value of ig3d_GetCameraInfo__s
+
+func: ig3d_MoveCameraInDirection_3f(dx, dy, dz)
+docs:  Moves the camera by [dx] units on the x-axis, [dy] on the y and [dz] on the z.
+
+func: ig3d_RotateCameraAroundMesh_3f(xa, ya, za)
+docs:  Rotates the camera around the center of the selected mesh by [xa, ya, za] degrees and then makes the camera look at that selection. This can be used to create a spectator view.
+
+//Section: Window
+
+func: ig3d_SetupWindowVisibility_b(show)
+docs:  If [show] is true, the OpenGL window is shown, otherwise it will be hidden.
+
+func: ig3d_SetWindowBounds_4i(left, top, right, bottom)
+docs:  Sets the bounding rectangle of the OpenGL window using global screen coordinates [left, top, right, bottom].
+
+func: ig3d_GetWindowBounds__4i():(left, top, right, bottom)
+docs:  Returns the bounding rectangle of the OpenGL window.
+
+func: ig3d_ShowWindowTitleBarAndShadow_2b(visibility)
+docs:  If [visibility] is true, the OpenGL window gets a title bar and a shadow, otherwise, title bar will be hidden and shadowing disabled. (Useful to make an "in-stack" window). This feature works on Mac OS X only.
+
+func: ig3d_SetDrawingWindow_s(windowName)
+docs:  OBSOLETE REV EXTERNAL FEATURE!!! In case you want to draw the OpenGL scene to a rev window as well, you can tell the external the name of a rev window you would like to draw to. The actual drawing is then performed by ig3d_CopyGLToRevWindow_4i
+
+func: ig3d_CopyGLToRevWindow_4i(left, top, right, bottom)
+docs:  This copies the OpenGL scene to the rev window specified by ig3d_SetDrawingWindow_s. You have to specify the rectangle [left, top, right, bottom] (in local coordinates of the window) where it should be drawn. Use this command with care, rev is often updating its internal window data structures when controls are added, pointer tool is chosen etc., which requires you to call ig3d_SetDrawingWindow_s again before drawing or rev will crash!
+
+func: ig3d_SetFourViews_b(fourViews)
+docs:  If you set [fourViews] to true, the 3D scene window will be devided into 4 parts: One 3D view and three 2D views. This makes sense in mesh editing and is rather useless in game mode. If you set it to false there is only the one 3D view. This is the default setting.
+
+//Section: Groups and entity selection
+
+func: ig3d_GetGroupsList__s():(groupList)
+docs:  Returns a line-delimited list of all groups and their members in the scene. Members are preceded by a minus sign. Since groups can be members of another group and in turn have members, multiple minus signs indicate the depth of a member inside the group hierarchy. A group without a preceding minus sign is a top-level group.
+
+func: ig3d_GetGroupInfo_s_s(groupName):(groupData)
+docs:  This will return a 3-line information string about group [groupName]. Line 1: Group name, Line 2: position (x,y,z), Line 3: orientation (xa,ya,za). Position and Orientation values are averaged from the group members. You can find group members of a group by calling ig3d_GetGroupsList__s which returns the complete group hierarchy.
+
+func: ig3d_SetGroupInfo_2s(groupName):(groupData)
+docs:  This sets the group information of group [groupName] to [groupData]. For the format check out ig3d_GetGroupInfo_s_s.
+
+func: ig3d_GetSelection__s():(entityList)
+docs:  Returns a line-delimited list of all selected entities in the scene each line representing an entity. If there is just one word other than the following keywords, then it is the name of an object. Other entities are preceded by one of these keywords: "light", "sound", "particle" or "player". "light" is always followed by the light number, "sound" and "particle" are followed by the emitter name, "player" stands for the camera and nothing else follows in the line.
+
+func: ig3d_SetSelection_s(entityList)
+docs:  This allows you to manually select entities in the scene (reflected by the white bounding boxes). The format of [entityList] is described in ig3d_GetSelection__s. The new selection will replace the old one, thus any objects you don't include in your list will become unselected.
+
+//Section: Level
+
+func: ig3d_SetLevelName_s(levelName)
+docs:  This sets the current level name. This will replace the name returned by ig3d_GetLevelName__s. It could be used to specify a default level name or in a "Save as..." functionality, where you would first set the level name and then save the level.
+
+func: ig3d_SaveLevel_s(levelName)
+docs:  Saves the current scene to a folder [levelName] relative to the iGame3D directory. The mesh will also be saved (it will save to the last loaded mesh model file or create one if none exists).
+
+func: ig3d_GetLevelName__s():(levelName)
+docs:  Returns the name of the currently loaded level. The returned string will be empty, if no level has been loaded before.
+
+//Section: Textures
+
+func: ig3d_LoadTexture_s_b(fileName):(success)
+docs:  Loads the texture from file [fileName]. This path is relative to the iGame3D directory. (only files within the iGame3D folder hierarchy are allowed). If loading succeeded, true will be returned, otherwise false if something went wrong.
+
+func: ig3d_GetColorInTexture_s6i_4f(texFile, left, top, right, bottom, x, y):(r, g, b, a)
+docs:  This lets you determine the color at a specified pixel position [x,y] in a texture [texFile] (local to iGame3D directory). The texture will (virtually) be scaled to [left, top, right, bottom] first, then the color at a position inside that rect will be looked up. (Can be used for color picking, which appears to be buggy in rev).
+
+func: ig3d_GetTexturesList__s():(list)
+docs:  Returns a line-delimited list of the loaded textures.
+
+//Section: Lua scripting
+
+func: ig3d_ExecuteLuaScript_s_i(fileName):(result)
+docs:  This executes a LUA script stored in file [fileName] (full path). If the file was not found, this will return 0, otherwise 1. Result type is integer because other result codes may be implemented later.
+
+func: ig3d_ExecuteLua_s_i(text):(result)
+docs:  This executes a LUA script directly parsed as a string in [text]. The return value is the same as in ig3d_ExecuteLuaScript_s_i
+
+func: ig3d_GetLuaOutput__s():(output)
+docs:  OBSOLETE REV EXTERNAL FEATURE!!! Call this to receive the latest text output of the external. A typical use is to catch a "console" event in the ig3d_ext_event handler of the rev stack and then call this function and put the result into a console or a dialog window.
+
+func: ig3d_UpdateScript_s(scriptFile)
+docs:  Use this function to tell iGame3D that the script [scriptFile] (path local to iGame3D directory) has changed, so force it to reload it. In level load scripts only the non-automatic part will be reloaded. This comes in handy when you edit the game logic in a script and don't want to reload the whole level all the time!
+
+func: ig3d_GetStateScript__s():(scriptText)
+docs:  This takes a scripted "snapshot" of the current scene. It will save positions, orientations etc. of all entities in the scene and returns that as script commands in a string. You can later execute this state script to restore the current scene!
+
+//Section: Quicktime
+
+func: ig3d_BuildQuickTimeMovie_si(filename, framerate)
+docs:  This starts recording a QuickTime Movie (without sound) to a file specified by [fileName] (full path). The framerate is set in the [framerate] parameter (in frames per second). This is a Mac OS X-only feature!!
+
+func: ig3d_EndVideoCapturing()
+docs:  Stops recording the movie previously started using "ig3d_BuildQuickTimeMovie_si" and closes the movie file written to. Mac OS X only.
+
+//Section: Timing
+
+func: ig3d_GetElapsedSeconds__f():(frameTime)
+docs:  Gets the elapsed time since the last frame. That is equivalent to the time between two consecutive draws of the OpenGL scene. It is returned in seconds.
+
+func: ig3d_GetUptime__f():(uptime)
+docs:  Returns the time since startup of iGame3D (in seconds).
+
+//Section: Editing planes
+
+func: ig3d_GetPlaneInfo__if():(whichPlane, offset)
+docs:  Returns a string containing the number of the current visible grid plane [whichPlane] and its distance to origin (0,0,0) [offset]. If [whichPlane] is 0, it is the xz-plane, 1 is xy-plane and 2 is yz-plane.
+
+func: ig3d_SetPlaneInfo_if(whichPlane, offset)
+docs:  Sets the current grid plane to [whichPlane] and sets its distance to origin to [offset]. See ig3d_GetPlaneInfo_if for info on [whichPlane] parameter.
+
+//Section: 3D controller (for moving or rotating entities or the mesh)
+
+func: ig3d_Get3DControllerVisibility__b():(show)
+docs:  Returns the visibility of the 3D controller in the top-left of the OpenGL where [true] means visible.
+
+func: ig3d_Set3DControllerVisibility_b(show)
+docs:  If [show] is true, the 3D controller in the top-left of the OpenGL window will be shown, otherwise hidden
+
+func: ig3d_Get3DControllerManual__b():(manual)
+docs:  Returns true if the 3D controller is in "manual" mode. That means that it won't perform any action and justs sends an event of type "3dcontroldrag" with the button number (1 to 9) and the new position of the mouse and the old position of the mouse. (button, h, v, old_h, old_v). The stack can then decide what to do.
+
+func: ig3d_Set3DControllerManual_b(manual)
+docs:  If [manual] is true, the 3D controller goes into "manual" mode (described in ig3d_Get3DControllerManual__b). If it is false, it goes into automatic mode and acts as usual.
+
+//Section: Placement auxiliary body (typically used as a placeholder to represent an object or other entity before placing it into the scene)
+
+func: ig3d_SetAuxiliaryBodySize_3f(xsize, ysize, zsize)
+docs:  Sets the dimensions of the auxiliary body.
+
+func: ig3d_SetAuxiliaryBodyPosition_3f(x,y,z)
+docs:  Sets the position of the auxiliary body.
+
+func: ig3d_SetAuxiliaryBodyVisibility_b(show)
+docs:  If [show]=true, the auxiliary body will be visible, otherwise hidden.
+
+//Section: Global visual settings
+
+func: ig3d_ShowGrid_b(visibility)
+docs:  If [visibility] is true, the placement grid will be shown, otherwise hidden.
+
+func: ig3d_SetGridColor_3f(red, green, blue)
+docs:  This sets the color of the placement grid to the given RGB color.
+
+func: ig3d_GetPointSize__f():(size)
+docs:  Returns the point size of mesh vertices and path points visible in editing mode (in pixels).
+
+func: ig3d_SetPointSize_f(size)
+docs:  Sets the point size of mesh vertices and path points visible in editing mode to the given pixel size.
+
+func: ig3d_GetLineWidth__f():(width)
+docs:  Returns the width of mesh line edges visible in editing mode.
+
+func: ig3d_SetLineWidth_f(width)
+docs:  Sets the width of mesh line edges visible in editing mode to the given width.
+
+func: ig3d_SetGLSmoothing_b(smooth)
+docs:  If supported by GPU and renderer, this will turn on antialiasing of lines with [smooth]=true, otherwise it can be used to turn it off.
+
+func: ig3d_GetProjection__b5f():(perspective, fov, left, right, top, bottom)
+docs:  This returns a string of information about the projection in the OpenGL viewport. When perspective projection is used, [perspective] will be true and [fov] will be the field of view in degrees (90 is default). If [perspective] is false, it is an orthographic view, and [left, right, top, bottom] specify the viewport. (for example -10.0,10.0,-10.0,-10.0).
+
+func: ig3d_SetProjection_b5f(perspective, fov, left, right, top, bottom)
+docs:  This sets the projection of the OpenGL viewport to [perspective] where true means perspective projection and false means orthographic projection. The parameters have the same meaning as in ig3d_GetProjection__b5f. The value of [fov] won't be used in orthographic perspective and [left, right, top, bottom] won't be used in perspective projection.
+
+func: ig3d_SetBackgroundColor_3f(red, green, blue)
+docs:  This sets the background color of the OpenGL window to the given RGB color.
+
+func: ig3d_Get2DViewScales__3f():(xzScale, xyScale, yzScale)
+docs:  This returns the scaling factors of the three 2D views. They control how far the "camera" is away from the scene in each view. Remember: These views can be enabled using ig3d_SetFourViews_b(true). The scale values are all 30.0 by default. Increasing them means zooming out, decreasing means zooming in. The xz-view is in top-right of the window, the xy-view is bottom-left and the yz-view is bottom-right.
+
+func: ig3d_Set2DViewScales_3f(xzScale, xyScale, yzScale)
+docs:  This sets the scaling factors of the three 2D views. See "ig3d_Get2DViewScales__3f" for details.
+
+//Section: Fog
+
+func: ig3d_SetFogInfo_b5f(on, red, green, blue, start, end)
+docs:  If [on] is true, OpenGL fog will be enabled, otherwise disabled. The fog color can be specified with [red, green, blue]. The distance to the viewer at which the fog begins (starts making things foggy) and where it ends (where you can see nothing but the fog) can be specified by [start] and [end].
+
+func: ig3d_GetFogInfo__b5f():(on, red, green, blue, start, end)
+docs:  The parameters are the same as in "ig3d_SetFogInfo_b5f". Here you get the values instead of setting them.
+
+//Section: Lua iGame3D interface control
+
+func: ig3d_Init_s4i(fullPath, left, top, right, bottom)
+docs:  OBSOLETE REV EXTERNAL FEATURE!!! Call this at application startup. You tell it the full pathname where of the directoy it should look for files. The engine doesn't load files from anywhere, it can only load files from within the directory you provide here and its subdirectories. The rectangle of the OpenGL window is set using [left, top, right, bottom].
+
+func: ig3d_Exit()
+docs:  Call this when you attemp to quit the iGame3D application. It will perform a basic cleanup of the resources iGame3D is using and thus is a good idea to call for a clean shutdown.
+
+func: ig3d_ResizeGL()
+docs:  This forces the GL window to resize its viewport, normally you shouldn't need to do this yourself because it is done automatically wherever it is needed.
+
+func: ig3d_DrawGL()
+docs:  This forces iGame3D to redraw the GL scene. Normally you need this because the scene is drawn automatically every game loop.
+
+func: ig3d_Idle()
+docs:  OBSOLETE REV EXTERNAL FEATURE!!! This tells the external to update the OpenGL window, handle game scripts when in "game-mode", respond to key presses etc. You should call this in Rev's idle handler either in card or stack script.
+
+func: ig3d_TellFocus_b(fieldFocus)
+docs:  This is used to tell iGame3D if it should have the keyboard focus. If [fieldFocus] is true (default), then the it won't react to keyboard input, otherwise it will. Typically you will set [fieldFocus] to true whenever you type something in a MurgaLua input text field and set it to false again when finished typing. That's why the parameter is called [fieldFocus]. (You will probably not want to move the camera when typing in a text field!)
+
+func: ig3d_SetMouseView_b(mouseView)
+docs:  This is used to tell iGame3D if it should use the mouse for controlling the camera. If [mouseView] is set to true, then iGame3D will hide the cursor and go into this camera "look" mode. You can then read the mouse delta using getSceneInfo(IG3D_MOUSE_DELTA). Otherwise the cursor will be shown and the camera look mode will be disabled making the mouse act normally.
+
+func: ig3d_HandleClick()
+docs:  This forces iGame3D to simulate a click into the OpenGL window at the position the mouse is at.
+
+func: ig3d_HandleMouseDown()
+docs:  This forces iGame3D to simulate a mouse down in the OpenGL window at the position the mouse is at (mouse button pressed but not released yet).
+
+func: ig3d_SetMode_i(mode)
+docs:  This sets the editing mode to one of the following: 1: editing mode (default), 2: sceletal animation mode (lets you create animations with boned objects together with animation editor), 4: game mode (This will let you preview your game, disable any editing stuff you'd see in the editing modes and it runs the game_script()-function of the current level script)
+
+func: ig3d_GetMode__i():(mode)
+docs:  This returns the editing mode the engine is currently in. See ig3d_SetMode_i() for details.
+
+func: ig3d_ClearScene_b(all)
+docs:  This will delete the mesh and any visible entities in the scene. If [all]=true, then the model cache, all textures, sounds and fonts will also be cleared.
+
+func: ig3d_RebuildMacMenubar()
+docs:  On Mac OS X murgaLua tends to replace the menu bar created by the iGame3D Player with an empty menu bar at startup. Calling ig3d_RebuildMacMenubar() will reload the menu bar of the iGame3D Player. ig3d_RebuildMacMenubar() is automatically added to .lua scripts when converted from from Fluid .cxx exports. Naturely it has no effect on Windows systems.
+
+//Section: Other commands
+
+func: ig3d_FoolMousePosition_2i(x,y)
+docs:  This makes iGame3D think the mouse is positioned at screen coordinates [x,y]. You can use this to simulate a click at a desired position by calling ig3d_HandleClick right after fooling the mouse position. In the next event loop, the mouse position will be corrected again.
+
+func: ig3d_SaveScreenshot_s2bi(fileName, alpha, supersampling, numFSAA)
+docs:  This saves a screenshot of the OpenGL scene to file [fileName] which takes a full path. If [alpha] is true, then an alpha channel is saved with the image with anything except the background being opaque. If supersampling is on, the image will be rendered at a bigger size and scaled down after that. This improves quality. [numFSAA] controls how many fullscreen antialiasing passes will be made. Only 0,2,4,8,15,16 are supported.
+
+func: ig3d_SetupCollisionWorldFromMesh()
+docs:  This tells iGame3D to update its collision data structures according to the current mesh. This is done automatically every time the game mode is launched, but you might need it for special purposes.
+
+func: ig3d_CreateDirectory_s(fullPath)
+docs:  This creates a folder at the given full path on your hard drive. It creates only this one folder and fails if its parent folder does not exist. For example /Users/greatman/igame3d/test/ can only be created if the folder /Users/greatman/igame3d exists!
+
+//Section: Other functions
+
+func: ig3d_IsMouseButtonDown__b():(mouseDown)
+docs:  Returns a boolean [mouseDown] that is true, if the left mouse button is pressed, otherwise false
+
+func: ig3d_IsFileWritable_s_b(fileName):(writable)
+docs:  Checks if the file [fileName] is writable. If it is it will return true, otherwise false. [fileName] should be the full path of the file.
+
+func: ig3d_GetNumberOfPolys__i():(polyCount)
+docs:  Returns the number of polygons (only triangles in the case of iGame3D) in the scene. It's the sum of the mesh poly count and the poly counts of all objects and particles currently visible in the scene. Think of a ray cast from the front of your monitor into the depth. 
+
+func: ig3d_Get3DPositionFrom2DCoordinates_2ib_3f(screen_x, screen_y, collideWithScene):(x,y,z)
+docs:  This function translates global 2-dimensional screen coordinates [screen_x, screen_y] into the corresponding point in 3D space of the OpenGL scene. The point will lie on the current mesh placement where the ray collides with it. If [collideWithScene] is set to true, then also objects and the mesh will be checked with the ray. If nothing is hit, the function will return nothing (empty string).
+
+func: ig3d_GetScreenBounds__2i():(width, height)
+docs:  Returns [width] and [height] of the screen (monitor).
+
+func: ig3d_RotatePointAroundPoint_9f_3f(px,py,pz, cx,cy,cz, xa,ya,za):(tx,ty,tz)
+docs:  This lets you rotate a point around another point in 3D space. [px,py,pz] makes up the point to rotate. [cx,cy,cz] is the position to rotate the point around. [xa,ya,za] are the rotation angles. The new position (after the rotation) will be returned. This is an auxiliary function you might need often in calculations. It does not change anything in the scene. 
+
+//Section:  ------------------	Mesh	--------------
+//Section: States
+
+func: ig3d_SetMeshTool_i(toolNumber)
+docs:  Selects the given mesh tool. Values: Line tool: 1, Mesh select: 2, vertex tool: 3, split tool: 4, disconnect: 5, path select: 6
+
+func: ig3d_SetMeshAutoAligning_b(alignOn)
+docs:  This will enable automatic aligning of the mesh to the grid size specified by ig3d_SetMeshAlignmentSize_f
+
+func: ig3d_SetMeshAlignmentSize_f(gridSize)
+docs:  This sets the grid size for automatic grid aligning to [gridSize].
+
+func: ig3d_SetBackfaceCulling_b(cullingOn)
+docs:  This will enable or disable mesh backface culling depending on the value of [cullingOn]. Note: In game-mode backface culling is always on and objects are also always backface culled. So this effects mesh culling in editing mode only.
+
+func: ig3d_SetMeshZBuffering_b(zbufferOn)
+docs:  Usually, triangle auxiliary edges and vertices can be seen through the mesh in editing mode. If you enable z-buffering, those edges and vertices will be z-buffered just like the rest of the mesh, so you can see only non-occluded ones.
+
+//Section: Selection
+
+func: ig3d_SelectWholeMesh()
+docs:  Selects the entire mesh in the scene
+
+func: ig3d_InvertMeshSelection()
+docs:  Inverts the mesh selection. Originally selected parts become unselected, originally unselected parts become selected
+
+func: ig3d_SelectConnectedMesh()
+docs:  Selects the mesh that is connected to any of the currently selected mesh vertices. Two vertices A and B are connected if there is a combination of edges between them.
+
+func: ig3d_SelectUnclosedEdges()
+docs:  This selects the mesh vertices on border edges. Here a border edge is an edge that is not separating exactly 2 triangles. So it is either not part of any triangle or it is border edge in a triangle mesh or for some reason its is connected to 3 or more triangles. You might want to eliminate such edges because they tend to break shadow casting where closed shapes are preferred.
+
+//Section: Paths
+
+func: ig3d_GetPathsList__s():(pathsList)
+docs:  Returns a line-delimited list of the paths in the scene. (only the paths of the mesh, not the ones in object models).
+
+func: ig3d_GetPathInfo_i_s(pathNumber):(pointsList)
+docs:  Returns a line-delimited list of the positions (x,y,z coords) of all path points of path [pathNumber] (line number of path in path list).
+
+func: ig3d_SetPathInfo_is(pathNumber, pointsList)
+docs:  Sets the path points of path [pathNumber] (line # in path list) to [pointsList]. [pointsList] is a line-delimited string where each line represents a point und thus has three coords (x,y,z). Setting the path points replaces the old points.
+
+func: ig3d_AddToPath_i(pathNumber)
+docs:  This takes the positions of all selected mesh vertices and adds these as path points to path [pathNumber] (line # of path in path list). Very useful when you have a path that has a lot in common with the level, like for driving games.
+
+func: ig3d_CreatePath_s(pathName)
+docs:  Creates a path of name [pathName]. When you save the mesh, this path will save with it.
+
+func: ig3d_DeletePath_i(pathNumber)
+docs:  Deletes path [pathNumber]. This number is equivalent to the line number of a path in the path list.
+
+func: ig3d_SetPathName_is(pathNumber, newName)
+docs:  Renames path [pathNumber] to [newName]. [pathNumber] is the line number in the path list.
+
+func: ig3d_SetPathsVisible_b(showPaths)
+docs:  If [showPaths] is true, then paths will be visible in the editor. Path points and their edges are purple-colored. You can use the path selection tool to select and drag path points ( ig3d_SetMeshTool_i 6 )
+
+//Section: Materials
+
+func: ig3d_GetMeshMaterialsList__s():(list)
+docs:  Returns a line-delimited list of all mesh materials.
+
+func: ig3d_GetCurrentMaterialNumber__i():(matNumber)
+docs:  Returns the number of the default material (line number in material list). The default material is the material that new created triangles get attached to. When a new material is created it becomes the default material. But you can set it yourself using ig3d_SetCurrentMaterialNumber_i as well.
+
+func: ig3d_SetCurrentMaterialNumber_i(matNumber)
+docs:  This sets the default material to [matNumber] (line number in material list). See ig3d_GetCurrentMaterialNumber__i for more details.
+
+func: ig3d_GetMeshMaterialInfo_i_s(matNumber):(materialInfo)
+docs:  Returns the material information of material [matNumber] (line number in material list). For a detailed discription of the format of the multi-line material information, search for "Material instruction reference".
+
+func: ig3d_SetMeshMaterialInfo_is(matNumber, materialInfo)
+docs:  Sets the material information of material [matNumber] (line number in material list) to [materialInfo]. For a detailed discription of the format of the multi-line [materialInfo], search for "Material instruction reference".
+
+func: ig3d_SetMeshMaterialName_is(matNumber, newName)
+docs:  Sets the name of mesh material [matNumber] (line number in material list) to [newName].
+
+func: ig3d_SetMaterialForSelectedMesh_i(matNumber)
+docs:  Attaches the selected mesh to material [matNumber] (line number in material list).
+
+func: ig3d_CreateMaterial_s(matName)
+docs:  Creates a new mesh material named [matName].
+
+func: ig3d_DeleteMaterial_i(matNumber)
+docs:  Deletes material [matNumber] (line number in materials list). The triangles attached to this material will be attached to the default material instead.
+
+func: ig3d_SelectMeshOfMaterial_i(matNumber)
+docs:  Selects the mesh that is attached to material [matNumber] (line number in materials list).
+
+func: ig3d_CombineEqualMeshMaterials()
+docs:  This looks for duplicate mesh materials and combines them. Keeping the material count small is good for performance!
+
+//Section: Mesh tags (or vertex groups). Vertices can be part of multiple mesh tags. This can be useful when working with selections.
+
+func: ig3d_GetMesh_tagsList__s():(list)
+docs:  Returns a line-delimited list of all mesh tags in the scene.
+
+func: ig3d_SetDefaultMesh_tag_i(tagNumber)
+docs:  This sets the default mesh tag to [tagNumber] (line number in mesh tag list). Any new vertices you create will be added to the default mesh tag you specify here. If [tagNumber] is -1 (default), new vertices won't be added to a default mesh tag.
+
+func: ig3d_SetMesh_tagVisibility_ib(tagNumber, show)
+docs:  This shows ([show]=true) or hides ([show]=false) all vertices of mesh tag [tagNumber] (line number in mesh tag list).
+
+func: ig3d_AddToMesh_tag_i(tagNumber)
+docs:  This adds the selected mesh vertices to mesh tag [tagNumber] (line number in mesh tag list).
+
+func: ig3d_RemoveFromMesh_tag_i(tagNumber)
+docs:  This removes the selected mesh vertices from mesh tag [tagNumber] (line number in mesh tag list), if they were at all part of it.
+
+func: ig3d_CreateMesh_tag_s(tagName)
+docs:  Creates an empty mesh tag named [tagName].
+
+func: ig3d_DeleteMesh_tag_i(tagNumber)
+docs:  Detaches any vertices from and deletes mesh tag [tagNumber] (line number in mesh tag list).
+
+func: ig3d_SetMesh_tagName_is(tagNumber, newName)
+docs:  This sets the name of mesh tag [tagNumber] (line number in mesh tag list) to [newName].
+
+func: ig3d_SelectMesh_tagVertices_ib(tagNumber, deselectOthers)
+docs:  This will select all vertices of mesh tag [tagNumber] (line number in mesh tag list). If [deselectOthers] is true, then everything else will be deselected, otherwise the old selection will stay untouched.
+
+//Section: Mesh bones
+
+func: ig3d_MakeBoneFromVertex_2s(boneName, parent)
+docs:  This turns a mesh vertex into a mesh bone of name [boneName]. The parent bone is set using [parent] and is just the name of another bone you want your new bone to be a child of. [parent]="None" means no parent bones except for the root bone at 0,0,0. Mesh bones don't do a thing except being green, but if you save the mesh and load it as an object you can begin animating that model.
+
+func: ig3d_AttachVertexToBone_s(boneName)
+docs:  This attaches the selected mesh to bone [boneName]. The part of the model attached to a bone will move and rotate with the bone and its parent bones, just like your fingers move when you move your arm! There's now visual feedback for this in mesh editing, but if you load an object with the bones and mesh attached to the bones, you can check out this behaviour in sceletal animation mode.
+
+func: ig3d_SelectMeshAttachedToBone_s(boneName)
+docs:  This selects the mesh that is attached to bone [boneName]. Everything else will be unselected unless you have the shift key pressed.
+
+func: ig3d_SelectMeshBone_s(boneName)
+docs:  Selects mesh bone [boneName]. It will unselect any other vertices unless you have the shift key pressed.
+
+func: ig3d_SetMeshBoneRotation_s3f(boneName, xa, ya, za)
+docs:  This sets the orientation of the bounding box of bone [boneName] to [xa, ya, za]. Adjusting the orientation of the bounding boxes can be useful to better approximate the actual shape of an object for collision detection. The mesh bone bounding boxes are drawn green in editing mode, play around with the rotation to best match your mesh.
+
+func: ig3d_GetMeshBonesList__s():(boneList)
+docs:  Returns a line-delimited list of all mesh bones in the scene. Each line contains two words, the bone name and the line number of its parent bone in this list. The "None" bone is the default bone that cannot be deleted, modified etc. It has no parent bone, so the parent number is set to 0. The list is not formatted in a hierarchial way because you can see the "sceleton" pretty good in sceletal animation mode already. Of course you could easily construct a hierarchial list from this output if you need to.
+
+func: ig3d_SetMeshBoneRotationAndScale_s6f(boneName, xrot, yrot, zrot, xscale, yscale, zscale)
+docs:  This is used to modify the collision boxes of bones. When you are editing the bones in the mesh editor, you will see the green bounding boxes of the bones which will be big enough to surround all vertices connected to a bone. However this box is axis-aligned by default and might not match the actual geometry well. With this function you can change the bounding box orientation of bone [boneName] by rotating it around the x,y,z-axis where [xrot, yrot, zrot] are specified in degrees (values of 0 mean no rotation). You can also scale the bounding box using the [xscal, yscal, zscal] parameters (values of 1 mean no scaling).
+
+func: ig3d_ClusterMeshBones()
+docs:  Attaches vertices to "nearest" mesh bones. Each mesh bone has a direction arrow for orienting its bounding box and also for clustering vertices. Vertices inside an imaginary cone with its tip at the mesh bone position and oriented in arrow direction are possibly attached to this bone. The distance from both the actual bone position and the cone center line (in arrow direction) are considered when looking for the "nearest" bone. A lot of vertices will be in multiple imaginary bone cones, so this distance criterium is important for finding the nearest bone. Also the bone hierarchy is important. Vertices are always attached to the bones deepest in the hierarchy when they fit in multiple bones. This feature is useful if you want to add a bone skeleton to an unboned humanoid mesh. You could load the skeleton first (for example Data/WTF/human_bones.wtf), then load the unboned mesh, modify the bones position and direction arrows to better fit this mesh and then run the clustering process. Often you will need to fix a few vertices by hand, but this is a useful first step.
+//Section: Mesh I/O
+
+func: ig3d_LoadMesh_sf_b(fileName, size):(result)
+docs:  This loads a mesh from a model file [fileName] (full path). Supported types are .wtf, .3ds, .obj and .mesh files. The mesh will be uniformly scaled to [size] (in  of original size). On success "true" is returned, otherwise "false".
+
+func: ig3d_SaveMesh_sf_b(fileName, size):(result)
+docs:  This saves the current level mesh to file [fileName] (full path). It will save as a WTF model so you should use .wtf suffix in the file name. The mesh will save uniformly scaled to [size] (in  of original size). On success "true" is returned, otherwise "false".
+
+func: ig3d_SaveMeshAsWTF_sf(fileName, size)
+docs:  Also saves the current level mesh to file [fileName] (full path) as an .wtf model. The mesh will save uniformly scaled to [size] (in  of original size).
+
+func: ig3d_SaveMeshAsOBJ_sf(fileName, size)
+docs:  This saves the current level mesh to file [fileName] (full path) as an Alias Wavefront model (.obj) The mesh will save uniformly scaled to [size] (in  of original size).
+
+func: ig3d_SaveMeshAsMeshwork_sf(fileName, size)
+docs:  This saves the current level mesh to file [fileName] (full path) as an Meshwork model (.mesh). The mesh will save uniformly scaled to [size] (in  of original size).
+
+func: ig3d_SaveMeshAs3DS_sf(fileName, size)
+docs:  This saves the current level mesh to file [fileName] (full path) as an 3D Studio model (.3ds). The mesh will save uniformly scaled to [size] (in  of original size).
+
+//Section: UV manipulation
+
+func: ig3d_GetMatchingUVSizesForMesh_fb3f_2f(ya, fixed, fx,fy,fz):(u,v)
+docs:  This is a utility function used to calculate the u and v sizes for ig3d_GenerateAndApplyMeshUVMapping_5fb3f in case you want to map a texture exactly once onto the selected mesh geometry. You specify a [ya] angle in degrees which is used to rotate a texture on the selected mesh, start with a value of 0 and play with this value until it matches you needs. If [fixed] is true, then the texture is projected in a fixed direction defined by the [fx,fy,fz] vector. If [fixed] is false, iGame3D will compute a projection vector perpendicular to the mesh and [fx,fy,fz] will be ignored. Returned is the a string consisting of two floats: u-size and v-size. This is what you send to ig3d_GenerateAndApplyMeshUVMapping_5fb3f in the first two parameters.
+
+func: ig3d_GenerateAndApplyMeshUVMapping_5fb3f(usize, vsize, umod, vmod, ya, fixed, fx,fy,fz)
+docs:  This is used to apply a UV coordinate mapping to the selected mesh triangles. [usize] and [vsize] specify width and height of ONE texture tile. So if you got a ground plate of size 4x5, [usize] of 4 and [vsize] of 5 will make the texture appear exactly once on that plate. [umod] and [vmod] allow you to offset the texture. With [ya] you can apply rotation to the mapping. [fixed] and [fx,fy,fz] can be used for a fixed projection vector just like in ig3d_GetMatchingUVSizesForMesh_fb3f_2f. Note that this command is only applying the mapping, you'll still need to apply a texture to the material used by the mesh to see the mapped texture in action.
+
+func: ig3d_ScaleUVMapping_2f(scaleU, scaleV)
+docs:  This scales the UV coordinates of all selected mesh triangles by [scaleU, scaleV].
+
+func: ig3d_OffsetUVMapping_2f(offU, offV)
+docs:  This offsets the UV coordinates of all selected mesh triangles by [offU, offV].
+
+//Section: Visibility
+
+func: ig3d_MakeInvisible()
+docs:  This will hide the selected mesh (vertices, lines and triangles)
+
+func: ig3d_ShowAll()
+docs:  Shows the whole mesh again, unhiding hidden vertices, lines and triangles, triangles hidden using "ig3d_HideFaces_b true" will remain hidden and can only be shown using "ig3d_HideFaces_b false"
+
+func: ig3d_HideFaces_b(hide)
+docs:  If [hide] is true, then this hides the faces of the selected mesh, that is the triangles. This allows you to still view edges and vertices and "see through" the faces. Triangles hidden this way can only be shown again using "ig3d_HideFaces_b false"
+
+//Section: Facing
+
+func: ig3d_SetFacePos_b3f(faceOut, x,y,z)
+docs:  This allows you to specify an orientation point in [x,y,z] that will be taken into consideration when creating new triangles by LUA scripting. Depending on the value of [faceOut], fresh triangles will be either back-facing or front-facing to the specified point. If you are creating a convex shape using LUA scripting, simply position the face position to the center of the shape to create and set [faceOut] to true. Any triangles created in editor won't be effected by the face position.
+
+func: ig3d_MeshSetFacing_b3f(faceOut, x,y,z)
+docs:  This forces the selected mesh triangles to adjust their facings to be either back-facing ([faceOut]=true) or front-facing ([faceOut]=false) to the point [x,y,z].
+
+func: ig3d_InvertMeshFaces()
+docs:  Inverts the facing of the selected mesh polys
+
+func: ig3d_MeshFaceAwayFromCamera()
+docs:  The selected mesh will be outfacing from the viewer/camera 
+
+func: ig3d_RemoveDoubleSidedFacesAndFixFacings()
+docs: This removes one side of each double-sided mesh triangle. This may result in mixed frontfacing and backfacing polygons which looks ugly. If you have some mesh triangles selected when calling this function, these will be considered as examples of correctly facing triangles. The facing of all other triangles are fixed depending on the facings that are assumed to be correct (as set by selecting). The facing of the selected triangles are never changed. When nothing is selected or the whole mesh is selected, only the double-side removal is happening.
+
+//Section: Undo
+
+func: ig3d_PushMeshToUndoCache()
+docs:  Copy the current mesh to the undo buffer. When you undo later, the mesh from the undo buffer swaps with current mesh
+
+func: ig3d_MeshUndo()
+docs:  Swap current mesh with undo buffer
+
+//Section: Transformations
+
+func: ig3d_RotateSelectedMesh_6f(xang, yang, zang, cx, cy, cz)
+docs:  Rotates the selected mesh around position [cx, cy, cz] by the given angles around x,y,z axis
+
+func: ig3d_SetMeshPosition_3f(x,y,z)
+docs:  Sets the centroid of the selected mesh to the given [x,y,z] position.
+
+func: ig3d_SetMeshPositionNoUndo_3f(x,y,z)
+docs:  Sets the centroid of the selected mesh to the given [x,y,z] position without telling the undo manager that you did so.
+
+func: ig3d_ScaleSelectedMesh_3f(percentx, percenty, percentz)
+docs:  This will scale the selected mesh to the given percentage of the original size.
+
+func: ig3d_ScaleSelectedMeshTo_3f(sizex, sizey, sizez)
+docs:  This will scale the selected mesh to fixed sizes. You can perform a uniform scale by setting two of the sizes to 0.
+
+func: ig3d_MirrorSelectedMesh_3i(mirrorx, mirrory, mirrorz)
+docs:  This will mirror the selected mesh at its centroid around each axis with non-zero value. For example 0,0,1 will mirror on z-axis.
+
+func: ig3d_MagicCatch_fb(distance, cylindric)
+docs:  This function is used to wrap one mesh around another mesh (typically used to make clothes). To use it position a high-poly primitive mesh around the mesh you want to wrap it around. Select only the "cloth" mesh. Then use this function with a [distance] value between 0.0 and 1.0 and [cylindric] = true or false. All "cloth" mesh vertices will move to mesh's geometric center until they hit the mesh to wrap around. If [distance] is set to 1, they will be placed at the exact collision point, if set to 0 they won't move at all. Most of the time a value of 0.8 works best. If you set [cylindric] to true, the vertices will only move in x and z direction like wrapping a cylinder around the inner shape. 
+
+//Section: Measurement
+
+func: ig3d_GetMeshBounds__6f():(sx, bx, sy, by, sz, bz)
+docs:  Returns the smallest and biggest x,y,z coordinates of the selected mesh. Can be used to measure the mesh. [bx]-[sx] would be the x-size.
+
+func: ig3d_GetMeshCentroid__3f():(x,y,z)
+docs:  Returns the center position of the selected mesh.
+
+//Section: Misc Mesh Manipulation
+
+func: ig3d_AlignMesh()
+docs:  Aligns the selected mesh depending on the value set using ig3d_SetMeshAlignmentSize_f
+
+func: ig3d_MakeMeshSmoothShaded_b(smooth)
+docs:  If [smooth] = true, then the vertex normals for the selected mesh will be calculated to make it look right when smooth shaded. Smooth shading is a per-material feature and thus can only be activated in the material!
+
+func: ig3d_DeleteMesh_b(complete)
+docs:  Deletes the selected mesh. If [complete] = true, the whole mesh (including unselected parts) will be cleared
+
+func: ig3d_ExtrudeSelectedMesh_fb(distance, faceOut) Extrudes the selected mesh by [distance] units
+docs:  If [faceOut] is true, the resulting geometry will be facing out, otherwise in
+
+func: ig3d_CreateMeshFromImage_s2f2i(texture, xz_sizes, height, divisions, mask)
+docs:  Create a squared mesh from a given heightmap image [texture]. Maximum height and side sizes can be given as well as the number of side [divisions] to set the level of detail. The component [mask] is used to tell which color channels of the image will be considered and is a sum of red:1, green:2, blue:4, alpha:8. For example 9 being red and alpha (1+8).
+
+func: ig3d_DuplicateMesh()
+docs:  Duplicates the selected mesh. After the duplicating the source mesh will be unselected and the new mesh will be selected
+
+func: ig3d_CombineSelectedMeshOverlaps_f(range)
+docs:  Combines vertices within a distance <= [range] to each other, thus reducing the polycount
+
+func: ig3d_SubdivideMesh()
+docs:  Subdivides the selected mesh (doubling the poly count).

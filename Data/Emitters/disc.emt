@@ -1,0 +1,33 @@
+model=Weapons/bullet.wtf
+
+amount=1
+
+emission rate=0.000000
+
+life=23
+
+fade=0.100000
+
+area=0.000000
+
+size=2.000000
+
+size variance=0.000000
+
+lux=true
+
+weight=0.00900
+
+move=true,0.000000
+
+explode=false,0.000000
+
+scale=true,1.100000
+
+rotate=true,15.000000
+
+anim=false
+
+speed=2
+
+destroy=true

@@ -1,0 +1,12 @@
+YES
+Shadows: YES
+YES
+Clouds: YES
+YES
+Particle effects: YES
+YES
+High quality models: YES
+YES
+Sound effects: YES
+YES
+Music: YES

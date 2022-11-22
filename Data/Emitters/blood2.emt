@@ -1,0 +1,33 @@
+amount=50
+
+emission rate=0
+
+life=1.1
+
+fade=0.000000
+
+area=0.04000
+
+size=0.400000
+
+size variance=0.200000
+
+lux=false
+
+weight=0.020000
+
+move=false,0.000000
+
+explode=true,0.300000
+
+scale=false,0.000000
+
+rotate=false,0.000000
+
+speed=0
+
+
+
+texture=Data/Images/Decals/blood.png
+
+plane=false,0,0,0

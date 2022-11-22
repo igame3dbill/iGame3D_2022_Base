@@ -1,0 +1,14 @@
+119
+Accelerate: w
+115
+Deccelerate: s
+97
+Roll left: a
+100
+Roll right: d
+113
+Strafe left: q
+101
+Strafe right: e
+7
+Mouse Speed:

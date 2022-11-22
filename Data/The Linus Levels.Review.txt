@@ -1,0 +1,44 @@
+flycam_temp -- Some balls? no action script
+
+letscrash -- UDG Intro Crash test, with no level mesh, nothing happening.
+I moved setSceneInfo(IG3D_MOUSE_VIEW, true, 1) into the conditional testing for game mode  of UDG_INIT.LUA 
+So annoying to lose the mouse pointer and wiggle the camera around everytime you load a level for testing.
+
+Added:
+if ig3d_GetMode__i() == 4 then
+if UIMainTools then UIMainTools:hide() end
+end  
+
+to UDG_IntroCredits/load script.lua so the GUI hides when play mode is active but before  UDG_Init.lua runs for the main game.
+Noted that UDG_IntroCredits has some scripts floating around in it's level folder, maybe should move those to the UDG scripts folder?
+
+Something in UDG is still reference RTS_Functions
+OKAY a bit of stuff still relies on RTS scripts.
+
+Updated UDG_Options.fl to write gCurrentLevel after selecting a level and to go directly to game mode so UDG_Init stuff actually runs, it was not doing that if loading in editor mode and then choosing play from the menu.
+
+
+performance <<-- 100 animated models, seems to run okay, now try with AStar path finding, see what that grinds down to.
+
+pers <<-- Image and MAtrix Captrurer again, not sure the purpose.
+
+Postman <<-- simple sample game, updated path for math.functions.lua, moved necesarry images, emitters, models,etc to current Windows igame3d directories.
+This contains a lot of scripts in the Level folder...they have been moved to
+Data/Scripts/Games/Postman_Functions and the load script has been updated to reflect that.
+
+
+
+
+RagdollDebug <<-- super spazzy ragdoll  
+
+
+Studio -- Seems to be same level as Utility/Studio 
+I commented out the levelMesh loading since the mesh seemed to make no difference
+Moving to UTILITY/Studio, fixed the paths in the load script for the images to export there
+There was a girl.obj in the level folder, moved to Data/OBJ
+
+
+testosteron << -- empty testing level REMOVED
+FYI
+dofile(gameroot.."Data/Scripts/Default/default_Globals.lua")
+within a load script breaks things, have to figure out why.

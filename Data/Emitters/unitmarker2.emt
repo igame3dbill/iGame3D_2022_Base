@@ -1,0 +1,4 @@
+amount=1emission rate=0.0life=0.0001fade=0.000000area=0.000000size=1.000000size variance=0.000000lux=trueweight=0.000000move=false,0.000000explode=false,0.000000scale=false,0.000000rotate=false,0.000000
+speed=0
+texture=Data/Images/Effects/redcircle.png
+plane=true,90,0,0

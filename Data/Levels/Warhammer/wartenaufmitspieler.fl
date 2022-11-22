@@ -1,0 +1,145 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {function zumHauptmenue()
+
+	server:close()
+
+	WartenAufMitspieler:hide()
+
+	Hauptmenue:show()
+
+end
+
+
+
+function akzeptierenClicked(w)
+
+	control:send("/ack\\n")
+
+	control:send(gMaxPunkte.."\\n")
+	
+	gMeinIndex=1 --host ist spieler 1
+	gSpieler=1
+	control:send(gSpieler.."\\n") -- host starts by default
+
+	armeelisteAuswaehlen()
+	WartenAufMitspieler:hide()
+
+end
+
+
+
+function ablehnenClicked(w)
+
+	control:close()
+
+	hostAbort:activate()
+
+	hostDeny:deactivate()
+
+	hostAccept:deactivate()
+
+	connected=false
+
+	enemyName=nil
+
+	control=nil
+
+	hostMessage:value("Warte auf Mitspieler...")
+
+end
+
+
+
+function armeelisteAuswaehlen()
+
+	gListenDatei = fltk.fl_file_chooser("Bitte waehlen Sie eine Armeeliste mit max. "..gMaxPunkte.." Punkten aus:", "Army Builder XML Exports (*.{xml})", nil, nil)
+
+	if gListenDatei~= nil then
+
+		loadLevel("Data/Levels/Warhammer")
+
+		
+
+	else
+
+		WartenAufMitspieler:hide()
+
+		control:close()
+
+		Hauptmenue:show()	
+
+	end
+
+end} {}
+  Fl_Window WartenAufMitspieler {
+    label {Warte auf Mitspieler...} open
+    xywh {85 459 582 50} type Double hide
+  } {
+    Fl_Button hostAbort {
+      label Abbrechen
+      callback zumHauptmenue
+      xywh {5 10 90 25}
+    }
+    Fl_Text_Display hostMessage {
+      xywh {100 10 275 30}
+    }
+    Fl_Button hostAccept {
+      label Akzeptieren
+      callback akzeptierenClicked
+      xywh {380 15 90 25}
+    }
+    Fl_Button hostDeny {
+      label Ablehnen
+      callback ablehnenClicked
+      xywh {470 15 90 25}
+    }
+  }
+  code {hostAccept:deactivate()
+hostDeny:deactivate()
+
+host = "*"		--"localhost";
+port = "53839";
+server = assert(socket.bind(host, port));
+server:settimeout(0.0)
+ack = "\\n";
+connected=false
+enemyName=nil
+
+setSceneInfo(IG3D_RUN_IN_BACKGROUND, true)
+
+hostMessage:value("Warte auf Mitspieler...")
+
+function waitForJoiningEnemy()
+	fltk_update()
+	
+	if connected==false then
+		control = server:accept();
+		control:settimeout(0.0)
+    
+    		connected=true
+ 
+    		
+    	else
+    		result,e=control:receive()
+    		if result~= nil and e==nil then
+    			if enemyName==nil then
+    				enemyName=result
+    				hostMessage:value(enemyName.." moechte mitspielen...")
+    				beep()
+    				hostAccept:activate()
+    				hostDeny:activate()
+    				hostAbort:deactivate()
+    			end
+    		end
+    	
+    	end
+end
+
+game_func=waitForJoiningEnemy} {selected
+  }
+} 

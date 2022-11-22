@@ -1,0 +1,262 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {-- WTF BROWSER CODE AHEAD 1015
+gLastBrowserControlClick=time()
+gLastSelection=-1
+gDropObject = gameroot.."Data/WTF/Cubes/cube.wtf"
+gBrowserPath=gameroot.."Data/WTF/"
+gBrowserFiles={}
+-- (left, top, right, bottom) 
+gGLX,gGLY,gGLR,gGLB = ig3d_GetWindowBounds__4i()
+
+function listWTFFiles()
+gBrowserFiles={}
+    wtfFileBrowser:clear()
+    for file in lfs.dir(gBrowserPath) do
+        if string.sub(file, 1,1)~="." or file==".." then
+            local f = gBrowserPath..'/'..file
+            local attr = lfs.attributes (f)
+            assert (type(attr) == "table")
+             if attr.mode == "file" and string.sub(file, -4,-1)==".wtf" then 
+             	local a={file, "file"}
+             	table.insert(gBrowserFiles, a)
+             	wtfFileBrowser:add(file)
+             end   
+           if attr.mode == "directory" then 
+           local a={file, "directory"}
+             table.insert(gBrowserFiles, a)
+             wtfFileBrowser:add(file.."     ->")
+	   end  
+        end
+     end
+     
+end
+
+function updateWTFPreviewBox(name)
+	fltk.fl_register_images()
+	local a=string.gsub(gBrowserPath, "/WTF/", "/WTFPreviews/")
+	print("a= "..a)
+	local b=string.sub(name, 1,-5).."_wtf.png"
+	local img = Fl_Shared_Image.get(a..b)
+	wtfPreviewBox:color(40)
+	if img==nil then
+		img=Fl_Shared_Image.get(gameroot.."Data/Images/Colors/white.png")
+		wtfPreviewNote:label("No preview available")
+	else
+		wtfPreviewNote:label("")
+	end
+	
+	WPW=wtfPreviewBox:w()
+	WPH=wtfPreviewBox:h()
+	wtfPreviewBox:image(img,WPW-8,WPH-8)
+	--wtfPreviewBox:resize(90,3,WPW-8,WPH-8)
+	wtfPreviewBox:redraw()
+end
+
+function wtfAddObjectClicked(w)
+	if wtfFileBrowser:value()==0 then return end
+	local theFile=gBrowserFiles[tonumber(wtfFileBrowser:value())]
+	if theFile[2]=="directory" then return end
+	
+	local c=\#(gameroot.."Data/WTF/")+1
+	local newObj={}
+	table.insert(gObjects, newObj)
+	local n=\#gObjects
+	gDropObject = string.sub(gBrowserPath..theFile[1],c,-1)
+	gObjects[n].cObj=make(ig3d_object, gDropObject)
+	
+end
+
+function wtfPreviewLoadMesh(w)
+	if wtfFileBrowser:value()==0 then return end
+	local theFile=gBrowserFiles[tonumber(wtfFileBrowser:value())]
+	if theFile[2]=="directory" then return end
+	
+	local c=\#(gameroot)+1
+	local newObj={}
+	table.insert(gObjects, newObj)
+	local n=\#gObjects
+	loadMesh( string.sub(gBrowserPath..theFile[1],c,-1))
+end
+
+function createPreviewsClicked(w)
+	if wtfFileBrowser:value()==0 then return end
+	local theFile=gBrowserFiles[tonumber(wtfFileBrowser:value())]
+	local a=string.gsub(gBrowserPath, "/WTF/", "/WTFPreviews/")
+	print("a= "..a)
+	local b=string.sub(theFile[1], 1,-5).."_wtf.png"
+	local c=\#gameroot+1
+	
+	
+	if theFile[2]=="file" then
+		ig3d_CreateDirectory_s(goDirsUp(a..b,0))
+		createWTFPreviewPNG(string.sub(gBrowserPath..theFile[1], c,-1), a..b)
+		updateWTFPreviewBox(theFile[1])
+	end
+	
+	if theFile[2]=="directory" then
+		ig3d_CreateDirectory_s(a..theFile[1])
+		batchPreviewsForFolder(string.sub(gBrowserPath..theFile[1].."/", c,-1), string.sub(a..theFile[1].."/", c,-1))
+	end
+	ig3d_SetWindowBounds_4i(gGLX,gGLY,gGLR,gGLB)
+end
+
+
+function browserControlDoubleClicked(w)
+	--
+	local theFile=gBrowserFiles[tonumber(w:value())]
+	if theFile[2]=="directory" then
+		if theFile[1]==".." then 
+			gBrowserPath=goDirsUp(gBrowserPath, 1)
+		else
+			gBrowserPath=gBrowserPath..theFile[1].."/"
+		end
+		listWTFFiles()
+	end
+	
+end
+
+function browserControlClicked(w)
+	if w:value()==0 then return end
+	local theFile=gBrowserFiles[tonumber(w:value())]
+	if theFile[2]=="file" then
+		updateWTFPreviewBox(theFile[1])
+	end
+	
+	local t=time()
+	
+	if t-gLastBrowserControlClick < 0.4 and w:value()==gLastSelection then
+		browserControlDoubleClicked(w)
+		gLastBrowserControlClick=0
+	else
+		gLastBrowserControlClick=time()
+	end
+	gLastSelection=w:value()
+	
+end} {}
+  code {function createLowPolyClicked(w)
+
+	if wtfFileBrowser:value()==0 then return end
+	local theFile=gBrowserFiles[tonumber(wtfFileBrowser:value())]
+	if theFile[2]=="directory" then return end
+	
+	local c=\#(gameroot)+1
+	local newObj={}
+	table.insert(gObjects, newObj)
+	local n=\#gObjects
+	local mp=string.sub(gBrowserPath..theFile[1],c,-1)
+	loadMesh( mp )
+	
+	local bl=ig3d_GetMeshBonesList__s()
+	
+	for w in string.gmatch(bl, "[^\\n]+") do
+		local spaceoffset=string.find(w, " ")
+		local nam=string.sub(w, 1, spaceoffset-1)
+		--local num=string.sub(w, spaceoffset+1, -1)
+		ig3d_SelectMeshBone_s(nam)
+		ig3d_MakeInvisible()
+     	end
+     	ig3d_SelectWholeMesh()
+     	ig3d_PolyReductionDownToVertexCount_i(lowpolynumvertices:value())
+	ig3d_ShowAll()
+	mp=string.sub(mp, 1, -5).."low.wtf"
+	saveMesh(mp)
+	ig3d_SelectWholeMesh()
+	ig3d_DeleteMesh_b(false)
+	
+end} {}
+  code {function batchBinariesForFolder(thefolder1)
+	local allFiles=listFiles(thefolder1)
+	local i
+	local suffix
+	
+	for i=1,\#allFiles,1 do
+		suffix=string.sub(allFiles[i], -4,-1)
+		if suffix==".wtf" then
+			local filename=string.sub(thefolder1..allFiles[i], \#gameroot+10, -1)
+			--print(filename)
+			a=make(ig3d_object, filename)
+			delete(ig3d_object, a)
+		end
+	end
+end
+
+
+function createBinariesClicked(w)
+	if wtfFileBrowser:value()==0 then return end
+	local theFile=gBrowserFiles[tonumber(wtfFileBrowser:value())]
+	local c=\#gameroot+1
+	
+	
+	if theFile[2]=="file" then
+		local filename=string.sub(gBrowserPath..theFile[1], c+9, -1)
+		a=make(ig3d_object, filename)
+		delete(ig3d_object, a)
+		
+	end
+	
+	if theFile[2]=="directory" then
+		batchBinariesForFolder(gameroot..string.sub(gBrowserPath..theFile[1].."/", c,-1))
+	end
+	
+end} {selected
+  }
+  Fl_Window WTFBrowserNew {
+    label {WTF Catalog} open
+    xywh {101 181 421 305} type Double resizable size_range {426 286 424 719} visible
+  } {
+    Fl_Group {} {open
+      xywh {0 1 336 49}
+    } {
+      Fl_Button {} {
+        label {Add object}
+        callback wtfAddObjectClicked
+        xywh {169 12 80 19} labelsize 10
+      }
+      Fl_Button {} {
+        label {Load mesh}
+        callback wtfPreviewLoadMesh
+        xywh {87 12 80 19} labelsize 10
+      }
+      Fl_Button lowpolybutton {
+        label {Create low-poly}
+        callback createLowPolyClicked
+        xywh {253 12 80 19} labelsize 10
+      }
+      Fl_Button {} {
+        label {Create preview}
+        callback createPreviewsClicked
+        xywh {6 12 80 19} labelsize 10
+      }
+      Fl_Button {} {
+        label {Create binary}
+        callback createBinariesClicked
+        xywh {5 31 80 19} labelsize 10
+      }
+    }
+    Fl_Value_Input lowpolynumvertices {
+      label {Num vertices}
+      xywh {338 12 73 19} labelsize 10 align 33 minimum 1 maximum 1000 value 250 textsize 10
+    }
+    Fl_Box wtfPreviewBox {
+      xywh {10 56 240 240} box FLAT_BOX color 40 align 16
+    }
+    Fl_Box wtfPreviewNote {
+      label {NO PREVIEW}
+      xywh {10 59 240 16} labelsize 10
+    }
+    Fl_Browser wtfFileBrowser {
+      callback browserControlClicked
+      xywh {255 56 160 241} type Hold labelsize 10 when 3 textsize 10 resizable
+    }
+  }
+  code {WTFBrowserNew:show()
+
+
+
+listWTFFiles()} {}
+} 

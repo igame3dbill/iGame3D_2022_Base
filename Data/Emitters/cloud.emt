@@ -1,0 +1,5 @@
+amount=1emission rate=0.0life=-1fade=0.500000area=0.0size=5.000000size variance=0.000000weight=0.000000
+lux=falsemove=false,0.000000explode=false,0.000000scale=false,0.000000rotate=false,0.000000
+speed=0
+texture=Data/Images/Effects/wolken.png
+num_textures=4,4

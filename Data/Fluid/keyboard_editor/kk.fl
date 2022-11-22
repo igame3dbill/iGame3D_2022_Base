@@ -1,0 +1,57 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0108 
+header_name {.h} 
+code_name {.cxx}
+Function {make_window()} {open
+} {
+  code {function btn1f(w)
+ktest:make_current()
+local nb= fltk:Fl_Button(0,0,0,0,"")
+nb:label("test1")
+--flbtn:callback(btn2f)
+nb:resize(80,17,22,22)
+nb:box(fltk.FL_THIN_UP_BOX)
+nb:down_box(fltk.FL_THIN_DOWN_BOX)
+nb:labelsize(9)
+ktest:add(nb)
+nb:show();
+ktest:redraw()
+end
+
+function btn2f(w)
+ktest:make_current()
+local nb = 0
+nb= fltk:Fl_Button(0,0,0,0,"")
+nb:label("test2")
+--flbtn:callback(nb)
+nb:resize(100,17,22,22)
+nb:box(fltk.FL_THIN_UP_BOX)
+nb:down_box(fltk.FL_THIN_DOWN_BOX)
+nb:labelsize(9)
+
+ktest:add(nb)
+ktest:redraw()
+end} {selected
+  }
+  Fl_Window ktest {
+    label ktest
+    callback wClose open
+    xywh {821 125 187 62} type Double visible
+  } {
+    Fl_Button btn1 {
+      label btn1
+      callback btn1f
+      xywh {10 10 52 20} labelsize 11
+    }
+    Fl_Button btn_1 {
+      label btn_1
+      callback btn2f
+      xywh {80 10 52 20} labelsize 11
+    }
+    Fl_Button btn3 {
+      label btn_1
+      xywh {80 35 52 20} labelsize 11
+    }
+  }
+  code {ktest:show()} {}
+} 

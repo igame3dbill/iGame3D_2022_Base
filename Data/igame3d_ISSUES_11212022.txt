@@ -1,0 +1,70 @@
+ISSUES:
+Edit_Sounds button has no GUI? 
+The tooltip is giving the name of an emitter.
+
+UNITS button is not opening a GUI
+The tooltip is giving the name of an emitter.
+
+The EYE button, whatever that is...should have been some options for fog/fov?
+It don't work. Tooltip is garbage text.
+
+Edit_camera Button...should probably make a UI for camera stuff.
+
+SHOULD MAKE BUTTON and KEYBIND FOR Editor Mouse Cursor. Camera button is tricky. 
+
+
+Importing a mesh 'opens' the file in iGame3D, probably for writing that .wtfb, doesn't close it, the file system will throw an error about open file if moving/deleting.
+Exporting a mesh of the same name does not overwrite the original.
+
+ModelBrowser.fl is messy it was not getting complete list of models in scene, now it does, but it doesn't update when models are added to the scene. It is using the same globals as the load scripts, and it probably shouldn't use those for it's own actions.
+Needs going over. Who made that? Me? Shiiiiiit I don't remember that at all.
+
+Level > New Level > Seems to be writing the current mesh to the level mesh of the current level before making a new level.
+Or clearing the mesh of the current level...need to figure out what's going on.
+
+OH BEWARE if you have an old style script that doesn't have --begin auto-script and --end auto-script and you save the level you lose the script stuff!
+
+ig3d_LoadMesh_sf_b() fails on windows file path delimeter \
+
+There are redudant but not equal function lua files
+the default globals are loading one file and other scripts load extended files in more specific directories.
+
+default_Globals.lua needs a going over and a correction to loading.
+
+It's rather mysterious how iGame3D UI is generated, it seems like its from the default_Globals.lua and then the UI_MAIN_TOOLS.fl is ...just an init for that? Made sense when I made it 14 years ago. Jesus.
+
+Need a COLLECTOR type script that reports missing file paths.
+Getting a lot of ERROR: Could not open file
+but the path it returns ends in gameroot and not a file name, maybe path too long?
+
+Okay so specifically it's when loading emitters:
+-- ERROR: Could not open file  "C:/ZeroBraneStudio/bin/"<-- where igame3d is running from
+I changed the path of the emitters removing Data/Emitters/ etc and it spit out an error for the full expected paths in that case, same when just removing Data/
+
+When the normal full "Data/Emitters/etc/thing.emt" it spits out the ERROR message above. HOWEVER, the models it's supposed to make seem to spawn anyway?
+
+Dunno what's that about. Does not do this for Sound Emitters
+
+Moved Redudant function Scripts into Scripts/REDUNDANT_TO_REMOVE folder.
+Moved some essential functions to Data/Scripts/Default/Base
+Moved some others to Data/Scripts/Default/
+..User_Interface
+..Entity
+..Input
+etc depending on where they seemed they belong.
+
+Default scripts via the default_Globals.lua
+
+So far so good doesn't look like anything broke.
+Relocating some things like scene, animation, debug are questionable.
+---------------------------------------------------------------------------------
+
+"C:\ZeroBraneStudio\bin\Data\GUI\UniversalBrowser\UniversalBrowser.fl" <<< -- MISSING uListSoundEmitters() crashes UI.
+
+--------------------------------------------------------------------------------
+"C:\ZeroBraneStudio\bin\Data\Scripts\Functions\Menus\library_menu_functions.lua"
+Does not handle "GUI", "Text","Shaders","Sound" menu options
+
+
+
+
