@@ -7,11 +7,11 @@
 # """
 
 import time
-import Blender
-from Blender import Scene, Mesh
+#import Blender
+#from Blender import Scene, Mesh
 
 header="iGame3D Mdl\n0\n#Author:\n#Date:"+time.strftime('%m-%d-%Y')+"\n"+"#Notes:\n#PNG: 0\n\n"
-file_name=Blender.Get('filename').replace(".blend",".wtf")
+# file_name=Blender.Get('filename').replace(".blend",".wtf")
 
 def write_wtf(filepath):
 

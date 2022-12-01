@@ -219,7 +219,7 @@ LuaOutFile=gameroot.."Data/GUI/"..whichWindow.."/"..whichWindow..".lua"
 parseFluid(FluidInFile,LuaOutFile)
 dofile(LuaOutFile)
 
-end
+end --OPEN_UI_WINDOWS
 
 function OPEN_FLUID_WINDOWS(whichWindow)
 gameroot=getSceneInfo(IG3D_ROOT)
@@ -246,8 +246,9 @@ if uBrowserNew ~= nil then
 OPEN_UI_WINDOWS("UniversalBrowser")
 end
 
+-- Open UniversalBrowser.fl fill it's main field with the browsed data
 function UniversalBrowse(tpick)
-  print("UniversalBrowse("..tpick..")")
+  print("\nUniversalBrowse("..tpick..")")
 n=1
 if tPick =="" then UniversalBrowserShow() end
 	if tPick == "Console" or tPick == "Library/Console" then 

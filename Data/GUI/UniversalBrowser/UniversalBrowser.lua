@@ -472,6 +472,109 @@ print(gSelectedFluidFile,LuaOutFile)
 dofile(LuaOutFile)
 end
 end
+-- GUIs BROWSER CODE AHEAD 11222022
+gLastBrowserControlClick=time()
+gLastSelection=-1
+
+guGUIBrowserPath = getSceneInfo(IG3D_ROOT).."Data/GUI/"
+gFullGUIpath = guGUIBrowserPath
+gSelectedGUIFile = guGUIBrowserPath.."Console".."console.fl"
+guGUIBrowserFiles={}
+-- (left, top, right, bottom) 
+gGLX,gGLY,gGLR,gGLB = ig3d_GetWindowBounds__4i()
+
+function ulistGUIFiles()
+guGUIBrowserFiles={}
+    uGUIFileBrowser:clear()
+    for file in lfs.dir(guGUIBrowserPath) do
+        if string.sub(file, 1,1)~="." or file==".." then
+            local f = guGUIBrowserPath..'/'..file
+            local attr = lfs.attributes (f)
+            assert (type(attr) == "table")
+             if attr.mode == "file" and string.sub(file, -3,-1)==".fl" then 
+             	local a={file, "file"}
+             	table.insert(guGUIBrowserFiles, a)
+             	uGUIFileBrowser:add(file)
+             end   
+           if attr.mode == "directory" then 
+           local a={file, "directory"}
+             table.insert(guGUIBrowserFiles, a)
+             uGUIFileBrowser:add(file.."     ->")
+	   end  
+        end
+     end
+     
+end
+
+
+function uGUIBrowserControlDoubleClicked(w)
+	--
+	local theFile=guGUIBrowserFiles[tonumber(w:value())]
+	if theFile[2]=="directory" then
+			if theFile[1]==".." then 
+			guGUIBrowserPath=goDirsUp(guGUIBrowserPath, 1)
+			
+				if string.find(guGUIBrowserPath,"GUI") == nil then
+				guGUIBrowserPath = gameroot.."Data/GUI/"
+				end
+			
+			else
+				guGUIBrowserPath=guGUIBrowserPath..theFile[1].."/"
+				gFullGUIpath = guGUIBrowserPath
+			
+             		end
+             		
+	end
+		ulistGUIFiles()
+end
+
+function uGUIBrowserControlClicked(w)
+	if w:value()==0 or w:value() == nil then return end
+	n=w:value()
+	local theFile= guGUIBrowserFiles[tonumber(n)]
+	uLoadGUIBtn:hide()
+	
+	if theFile[2]=="file" then
+	uLoadGUIBtn:show()
+	gSelectedGUIFile = guGUIBrowserPath..theFile[1]
+	end
+	
+	if theFile[2]=="directory" then
+		-- seek one level deeper for like named
+				for file in lfs.dir(guGUIBrowserPath..theFile[1].."/") do
+					if string.find(file,theFile[1]..".fl") ~= nil then
+					gSelectedGUIFile = guGUIBrowserPath..theFile[1].."/"..file
+					print(gSelectedGUIFile)
+					uLoadGUIBtn:show()
+             				end
+             			end
+             	end
+             	
+	local t=time()
+	
+	if t-gLastBrowserControlClick < 0.4 and w:value()==guLastSelection then
+		uGUIBrowserControlDoubleClicked(w)
+		gLastBrowserControlClick=0
+	else
+	
+		gLastBrowserControlClick=time()	
+	end
+	guLastSelection=w:value()
+end
+
+
+function uGUILoad()
+
+if gSelectedGUIFile == nil then return end
+if string.sub(gSelectedGUIFile,-3,-1) == ".fl" then
+
+LuaOutFile = string.sub(gSelectedGUIFile,1,-3).."lua"
+
+parseFluid(gSelectedGUIFile,LuaOutFile)
+
+dofile(LuaOutFile)
+end
+end
 -- uScripts BROWSER CODE AHEAD 1129
 gLastBrowserControlClick=time()
 gLastSelection=-1
@@ -835,6 +938,7 @@ pngBrowserGroup:hide()
 WTFBrowserGroup:hide()
 uLevelsBrowserGroup:hide()
 uFluidBrowserGroup:hide()
+uGUIBrowserGroup:hide()
 uScriptsBrowserGroup:hide()
 uEMTBrowserGroup:hide()
 uOGGBrowserGroup:hide()
@@ -848,6 +952,11 @@ end
 if what == "Fluid" then
 ulistFluidFiles()
 uFluidBrowserGroup:show()
+end
+
+if what == "GUI" then
+ulistGUIFiles()
+uGUIBrowserGroup:show()
 end
 
 if what == "Models" then 
@@ -1024,6 +1133,29 @@ uLoadFluidBtn:label(gLabelTable[#gLabelTable])
 uLoadFluidBtn:callback(uFluidLoad)
 uLoadFluidBtn:resize(5,3,125,19)
 uLoadFluidBtn:labelsize(10)
+end
+Fl_Group:current(Fl_Group:current():parent())
+end
+
+do uGUIBrowserGroup= fltk:Fl_Group(0,0,0,0,"")
+uGUIBrowserGroup:resize(0,1,135,389)
+uGUIBrowserGroup:labelsize(10)
+do uGUIFileBrowser= fltk:Fl_Browser(0,0,0,0,"")
+uGUIFileBrowser:callback(uGUIBrowserControlClicked)
+uGUIFileBrowser:resize(4,25,128,365)
+uGUIFileBrowser:type(1)
+uGUIFileBrowser:labelsize(10)
+uGUIFileBrowser:when(3)
+uGUIFileBrowser:textsize(10)
+end
+
+do uLoadGUIBtn= fltk:Fl_Button(0,0,0,0,"")
+if gLabelTable==nil then gLabelTable={} end
+table.insert(gLabelTable, "Load Fluid")
+uLoadGUIBtn:label(gLabelTable[#gLabelTable])
+uLoadGUIBtn:callback(uGUILoad)
+uLoadGUIBtn:resize(5,3,125,19)
+uLoadGUIBtn:labelsize(10)
 end
 Fl_Group:current(Fl_Group:current():parent())
 end

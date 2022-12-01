@@ -1,5 +1,5 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0108 
+version 1.0110 
 header_name {.h} 
 code_name {.cxx}
 Function {make_window()} {open
@@ -368,8 +368,7 @@ if string.sub(gSelectedLevelMesh,-4,-1) == ".wtf" then
 	loadMesh(gSelectedLevelMesh) 
 end
 
-end} {selected
-  }
+end} {}
   code {-- Fluids BROWSER CODE AHEAD 1128
 gLastBrowserControlClick=time()
 gLastSelection=-1
@@ -478,6 +477,110 @@ print(gSelectedFluidFile,LuaOutFile)
 dofile(LuaOutFile)
 end
 end} {}
+  code {-- GUIs BROWSER CODE AHEAD 11222022
+gLastBrowserControlClick=time()
+gLastSelection=-1
+
+guGUIBrowserPath = getSceneInfo(IG3D_ROOT).."Data/GUI/"
+gFullGUIpath = guGUIBrowserPath
+gSelectedGUIFile = guGUIBrowserPath.."Console".."console.fl"
+guGUIBrowserFiles={}
+-- (left, top, right, bottom) 
+gGLX,gGLY,gGLR,gGLB = ig3d_GetWindowBounds__4i()
+
+function ulistGUIFiles()
+guGUIBrowserFiles={}
+    uGUIFileBrowser:clear()
+    for file in lfs.dir(guGUIBrowserPath) do
+        if string.sub(file, 1,1)~="." or file==".." then
+            local f = guGUIBrowserPath..'/'..file
+            local attr = lfs.attributes (f)
+            assert (type(attr) == "table")
+             if attr.mode == "file" and string.sub(file, -3,-1)==".fl" then 
+             	local a={file, "file"}
+             	table.insert(guGUIBrowserFiles, a)
+             	uGUIFileBrowser:add(file)
+             end   
+           if attr.mode == "directory" then 
+           local a={file, "directory"}
+             table.insert(guGUIBrowserFiles, a)
+             uGUIFileBrowser:add(file.."     ->")
+	   end  
+        end
+     end
+     
+end
+
+
+function uGUIBrowserControlDoubleClicked(w)
+	--
+	local theFile=guGUIBrowserFiles[tonumber(w:value())]
+	if theFile[2]=="directory" then
+			if theFile[1]==".." then 
+			guGUIBrowserPath=goDirsUp(guGUIBrowserPath, 1)
+			
+				if string.find(guGUIBrowserPath,"GUI") == nil then
+				guGUIBrowserPath = gameroot.."Data/GUI/"
+				end
+			
+			else
+				guGUIBrowserPath=guGUIBrowserPath..theFile[1].."/"
+				gFullGUIpath = guGUIBrowserPath
+			
+             		end
+             		
+	end
+		ulistGUIFiles()
+end
+
+function uGUIBrowserControlClicked(w)
+	if w:value()==0 or w:value() == nil then return end
+	n=w:value()
+	local theFile= guGUIBrowserFiles[tonumber(n)]
+	uLoadGUIBtn:hide()
+	
+	if theFile[2]=="file" then
+	uLoadGUIBtn:show()
+	gSelectedGUIFile = guGUIBrowserPath..theFile[1]
+	end
+	
+	if theFile[2]=="directory" then
+		-- seek one level deeper for like named
+				for file in lfs.dir(guGUIBrowserPath..theFile[1].."/") do
+					if string.find(file,theFile[1]..".fl") ~= nil then
+					gSelectedGUIFile = guGUIBrowserPath..theFile[1].."/"..file
+					print(gSelectedGUIFile)
+					uLoadGUIBtn:show()
+             				end
+             			end
+             	end
+             	
+	local t=time()
+	
+	if t-gLastBrowserControlClick < 0.4 and w:value()==guLastSelection then
+		uGUIBrowserControlDoubleClicked(w)
+		gLastBrowserControlClick=0
+	else
+	
+		gLastBrowserControlClick=time()	
+	end
+	guLastSelection=w:value()
+end
+
+
+function uGUILoad()
+
+if gSelectedGUIFile == nil then return end
+if string.sub(gSelectedGUIFile,-3,-1) == ".fl" then
+
+LuaOutFile = string.sub(gSelectedGUIFile,1,-3).."lua"
+
+parseFluid(gSelectedGUIFile,LuaOutFile)
+
+dofile(LuaOutFile)
+end
+end} {selected
+  }
   code {-- uScripts BROWSER CODE AHEAD 1129
 gLastBrowserControlClick=time()
 gLastSelection=-1
@@ -841,6 +944,7 @@ pngBrowserGroup:hide()
 WTFBrowserGroup:hide()
 uLevelsBrowserGroup:hide()
 uFluidBrowserGroup:hide()
+uGUIBrowserGroup:hide()
 uScriptsBrowserGroup:hide()
 uEMTBrowserGroup:hide()
 uOGGBrowserGroup:hide()
@@ -854,6 +958,11 @@ end
 if what == "Fluid" then
 ulistFluidFiles()
 uFluidBrowserGroup:show()
+end
+
+if what == "GUI" then
+ulistGUIFiles()
+uGUIBrowserGroup:show()
 end
 
 if what == "Models" then 
@@ -894,10 +1003,10 @@ uBrowserNew:redraw()
 fltk_update()
 end} {}
   Fl_Window uBrowserNew {
-    label {PNG Browser}
+    label {PNG Browser} open
     xywh {94 184 143 398} type Double resizable non_modal size_range {143 403 192 680} visible
   } {
-    Fl_Group pngBrowserGroup {open
+    Fl_Group pngBrowserGroup {
       xywh {5 1 129 389}
     } {
       Fl_Box upngPreviewBox {
@@ -913,7 +1022,7 @@ end} {}
         xywh {5 132 128 20} labelsize 10
       }
     }
-    Fl_Group WTFBrowserGroup {open
+    Fl_Group WTFBrowserGroup {
       xywh {0 0 136 389} labelsize 10
     } {
       Fl_Box uwtfPreviewBox {
@@ -938,7 +1047,7 @@ end} {}
         xywh {5 62 130 16} labelsize 10
       }
     }
-    Fl_Group uLevelsBrowserGroup {open
+    Fl_Group uLevelsBrowserGroup {
       xywh {0 1 135 389} labelsize 10
     } {
       Fl_Browser uLevelsFileBrowser {
@@ -956,7 +1065,7 @@ end} {}
         xywh {5 3 60 19} labelsize 10
       }
     }
-    Fl_Group uFluidBrowserGroup {open
+    Fl_Group uFluidBrowserGroup {
       xywh {0 1 135 389} labelsize 10
     } {
       Fl_Browser uFluidFileBrowser {
@@ -969,7 +1078,20 @@ end} {}
         xywh {5 3 125 19} labelsize 10
       }
     }
-    Fl_Group uScriptsBrowserGroup {open
+    Fl_Group uGUIBrowserGroup {open
+      xywh {0 1 135 389} labelsize 10
+    } {
+      Fl_Browser uGUIFileBrowser {
+        callback uGUIBrowserControlClicked
+        xywh {4 25 128 365} type Select labelsize 10 when 3 textsize 10
+      }
+      Fl_Button uLoadGUIBtn {
+        label {Load Fluid}
+        callback uGUILoad
+        xywh {5 3 125 19} labelsize 10
+      }
+    }
+    Fl_Group uScriptsBrowserGroup {
       xywh {0 1 135 389} labelsize 10
     } {
       Fl_Browser uScriptsFileBrowser {
@@ -982,7 +1104,7 @@ end} {}
         xywh {5 3 125 19} labelsize 10
       }
     }
-    Fl_Group uEMTBrowserGroup {open
+    Fl_Group uEMTBrowserGroup {
       xywh {0 1 135 389} labelsize 10
     } {
       Fl_Browser uEMTFileBrowser {
@@ -995,7 +1117,7 @@ end} {}
         xywh {5 3 125 19} labelsize 10
       }
     }
-    Fl_Group uOGGBrowserGroup {open
+    Fl_Group uOGGBrowserGroup {
       xywh {0 1 135 389} labelsize 10
     } {
       Fl_Browser uOGGFileBrowser {
@@ -1008,7 +1130,7 @@ end} {}
         xywh {5 3 125 19} labelsize 10
       }
     }
-    Fl_Group uFontPngsBrowserGroup {open
+    Fl_Group uFontPngsBrowserGroup {
       xywh {0 1 135 389} labelsize 10
     } {
       Fl_Browser uFontPngsFileBrowser {
